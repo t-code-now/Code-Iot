@@ -52,6 +52,15 @@ jobs:
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: scripts/playground-smoke.sh 2>&1 | tee -a build.log
 
+      - name: Turso protocol test (local libSQL server)
+        if: always()
+        run: |
+          docker run -d --name sqld -p 8080:8080 ghcr.io/tursodatabase/libsql-server:latest 2>&1 | tail -1
+          sleep 6
+          echo "=== TURSO PROTOCOL TEST ===" | tee -a build.log
+          TURSO_DATABASE_URL=http://127.0.0.1:8080 TURSO_AUTH_TOKEN=local scripts/playground-smoke.sh 2>&1 | sed -n '/--- database/p;/--- avatar/,$p' | tee -a build.log
+          docker logs sqld 2>&1 | tail -5 | tee -a build.log
+
       - name: Package
         run: |
           mkdir -p codesprout/web
