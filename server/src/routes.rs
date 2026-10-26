@@ -75,7 +75,7 @@ fn bearer(headers: &HeaderMap) -> Option<String> {
 /// The logged-in user id, if any.
 fn optional_user(state: &AppState, headers: &HeaderMap) -> ApiResult<Option<i64>> {
     match bearer(headers) {
-        Some(token) => Ok(db::user_for_token(&state.conn()?, &token)?),
+        Some(token) => Ok(db::user_for_token(&*state.conn()?, &token)?),
         None => Ok(None),
     }
 }
@@ -182,7 +182,7 @@ async fn signup(State(state): State<AppState>, Json(req): Json<AuthRequest>) -> 
 }
 
 async fn login(State(state): State<AppState>, Json(req): Json<AuthRequest>) -> ApiResult<Json<AuthResponse>> {
-    let creds = db::credentials(&state.conn()?, req.username.trim())?;
+    let creds = db::credentials(&*state.conn()?, req.username.trim())?;
     let wrong = || ApiError::BadRequest("Wrong username or password".into());
     let (user_id, hash) = creds.ok_or_else(wrong)?;
 
@@ -206,14 +206,14 @@ async fn login(State(state): State<AppState>, Json(req): Json<AuthRequest>) -> A
 
 async fn logout(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Json<serde_json::Value>> {
     if let Some(token) = bearer(&headers) {
-        db::delete_session(&state.conn()?, &token)?;
+        db::delete_session(&*state.conn()?, &token)?;
     }
     Ok(Json(serde_json::json!({ "ok": true })))
 }
 
 async fn me(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Json<Profile>> {
     let user_id = require_user(&state, &headers)?;
-    let (profile, _) = build_profile(&state.conn()?, user_id)?;
+    let (profile, _) = build_profile(&*state.conn()?, user_id)?;
     Ok(Json(profile))
 }
 
@@ -221,7 +221,7 @@ async fn me(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Json
 
 fn user_completions(state: &AppState, headers: &HeaderMap) -> ApiResult<HashMap<String, u32>> {
     match optional_user(state, headers)? {
-        Some(id) => Ok(db::completions(&state.conn()?, id)?),
+        Some(id) => Ok(db::completions(&*state.conn()?, id)?),
         None => Ok(HashMap::new()),
     }
 }
@@ -430,7 +430,7 @@ async fn leaderboard(
     Query(q): Query<LeaderboardQuery>,
 ) -> ApiResult<Json<Leaderboard>> {
     let me = match optional_user(&state, &headers)? {
-        Some(id) => db::get_user(&state.conn()?, id)?.map(|u| u.username),
+        Some(id) => db::get_user(&*state.conn()?, id)?.map(|u| u.username),
         None => None,
     };
     let all_time = q.scope.as_deref() == Some("all_time");

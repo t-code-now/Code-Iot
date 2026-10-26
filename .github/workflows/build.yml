@@ -37,10 +37,12 @@ jobs:
         run: cargo test -p codesprout-server 2>&1 | tee -a build.log; exit ${PIPESTATUS[0]}
 
       - name: Build web app (WebAssembly)
+        if: always()
         working-directory: web
         run: trunk build --release 2>&1 | tee -a ../build.log; exit ${PIPESTATUS[0]}
 
       - name: Build server (release)
+        if: always()
         run: cargo build -p codesprout-server --release 2>&1 | tee -a build.log; exit ${PIPESTATUS[0]}
 
       - name: Package
