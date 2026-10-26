@@ -91,6 +91,8 @@ const STRINGS: &[(&str, &str, &str)] = &[
     ("profile.guest_desc", "You're learning without an account. Your progress isn't saved.", "אתם לומדים בלי חשבון. ההתקדמות שלכם לא נשמרת."),
     ("profile.create_free", "Create a free account", "יצירת חשבון חינמי"),
     ("profile.language", "Language", "שפה"),
+    ("legal.privacy", "Privacy", "פרטיות"),
+    ("legal.terms", "Terms", "תנאי שימוש"),
     ("auth.google", "Continue with Google", "המשך עם Google"),
     ("auth.or", "or", "או"),
     ("auth.google_wait", "Finish signing in in your browser — this screen continues by itself.", "סיימו את ההתחברות בדפדפן — המסך הזה ימשיך לבד."),

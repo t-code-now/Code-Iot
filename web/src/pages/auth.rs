@@ -32,6 +32,11 @@ pub fn Welcome() -> impl IntoView {
                 <a href="/login" class="btn btn-ghost btn-block">{session.t("welcome.have_account")}</a>
                 <GoogleButton/>
                 <button class="link-btn" on:click=guest>{session.t("welcome.guest")}</button>
+                <div class="legal-links">
+                    <a href="/privacy">{session.t("legal.privacy")}</a>
+                    <span>"·"</span>
+                    <a href="/terms">{session.t("legal.terms")}</a>
+                </div>
             </div>
         </div>
     }

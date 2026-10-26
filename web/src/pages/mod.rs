@@ -3,6 +3,7 @@ pub mod avatar;
 pub mod courses;
 pub mod home;
 pub mod leaderboard;
+pub mod legal;
 pub mod lesson;
 pub mod playground;
 pub mod profile;

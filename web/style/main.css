@@ -653,3 +653,12 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .auth-or span {
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
+
+/* ---------- privacy policy & terms ---------- */
+.legal { padding-bottom: 32px; }
+.legal-card { padding: 18px; border-radius: var(--radius); background: rgba(18, 26, 56, .92); border: 2px solid var(--line); line-height: 1.6; }
+.legal-card h2 { font-size: 18px; margin: 18px 0 6px; color: var(--primary); }
+.legal-card p { color: #e3e7fa; }
+.legal-links { display: flex; gap: 8px; font-size: 13px; font-weight: 800; color: #fff;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; }
+.legal-links a { text-decoration: underline; }
