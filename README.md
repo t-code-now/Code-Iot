@@ -6,13 +6,13 @@ A learn-to-code app in the style of bite-sized coding apps, written entirely in 
 - **Frontend:** Leptos compiled to WebAssembly, mobile-first dark UI
 - **Core:** dependency-free crate with all course content and game logic, shared by both
 
-**English and Hebrew (עברית).** The whole interface and all 617 lessons are available in both languages, with a full right-to-left layout for Hebrew. Switch from the welcome screen or Profile. Code always stays in English and left-to-right, as in a real editor.
+**English and Hebrew (עברית).** The whole interface and all 719 lessons are available in both languages, with a full right-to-left layout for Hebrew. Switch from the welcome screen or Profile. Code always stays in English and left-to-right, as in a real editor.
 
 **Everything is open.** No locked lessons, no hearts/energy, no paywall. Every course and every lesson can be opened from the start. An account is only needed to save progress; you can also try it as a guest.
 
 ## Features
 
-- 6 complete courses — 617 lessons (at least 100 per course) and 2,712 steps (teaching cards and exercises). Every topic ends with a project lesson that uses that topic's own material:
+- 7 complete courses — 719 lessons (at least 100 per course) and 3,159 steps (teaching cards and exercises). Every topic ends with a project lesson that uses that topic's own material:
 
   | Course     | Sections | Lessons | Covers |
   |------------|---------:|--------:|--------|
@@ -21,6 +21,7 @@ A learn-to-code app in the style of bite-sized coding apps, written entirely in 
   | HTML & CSS | 19 | 101 | HTML structure, semantic HTML, forms, selectors, cascade, box model, flexbox, grid, responsive design, transitions, animations, variables, accessibility, advanced selectors, typography & web fonts, images & media, advanced layout, modern CSS, forms in depth, CSS architecture, publishing, project |
   | SQL        | 19 | 101 | SELECT, filtering, sorting, CASE, aggregates, GROUP BY/HAVING, joins, subqueries, CTEs, INSERT/UPDATE/DELETE, table design, keys, indexes, transactions, views, window functions, text, dates & times, NULL logic, advanced joins, recursive queries, upserts & JSON, query performance, security, project |
   | Rust       | 19 | 101 | basics, control flow, ownership & borrowing, structs, enums & match, collections, error handling, **traits & generics** (Rust's OOP), closures, iterators, lifetimes, smart pointers, strings, collections/iterators/traits in depth, modules & testing, concurrency, files & CLI tools, async, project |
+  | C++        | 17 | 102 | basics, decisions, loops, functions, arrays & strings, vectors, references & pointers, structs & enums, **OOP** (classes, inheritance, polymorphism), memory & smart pointers, operator overloading, copy & move, templates & modern C++, STL containers, lambdas & algorithms, exceptions, files & streams, project |
   | Arduino    | 18 | 108 | **the full Arduino language from scratch** (syntax, every data type, literals, casting, all operators incl. bitwise, control flow, functions/scope/static/references/overloading/recursion, arrays, C strings & String, pointers, structs, enums, built-in library, preprocessor, multi-file sketches, PROGMEM, **OOP**: classes, constructors, encapsulation, inheritance, virtual/polymorphism, static, templates), then electronics, digital & analog I/O, PWM, sound, servos, motors, Serial/I²C/SPI, sensors, interrupts, state machines, EEPROM, project |
 
   Every section ends with a project, and each course ends with a final project you build step by step.
@@ -105,7 +106,7 @@ Auth uses `Authorization: Bearer <token>`. Content endpoints (`/api/courses`, `/
 
 ## Adding content
 
-Each course lives in its own file under `core/src/content/` (python.rs, javascript.rs, web.rs, sql.rs, rust.rs, arduino.rs + arduino_lang.rs). Add a `lesson(...)` with steps built from
+Each course lives in its own file under `core/src/content/` (python.rs, javascript.rs, web.rs, sql.rs, rust.rs, cpp.rs, arduino.rs + arduino_lang.rs). Add a `lesson(...)` with steps built from
 `learn`, `mc`, `fill` (use `___` for each blank), `order` (lines in the correct
 order — they're shuffled when served) and `typein`. Run `cargo test -p codesprout-core`;
 the content tests catch broken exercises (missing tiles, bad indexes, duplicate ids).

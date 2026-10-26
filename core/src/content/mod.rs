@@ -9,6 +9,7 @@
 mod arduino;
 mod arduino_lang;
 mod arduino_more;
+mod cpp;
 mod javascript;
 mod javascript_more;
 mod python;
@@ -79,6 +80,7 @@ pub fn catalog() -> &'static [Course] {
             (web::course(), web_more::extend),
             (sql::course(), sql_more::extend),
             (rust::course(), rust_more::extend),
+            (cpp::course(), (|_| {}) as fn(&mut Vec<Section>)),
             (arduino::course(), arduino_more::extend),
         ];
         for (course, extend) in &mut courses {

@@ -58,6 +58,7 @@ const HE_FILES: &[(&str, &str)] = &[
     ("web", include_str!("content/he/web.txt")),
     ("sql", include_str!("content/he/sql.txt")),
     ("rust", include_str!("content/he/rust.txt")),
+    ("cpp", include_str!("content/he/cpp.txt")),
     ("arduino", include_str!("content/he/arduino.txt")),
 ];
 

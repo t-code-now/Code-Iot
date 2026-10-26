@@ -54,6 +54,15 @@ fn keywords(lang: &str) -> &'static [&'static str] {
             "using", "constexpr", "nullptr", "sizeof", "uint8_t", "int16_t", "uint32_t", "PROGMEM",
             "continue", "pragma", "ifdef", "endif",
         ],
+        "cpp" => &[
+            "int", "long", "short", "float", "double", "bool", "char", "void", "auto", "unsigned",
+            "signed", "const", "constexpr", "static", "if", "else", "for", "while", "do", "return",
+            "switch", "case", "break", "continue", "default", "class", "struct", "enum", "public",
+            "private", "protected", "virtual", "override", "template", "typename", "using",
+            "namespace", "new", "delete", "nullptr", "true", "false", "this", "try", "catch",
+            "throw", "include", "std", "string", "vector", "cout", "cin", "endl", "size_t", "explicit",
+            "operator", "friend", "noexcept", "sizeof", "typedef", "inline", "mutable", "final",
+        ],
         "css" | "html" => &[
             "color", "display", "flex", "margin", "padding", "border", "background", "font-size",
             "justify-content", "align-items", "flex-direction", "solid",
@@ -66,7 +75,7 @@ fn line_comment(lang: &str) -> &'static [&'static str] {
     match lang {
         "python" => &["#"],
         "sql" => &["--"],
-        "javascript" | "rust" | "css" | "arduino" => &["//"],
+        "javascript" | "rust" | "css" | "arduino" | "cpp" => &["//"],
         _ => &[],
     }
 }
@@ -170,6 +179,7 @@ pub fn lang_for_course(course_id: &str) -> &'static str {
         "sql" => "sql",
         "rust" => "rust",
         "arduino" => "arduino",
+        "cpp" => "cpp",
         _ => "",
     }
 }
