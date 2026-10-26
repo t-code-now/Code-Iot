@@ -2,11 +2,33 @@
 
 use codesprout_core::progress::all_badges;
 use leptos::*;
+use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
+
+use crate::components::icons::{IconBolt, IconFlame, IconShare, IconShield};
 
 use crate::components::lang_switch::LangSwitch;
 use crate::i18n::{self, tf, Lang};
 use crate::session::use_session;
+
+#[wasm_bindgen(inline_js = "export function share_text(text, url) {
+  if (navigator.share) { navigator.share({ title: 'Code-Iot', text: text, url: url }).catch(() => {}); return 1; }
+  if (navigator.clipboard) { navigator.clipboard.writeText(text + ' ' + url); return 2; }
+  return 0;
+}")]
+extern "C" {
+    fn share_text(text: &str, url: &str) -> u32;
+}
+
+/// League tier from total XP (a simple ladder; everyone starts in Bronze).
+fn tier(xp: u64) -> (&'static str, &'static str) {
+    match xp {
+        0..=499 => ("tier.bronze", "bronze"),
+        500..=1999 => ("tier.silver", "silver"),
+        2000..=4999 => ("tier.gold", "gold"),
+        _ => ("tier.diamond", "diamond"),
+    }
+}
 
 fn format_date(unix_secs: i64, lang: Lang) -> String {
     let date = js_sys::Date::new(&JsValue::from_f64(unix_secs as f64 * 1000.0));
@@ -46,6 +68,44 @@ pub fn ProfilePage() -> impl IntoView {
                                 <p class="muted">{tf(lang, "profile.joined", &[&format_date(p.joined_at, lang)])}</p>
                             </div>
 
+                            <div class="big-stats">
+                                <div class="big-stat streak">
+                                    <span class="big-stat-icon"><IconFlame/></span>
+                                    <strong>{p.streak}</strong>
+                                    <span>{t("profile.day_streak")}</span>
+                                </div>
+                                <div class="big-stat xp">
+                                    <span class="big-stat-icon"><IconBolt/></span>
+                                    <strong>{p.xp}</strong>
+                                    <span>"XP"</span>
+                                </div>
+                                <a href="/leaderboard" class=format!("big-stat league {}", tier(p.xp).1)>
+                                    <span class="big-stat-icon"><IconShield/></span>
+                                    <strong>{t(tier(p.xp).0)}</strong>
+                                    <span>{t("profile.league")}</span>
+                                </a>
+                            </div>
+
+                            <div class="best-streak">
+                                <span class="best-streak-icon"><IconFlame/></span>
+                                <strong>{tf(lang, "profile.days", &[&p.longest_streak])}</strong>
+                                <span class="best-streak-label">{t("profile.best_streak")}</span>
+                            </div>
+
+                            {
+                                let copied = create_rw_signal(false);
+                                let text = tf(lang, "profile.share_text", &[&p.xp, &p.streak]);
+                                view! {
+                                    <button class="btn btn-outline btn-block share-btn" on:click=move |_| {
+                                        let url = web_sys_origin();
+                                        if share_text(&text, &url) == 2 { copied.set(true); }
+                                    }>
+                                        <IconShare/>{t("profile.share")}
+                                    </button>
+                                    {move || copied.get().then(|| view! { <p class="share-note">{t("profile.copied")}</p> })}
+                                }
+                            }
+
                             <div class="level-card">
                                 <div class="level-row">
                                     <span class="level-chip">{tf(lang, "profile.level", &[&p.level])}</span>
@@ -54,13 +114,12 @@ pub fn ProfilePage() -> impl IntoView {
                                 <div class="bar"><div class="bar-fill" style=format!("width:{level_pct}%")></div></div>
                             </div>
 
+                            <h3 class="section-title">{t("profile.more")}</h3>
                             <div class="stats-grid">
-                                <div class="stat-tile"><span class="stat-emoji">"🔥"</span><strong>{p.streak}</strong><span>{t("profile.day_streak")}</span></div>
-                                <div class="stat-tile"><span class="stat-emoji">"⚡"</span><strong>{p.xp}</strong><span>{t("profile.total_xp")}</span></div>
                                 <div class="stat-tile"><span class="stat-emoji">"📅"</span><strong>{p.weekly_xp}</strong><span>{t("profile.week_xp")}</span></div>
-                                <div class="stat-tile"><span class="stat-emoji">"🏅"</span><strong>{p.longest_streak}</strong><span>{t("profile.best_streak")}</span></div>
                                 <div class="stat-tile"><span class="stat-emoji">"📘"</span><strong>{p.lessons_completed}</strong><span>{t("profile.lessons")}</span></div>
                                 <div class="stat-tile"><span class="stat-emoji">"🎓"</span><strong>{p.courses_completed}</strong><span>{t("profile.courses")}</span></div>
+                                <div class="stat-tile"><span class="stat-emoji">"🧩"</span><strong>{p.badges.len()}</strong><span>{t("profile.badges")}</span></div>
                             </div>
 
                             {language_card}
@@ -88,7 +147,7 @@ pub fn ProfilePage() -> impl IntoView {
                     None => view! {
                         <>
                         <div class="profile-card">
-                            <div class="avatar big">"🌱"</div>
+                            <img class="avatar big mascot" src="/assets/mascot.png" alt=""/>
                             <h2>{t("profile.guest")}</h2>
                             <p class="muted">{t("profile.guest_desc")}</p>
                         </div>
@@ -103,4 +162,13 @@ pub fn ProfilePage() -> impl IntoView {
             }}
         </div>
     }
+}
+
+fn web_sys_origin() -> String {
+    js_sys::Reflect::get(&js_sys::global(), &JsValue::from_str("location"))
+        .and_then(|loc| js_sys::Reflect::get(&loc, &JsValue::from_str("origin")))
+        .ok()
+        .and_then(|v| v.as_string())
+        .filter(|o| o.starts_with("http") && !o.contains("tauri.localhost"))
+        .unwrap_or_else(|| "https://code-iot.onrender.com".to_string())
 }

@@ -20,7 +20,9 @@ pub fn Welcome() -> impl IntoView {
         <div class="welcome">
             <div class="welcome-top"><LangSwitch/></div>
             <div class="welcome-hero">
-                <div class="logo-mark">"🌱"</div>
+                <div class="logo-mark">
+                    <img src="/assets/mascot.png" alt="Code-Iot"/>
+                </div>
                 <h1 class="welcome-title">"Code-Iot"</h1>
                 <p class="welcome-sub">{session.t("welcome.sub")}</p>
                 <div class="welcome-langs">
@@ -85,6 +87,7 @@ pub fn AuthPage(mode: AuthMode) -> impl IntoView {
     view! {
         <div class="auth">
             <a href="/welcome" class="back-link">{session.t("back")}</a>
+            <img class="auth-logo" src="/assets/mascot.png" alt=""/>
             <h1 class="auth-title">{session.t(title)}</h1>
             <form class="auth-form" on:submit=submit>
                 <label class="field">

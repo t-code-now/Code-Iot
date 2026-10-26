@@ -63,10 +63,10 @@ pub fn StatPills() -> impl IntoView {
     view! {
         <div class="pills">
             <span class="pill pill-streak" class:lit={move || streak() > 0}>
-                <span class="pill-icon">"🔥"</span>{streak}
+                <IconFlame/>{streak}
             </span>
             <span class="pill pill-xp">
-                <span class="pill-icon">"⚡"</span>{xp}
+                <IconBolt/>{xp}
             </span>
         </div>
     }

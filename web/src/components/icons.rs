@@ -60,3 +60,59 @@ pub fn IconPlay() -> impl IntoView {
         </svg>
     }
 }
+
+#[component]
+pub fn IconBolt() -> impl IntoView {
+    view! {
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M13.2 2.5 4.8 13.4a.8.8 0 0 0 .6 1.3H11l-1.2 6.8a.5.5 0 0 0 .9.4l8.4-10.9a.8.8 0 0 0-.6-1.3H13l1.1-6.8a.5.5 0 0 0-.9-.4z"/>
+        </svg>
+    }
+}
+
+#[component]
+pub fn IconCheck() -> impl IntoView {
+    view! {
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12.5l4.5 4.5L19 7.5"/>
+        </svg>
+    }
+}
+
+/// A jigsaw piece: the mark for project lessons and section banners.
+#[component]
+pub fn IconPuzzle() -> impl IntoView {
+    view! {
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9.5 3a2.5 2.5 0 0 1 2.5 2.5V6h4a1 1 0 0 1 1 1v4h.5a2.5 2.5 0 0 1 0 5H17v4a1 1 0 0 1-1 1h-3.5v-.8a2 2 0 1 0-4 0v.8H5a1 1 0 0 1-1-1v-3.5h.8a2 2 0 1 0 0-4H4V7a1 1 0 0 1 1-1h2v-.5A2.5 2.5 0 0 1 9.5 3z"/>
+        </svg>
+    }
+}
+
+#[component]
+pub fn IconFlame() -> impl IntoView {
+    view! {
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12.6 2.3c.2 3-1.7 4.6-3.2 6.2C7.9 10.1 6.5 11.8 6.5 14.6A5.5 5.5 0 0 0 12 20.5a5.5 5.5 0 0 0 5.5-5.6c0-2.2-.9-3.9-2-5.2-.2 1.3-.8 2.3-1.8 2.8.4-3.6-.3-7.6-1.1-10.2zM12 18.5a2.3 2.3 0 0 1-2.3-2.3c0-1.5 1.1-2.3 2-3.4.3 1 .9 1.6 1.6 2.1.6.4 1 .9 1 1.6a2.3 2.3 0 0 1-2.3 2z"/>
+        </svg>
+    }
+}
+
+#[component]
+pub fn IconShare() -> impl IntoView {
+    view! {
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12M7.5 7.5 12 3l4.5 4.5"/>
+            <path d="M5 12v6.5A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5V12"/>
+        </svg>
+    }
+}
+
+#[component]
+pub fn IconShield() -> impl IntoView {
+    view! {
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.5 4.5 5.3v6.1c0 4.6 3.1 8.6 7.5 10.1 4.4-1.5 7.5-5.5 7.5-10.1V5.3z"/>
+        </svg>
+    }
+}
