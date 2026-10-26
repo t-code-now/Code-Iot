@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Code-IoT",
+  "productName": "Code-Iot",
   "version": "0.1.0",
   "identifier": "com.tcodenow.codeiot",
   "build": {
@@ -9,7 +9,7 @@
   "app": {
     "windows": [
       {
-        "title": "Code-IoT",
+        "title": "Code-Iot",
         "width": 420,
         "height": 860
       }

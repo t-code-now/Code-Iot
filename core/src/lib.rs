@@ -1,4 +1,4 @@
-//! Code-IoT core: everything that is pure logic lives here so it can be
+//! Code-Iot core: everything that is pure logic lives here so it can be
 //! unit-tested without a database or a browser, and shared by both the
 //! server and the WebAssembly frontend.
 //!

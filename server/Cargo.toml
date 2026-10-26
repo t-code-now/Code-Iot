@@ -1,6 +1,6 @@
 [package]
 name = "codesprout-server"
-description = "HTTP API (axum + SQLite) for Code-IoT; also serves the built web app"
+description = "HTTP API (axum + SQLite) for Code-Iot; also serves the built web app"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

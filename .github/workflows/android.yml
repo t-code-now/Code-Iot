@@ -88,29 +88,29 @@ jobs:
             PASS=codesprout
             keytool -genkeypair -keystore release.jks -storepass "$PASS" -keypass "$PASS" \
               -alias codeiot -keyalg RSA -keysize 2048 -validity 10000 \
-              -dname "CN=Code-IoT" 2>&1 | tee -a android.log
+              -dname "CN=Code-Iot" 2>&1 | tee -a android.log
           fi
           "$BT/zipalign" -f -p 4 "$APK" aligned.apk
-          "$BT/apksigner" sign --ks release.jks --ks-pass "pass:$PASS" --out Code-IoT.apk aligned.apk 2>&1 | tee -a android.log
-          "$BT/apksigner" verify Code-IoT.apk 2>&1 | tee -a android.log
-          ls -la Code-IoT.apk | tee -a android.log
+          "$BT/apksigner" sign --ks release.jks --ks-pass "pass:$PASS" --out Code-Iot.apk aligned.apk 2>&1 | tee -a android.log
+          "$BT/apksigner" verify Code-Iot.apk 2>&1 | tee -a android.log
+          ls -la Code-Iot.apk | tee -a android.log
         env:
           KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Code-IoT-android
-          path: Code-IoT.apk
+          name: Code-Iot-android
+          path: Code-Iot.apk
 
       - name: Publish APK as a release
         run: |
           git config user.name "ci"
           git config user.email "ci@users.noreply.github.com"
           gh release delete android-latest -y --cleanup-tag || true
-          gh release create android-latest Code-IoT.apk --target "${{ github.sha }}" \
-            --title "Code-IoT for Android" \
-            --notes "Latest Android build. On your phone, tap Code-IoT.apk below to download, then open it to install."
+          gh release create android-latest Code-Iot.apk --target "${{ github.sha }}" \
+            --title "Code-Iot for Android" \
+            --notes "Latest Android build. On your phone, tap Code-Iot.apk below to download, then open it to install."
         env:
           GH_TOKEN: ${{ github.token }}
 

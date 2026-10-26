@@ -1,4 +1,4 @@
-//! Code-IoT web app (Leptos, client-side rendered to WebAssembly).
+//! Code-Iot web app (Leptos, client-side rendered to WebAssembly).
 
 mod api;
 mod components;

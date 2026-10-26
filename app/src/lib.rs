@@ -1,4 +1,4 @@
-//! The Android app is a native window around the Code-IoT web app
+//! The Android app is a native window around the Code-Iot web app
 //! (built from `web/` into `web/dist`). It talks to the hosted server
 //! whose address is baked in at build time (`CODESPROUT_API`).
 
@@ -6,5 +6,5 @@
 pub fn run() {
     tauri::Builder::default()
         .run(tauri::generate_context!())
-        .expect("failed to start Code-IoT");
+        .expect("failed to start Code-Iot");
 }

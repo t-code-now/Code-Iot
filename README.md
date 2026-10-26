@@ -1,4 +1,4 @@
-# Code-IoT 🌱
+# Code-Iot 🌱
 
 A learn-to-code app in the style of bite-sized coding apps, written entirely in Rust:
 
@@ -112,7 +112,7 @@ the content tests catch broken exercises (missing tiles, bad indexes, duplicate 
 
 ## Note
 
-Code-IoT is an independent project. It is not affiliated with or endorsed by Mimo,
+Code-Iot is an independent project. It is not affiliated with or endorsed by Mimo,
 and uses its own name, design and course content.
 
 ## License
