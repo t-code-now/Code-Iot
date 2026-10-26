@@ -24,12 +24,9 @@ pub fn Welcome() -> impl IntoView {
                     <img src="/assets/mascot.png" alt="Code-Iot"/>
                 </div>
                 <h1 class="welcome-title">"Code-Iot"</h1>
-                <p class="welcome-sub">{session.t("welcome.sub")}</p>
-                <div class="welcome-langs">
-                    <span>"🐍"</span><span>"⚡"</span><span>"🌐"</span><span>"🗄️"</span><span>"🦀"</span><span>"🔌"</span>
-                </div>
             </div>
             <div class="welcome-actions">
+                <p class="welcome-sub">{session.t("welcome.sub")}</p>
                 <a href="/signup" class="btn btn-primary btn-block">{session.t("welcome.start")}</a>
                 <a href="/login" class="btn btn-ghost btn-block">{session.t("welcome.have_account")}</a>
                 <button class="link-btn" on:click=guest>{session.t("welcome.guest")}</button>

@@ -47,7 +47,7 @@ const STRINGS: &[(&str, &str, &str)] = &[
     ("done.next", "Next lesson", "השיעור הבא"),
     ("done.back", "Back to path", "חזרה למסלול"),
     // welcome & auth
-    ("welcome.sub", "Learn to code in bite-sized lessons. Every course is open — start anywhere.", "למדו לתכנת בשיעורים קצרים. כל הקורסים פתוחים — התחילו מאיפה שתרצו."),
+    ("welcome.sub", "Learn to code anywhere, anytime!", "ללמוד לתכנת בכל מקום, בכל זמן!"),
     ("welcome.start", "Get started", "בואו נתחיל"),
     ("welcome.have_account", "I already have an account", "כבר יש לי חשבון"),
     ("welcome.guest", "Try it without an account", "לנסות בלי חשבון"),
