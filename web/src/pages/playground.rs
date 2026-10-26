@@ -1,8 +1,8 @@
 //! Code playground for every language in the app.
 //!
-//! * HTML/CSS/JS, JavaScript, Python (Pyodide) and SQL (sql.js) run in a
+//! * HTML/CSS/JS, JavaScript and SQL (sql.js) run in a
 //!   sandboxed iframe right in the browser.
-//! * C++, Rust and Arduino sketches are compiled and run by the server's
+//! * Python, C++, Rust and Arduino sketches are compiled/run by the server's
 //!   `/api/run` (Compiler Explorer; Arduino through a board simulator).
 //!
 //! Each language keeps its own code in localStorage.
