@@ -1,22 +1,24 @@
-//! The living background: snippets of code in editor colours float slowly
-//! upward behind every screen. On the learning path they stay still, so the
-//! path itself is calm to read.
+//! The living background ("code fog"): faint, blurred words of code drift
+//! slowly upward behind every screen. Every 1.5 s two or three of them light
+//! up in a neon colour for 4 s and fade back into the fog. On the learning
+//! path the background is a still picture: no drifting and no glowing.
+
+use std::time::Duration;
 
 use leptos::*;
 use leptos_router::use_location;
 
-const SNIPPETS: &[&str] = &[
-    "def main():", "print()", "import", "for i in range(10):", "lambda x:", "class", "self",
-    "const", "let", "=>", "async", "await", "console.log()", "{}", "[]", "===",
-    "<div />", "</>", "<script>", "margin: 0;", "color: #fff;", "display: flex;",
-    "SELECT *", "FROM", "WHERE", "JOIN", "GROUP BY",
-    "fn main()", "let mut", "impl", "match", "Vec<T>", "&str", "Option<T>",
-    "#include", "std::cout", "int main()", "nullptr", "template<T>", "::",
-    "void setup()", "void loop()", "digitalWrite()", "delay(1000);", "Serial.println()",
-    "if ()", "else", "return;", "true", "false", "null", "while", "0x2A",
+const WORDS: &[&str] = &[
+    "const", "let", "function()", "=>", "<div>", "import", "from", "return;", "{}", "[]",
+    "if()", "else", "true", "false", "class", "await", "async", "console.log", "===", "null",
+    "export", "map()", "filter()", "<App />",
+    "def", "print()", "self", "SELECT", "WHERE", "fn main()", "let mut", "impl",
+    "#include", "std::cout", "int main()", "void loop()", "digitalWrite()",
 ];
 
-const COLORS: &[&str] = &["#569cd6", "#c586c0", "#dcdcaa", "#b5cea8", "#9cdcfe", "#4ec9b0", "#ce9178"];
+const NEON: &[&str] = &["#ff007f", "#00f3ff", "#f1fa8c", "#50fa7b"];
+
+const COUNT: usize = 45;
 
 fn rnd() -> f64 {
     js_sys::Math::random()
@@ -32,28 +34,55 @@ pub fn CodeBackground() -> impl IntoView {
     // The learning path ("/") gets the still version.
     let still = move || pathname.get() == "/";
 
-    let snippets = (0..40)
-        .map(|_| {
-            let size = rnd() * 1.2 + 0.6; // rem
-            let blur = if size > 1.4 { "blur(1px)" } else if size < 0.8 { "blur(2px)" } else { "none" };
-            let style = format!(
-                "left:{:.1}vw;font-size:{:.2}rem;color:{};animation-duration:{:.1}s;animation-delay:{:.1}s;\
-                 --target-opacity:{:.2};--drift:{:.0}px;--y:{:.0};filter:{}",
-                rnd() * 100.0,
-                size,
-                pick(COLORS),
-                rnd() * 20.0 + 15.0,
-                -rnd() * 30.0,
-                rnd() * 0.3 + 0.1,
+    // Neon colour of each word while it glows; None = resting in the fog.
+    let glow: Vec<RwSignal<Option<&'static str>>> = (0..COUNT).map(|_| create_rw_signal(None)).collect();
+
+    {
+        let glow = glow.clone();
+        let tick = move || {
+            if pathname.get_untracked() == "/" {
+                return;
+            }
+            let mut free: Vec<usize> = (0..COUNT).filter(|&i| glow[i].get_untracked().is_none()).collect();
+            let n = 2 + (rnd() * 2.0) as usize; // 2 or 3
+            for _ in 0..n {
+                if free.is_empty() {
+                    break;
+                }
+                let i = free.swap_remove(((rnd() * free.len() as f64) as usize).min(free.len() - 1));
+                let word = glow[i];
+                word.set(Some(pick(NEON)));
+                set_timeout(move || word.set(None), Duration::from_millis(4000));
+            }
+        };
+        if let Ok(handle) = set_interval_with_handle(tick, Duration::from_millis(1500)) {
+            on_cleanup(move || handle.clear());
+        }
+    }
+
+    let words = glow
+        .into_iter()
+        .map(|g| {
+            let base = format!(
+                "left:{:.1}vw;font-size:{:.2}rem;--float-duration:{:.1}s;animation-delay:{:.1}s;--drift:{:.0}px;--y:{:.0}",
+                rnd() * 90.0,
+                rnd() * 0.8 + 0.9,
+                rnd() * 40.0 + 20.0,
+                -rnd() * 60.0,
                 rnd() * 200.0 - 100.0,
                 rnd() * 100.0,
-                blur,
             );
-            view! { <span class="code-snippet" style=style>{pick(SNIPPETS)}</span> }
+            let style = move || match g.get() {
+                Some(color) => format!("{base};--neon-color:{color}"),
+                None => base.clone(),
+            };
+            view! {
+                <span class="code-word" class:active-glow=move || g.get().is_some() style=style>{pick(WORDS)}</span>
+            }
         })
         .collect_view();
 
     view! {
-        <div class="code-bg" class:still=still aria-hidden="true">{snippets}</div>
+        <div class="code-bg" class:still=still aria-hidden="true">{words}</div>
     }
 }
