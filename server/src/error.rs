@@ -30,8 +30,8 @@ impl IntoResponse for ApiError {
     }
 }
 
-impl From<rusqlite::Error> for ApiError {
-    fn from(e: rusqlite::Error) -> Self {
+impl From<crate::sql::DbError> for ApiError {
+    fn from(e: crate::sql::DbError) -> Self {
         ApiError::Internal(e.to_string())
     }
 }

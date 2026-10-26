@@ -4,7 +4,8 @@
 set -u
 export ADDR=127.0.0.1:3999 DATABASE_PATH=/tmp/smoke.db WEB_DIST=web/dist
 ./target/release/codesprout-server & pid=$!
-sleep 3
+sleep 5
+echo "--- database: ${TURSO_DATABASE_URL:+Turso}${TURSO_DATABASE_URL:-local file}"
 run() {
   echo "--- /api/run $1"
   python3 - "$1" "$2" "$3" <<'PY'
@@ -61,13 +62,20 @@ def call(method, path, body=None, token=None):
         return json.load(urllib.request.urlopen(req, timeout=20))
     except urllib.error.HTTPError as e:
         return {"http_error": e.code, "body": e.read().decode()[:200]}
-r = call("POST", "/api/auth/signup", {"username": "avatar_smoke", "password": "secret123"})
+import secrets
+name = "smoke_" + secrets.token_hex(4)
+r = call("POST", "/api/auth/signup", {"username": name, "password": "secret123"})
+if "token" not in r:
+    print("SIGNUP FAILED:", r); raise SystemExit(0)
 tok = r["token"]; print("signup avatar:", r["profile"].get("avatar"))
 print("preset:", call("PUT", "/api/me/avatar", {"avatar": "preset:a2"}, tok).get("avatar"))
 print("me:", call("GET", "/api/me", token=tok).get("avatar"))
 print("upload:", call("PUT", "/api/me/avatar", {"avatar": "data:image/jpeg;base64,/9j/4AAQ"}, tok).get("avatar"))
 print("bad:", call("PUT", "/api/me/avatar", {"avatar": "data:text/html;base64,PGg+"}, tok))
 print("clear:", call("PUT", "/api/me/avatar", {"avatar": None}, tok).get("avatar"))
+login = call("POST", "/api/auth/login", {"username": name, "password": "secret123"})
+print("login again:", "token" in login, "| completions saved:", call("POST", "/api/lessons/py-1-1/complete", {"correct": 3, "tz_offset_minutes": 120}, tok).get("xp_gained"))
+print("profile after lesson: xp", call("GET", "/api/me", token=tok).get("xp"))
 PY
 kill $pid
 for u in https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js \

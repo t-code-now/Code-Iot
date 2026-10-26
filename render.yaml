@@ -14,9 +14,9 @@ services:
         value: /data/codesprout.db
       - key: RUST_LOG
         value: info
-    # Free plan: the database resets when the server restarts or redeploys.
-    # To keep data, switch plan to "starter" and uncomment:
-    # disk:
-    #   name: data
-    #   mountPath: /data
-    #   sizeGB: 1
+      # Accounts and progress live in Turso (free), so they survive restarts.
+      # Set both in the Render dashboard (Environment tab).
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false

@@ -2,7 +2,7 @@
 //! logging in is only needed to save progress.
 
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use argon2::password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString};
@@ -12,7 +12,6 @@ use axum::http::HeaderMap;
 use axum::routing::{get, post, put};
 use axum::{Json, Router};
 use rand::RngCore;
-use rusqlite::Connection;
 use serde::Deserialize;
 
 use codesprout_core::api::*;
@@ -22,17 +21,12 @@ use codesprout_core::i18n::{self, Lang};
 use codesprout_core::{catalog, find_course, find_lesson, grading, shuffle};
 
 use crate::db;
+use crate::sql::Db;
 use crate::error::{ApiError, ApiResult};
 
 #[derive(Clone)]
 pub struct AppState {
-    pub db: Arc<Mutex<Connection>>,
-}
-
-impl AppState {
-    fn conn(&self) -> ApiResult<MutexGuard<'_, Connection>> {
-        self.db.lock().map_err(|_| ApiError::Internal("database lock poisoned".into()))
-    }
+    pub db: Arc<Db>,
 }
 
 pub fn api_router(state: AppState) -> Router {
@@ -75,15 +69,15 @@ fn bearer(headers: &HeaderMap) -> Option<String> {
 }
 
 /// The logged-in user id, if any.
-fn optional_user(state: &AppState, headers: &HeaderMap) -> ApiResult<Option<i64>> {
+async fn optional_user(state: &AppState, headers: &HeaderMap) -> ApiResult<Option<i64>> {
     match bearer(headers) {
-        Some(token) => Ok(db::user_for_token(&*state.conn()?, &token)?),
+        Some(token) => Ok(db::user_for_token(&state.db, &token).await?),
         None => Ok(None),
     }
 }
 
-fn require_user(state: &AppState, headers: &HeaderMap) -> ApiResult<i64> {
-    optional_user(state, headers)?.ok_or(ApiError::Unauthorized)
+async fn require_user(state: &AppState, headers: &HeaderMap) -> ApiResult<i64> {
+    optional_user(state, headers).await?.ok_or(ApiError::Unauthorized)
 }
 
 fn validate(req: &AuthRequest) -> ApiResult<()> {
@@ -126,16 +120,16 @@ fn stats_for(user: &db::User, done: &HashMap<String, u32>) -> Stats {
     }
 }
 
-fn build_profile(conn: &Connection, user_id: i64) -> ApiResult<(Profile, Stats)> {
-    let user = db::get_user(conn, user_id)?.ok_or(ApiError::Unauthorized)?;
-    let done = db::completions(conn, user_id)?;
+async fn build_profile(conn: &Db, user_id: i64) -> ApiResult<(Profile, Stats)> {
+    let user = db::get_user(conn, user_id).await?.ok_or(ApiError::Unauthorized)?;
+    let done = db::completions(conn, user_id).await?;
     let stats = stats_for(&user, &done);
 
     let t = now();
     let tz = user.tz_offset as i32;
     let today = progress::day_number(t, tz);
     let week_start = progress::week_start_unix(progress::week_number(today), tz);
-    let weekly_xp = db::xp_since(conn, user_id, week_start)?;
+    let weekly_xp = db::xp_since(conn, user_id, week_start).await?;
     let (level, level_xp, level_xp_needed) = progress::level_for_xp(stats.xp);
 
     let profile = Profile {
@@ -151,7 +145,7 @@ fn build_profile(conn: &Connection, user_id: i64) -> ApiResult<(Profile, Stats)>
         courses_completed: stats.courses_completed,
         badges: progress::badges(&stats),
         joined_at: user.created_at,
-        avatar: db::get_avatar(conn, user_id)?,
+        avatar: db::get_avatar(conn, user_id).await?,
     };
     Ok((profile, stats))
 }
@@ -174,18 +168,19 @@ async fn signup(State(state): State<AppState>, Json(req): Json<AuthRequest>) -> 
     })
     .await??;
 
-    let conn = state.conn()?;
+    let conn = &state.db;
     let t = now();
-    let user_id = db::create_user(&conn, &username, &hash, t)?
+    let user_id = db::create_user(conn, &username, &hash, t)
+        .await?
         .ok_or_else(|| ApiError::Conflict("That username is taken".into()))?;
     let token = random_hex(32);
-    db::create_session(&conn, &token, user_id, t)?;
-    let (profile, _) = build_profile(&conn, user_id)?;
+    db::create_session(conn, &token, user_id, t).await?;
+    let (profile, _) = build_profile(conn, user_id).await?;
     Ok(Json(AuthResponse { token, profile }))
 }
 
 async fn login(State(state): State<AppState>, Json(req): Json<AuthRequest>) -> ApiResult<Json<AuthResponse>> {
-    let creds = db::credentials(&*state.conn()?, req.username.trim())?;
+    let creds = db::credentials(&state.db, req.username.trim()).await?;
     let wrong = || ApiError::BadRequest("Wrong username or password".into());
     let (user_id, hash) = creds.ok_or_else(wrong)?;
 
@@ -200,23 +195,23 @@ async fn login(State(state): State<AppState>, Json(req): Json<AuthRequest>) -> A
         return Err(wrong());
     }
 
-    let conn = state.conn()?;
+    let conn = &state.db;
     let token = random_hex(32);
-    db::create_session(&conn, &token, user_id, now())?;
-    let (profile, _) = build_profile(&conn, user_id)?;
+    db::create_session(conn, &token, user_id, now()).await?;
+    let (profile, _) = build_profile(conn, user_id).await?;
     Ok(Json(AuthResponse { token, profile }))
 }
 
 async fn logout(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Json<serde_json::Value>> {
     if let Some(token) = bearer(&headers) {
-        db::delete_session(&*state.conn()?, &token)?;
+        db::delete_session(&state.db, &token).await?;
     }
     Ok(Json(serde_json::json!({ "ok": true })))
 }
 
 async fn me(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Json<Profile>> {
-    let user_id = require_user(&state, &headers)?;
-    let (profile, _) = build_profile(&*state.conn()?, user_id)?;
+    let user_id = require_user(&state, &headers).await?;
+    let (profile, _) = build_profile(&state.db, user_id).await?;
     Ok(Json(profile))
 }
 
@@ -225,21 +220,20 @@ async fn set_avatar(
     headers: HeaderMap,
     Json(req): Json<AvatarRequest>,
 ) -> ApiResult<Json<Profile>> {
-    let user_id = require_user(&state, &headers)?;
+    let user_id = require_user(&state, &headers).await?;
     if let Some(a) = &req.avatar {
         validate_avatar(a).map_err(|m| ApiError::BadRequest(m.into()))?;
     }
-    let conn = state.conn()?;
-    db::set_avatar(&conn, user_id, req.avatar.as_deref())?;
-    let (profile, _) = build_profile(&conn, user_id)?;
+    db::set_avatar(&state.db, user_id, req.avatar.as_deref()).await?;
+    let (profile, _) = build_profile(&state.db, user_id).await?;
     Ok(Json(profile))
 }
 
 // ---------------------------------------------------------------- catalog
 
-fn user_completions(state: &AppState, headers: &HeaderMap) -> ApiResult<HashMap<String, u32>> {
-    match optional_user(state, headers)? {
-        Some(id) => Ok(db::completions(&*state.conn()?, id)?),
+async fn user_completions(state: &AppState, headers: &HeaderMap) -> ApiResult<HashMap<String, u32>> {
+    match optional_user(state, headers).await? {
+        Some(id) => Ok(db::completions(&state.db, id).await?),
         None => Ok(HashMap::new()),
     }
 }
@@ -262,7 +256,7 @@ async fn list_courses(
     Query(q): Query<LangQuery>,
 ) -> ApiResult<Json<Vec<CourseSummary>>> {
     let lang = q.lang();
-    let done = user_completions(&state, &headers)?;
+    let done = user_completions(&state, &headers).await?;
     let courses = catalog()
         .iter()
         .map(|c| CourseSummary {
@@ -287,7 +281,7 @@ async fn get_course(
 ) -> ApiResult<Json<CourseDetail>> {
     let lang = q.lang();
     let course = find_course(&id).ok_or(ApiError::NotFound)?;
-    let done = user_completions(&state, &headers)?;
+    let done = user_completions(&state, &headers).await?;
     Ok(Json(CourseDetail {
         id: course.id.into(),
         title: i18n::course_title(lang, course.id, course.title).into(),
@@ -405,16 +399,16 @@ async fn complete_lesson(
     Path(id): Path<String>,
     Json(req): Json<CompleteRequest>,
 ) -> ApiResult<Json<CompleteResponse>> {
-    let user_id = require_user(&state, &headers)?;
+    let user_id = require_user(&state, &headers).await?;
     let (_, lesson, _) = find_lesson(&id).ok_or(ApiError::NotFound)?;
     let total = lesson.exercise_count() as u32;
     let tz = req.tz_offset_minutes.clamp(-14 * 60, 14 * 60);
     let t = now();
 
-    let mut conn = state.conn()?;
-    let (_, before) = build_profile(&conn, user_id)?;
+    let conn = &state.db;
+    let (_, before) = build_profile(conn, user_id).await?;
     let result = db::record_completion(
-        &mut conn,
+        conn,
         db::CompletionUpdate {
             user_id,
             lesson_id: lesson.id,
@@ -424,8 +418,9 @@ async fn complete_lesson(
             tz_offset: tz,
             today: progress::day_number(t, tz),
         },
-    )?;
-    let (profile, after) = build_profile(&conn, user_id)?;
+    )
+    .await?;
+    let (profile, after) = build_profile(conn, user_id).await?;
 
     Ok(Json(CompleteResponse {
         xp_gained: result.xp_gained,
@@ -447,18 +442,18 @@ async fn leaderboard(
     headers: HeaderMap,
     Query(q): Query<LeaderboardQuery>,
 ) -> ApiResult<Json<Leaderboard>> {
-    let me = match optional_user(&state, &headers)? {
-        Some(id) => db::get_user(&*state.conn()?, id)?.map(|u| u.username),
+    let me = match optional_user(&state, &headers).await? {
+        Some(id) => db::get_user(&state.db, id).await?.map(|u| u.username),
         None => None,
     };
     let all_time = q.scope.as_deref() == Some("all_time");
-    let conn = state.conn()?;
+    let conn = &state.db;
     let rows = if all_time {
-        db::leaderboard_all_time(&conn, 50)?
+        db::leaderboard_all_time(conn, 50).await?
     } else {
         // Weekly leagues reset Monday 00:00 UTC.
         let week = progress::week_number(progress::day_number(now(), 0));
-        db::leaderboard_since(&conn, progress::week_start_unix(week, 0), 50)?
+        db::leaderboard_since(conn, progress::week_start_unix(week, 0), 50).await?
     };
     let entries = rows
         .into_iter()

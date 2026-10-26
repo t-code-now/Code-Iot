@@ -47,6 +47,9 @@ jobs:
 
       - name: Playground smoke test
         if: always()
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: scripts/playground-smoke.sh 2>&1 | tee -a build.log
 
       - name: Package

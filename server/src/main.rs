@@ -2,18 +2,21 @@
 //!
 //! Environment variables (all optional):
 //! * `ADDR`           – listen address, default `0.0.0.0:3000`
-//! * `DATABASE_PATH`  – SQLite file, default `codesprout.db`
+//! * `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` – keep all data in a Turso
+//!   database (recommended for hosting: data survives restarts)
+//! * `DATABASE_PATH`  – local SQLite file when Turso isn't set, default `codesprout.db`
 //! * `WEB_DIST`       – built frontend folder, default `web/dist`
 
 mod db;
 mod error;
 mod routes;
+mod sql;
 mod run;
 mod sketch;
 
 use std::net::SocketAddr;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use tower_http::cors::CorsLayer;
 use tower_http::services::{ServeDir, ServeFile};
@@ -38,7 +41,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let dist = PathBuf::from(env_or("WEB_DIST", "web/dist"));
     let addr: SocketAddr = env_or("ADDR", "0.0.0.0:3000").parse()?;
 
-    let state = AppState { db: Arc::new(Mutex::new(db::open(&db_path)?)) };
+    let database = match (std::env::var("TURSO_DATABASE_URL"), std::env::var("TURSO_AUTH_TOKEN")) {
+        (Ok(url), Ok(token)) if !url.trim().is_empty() && !token.trim().is_empty() => sql::Db::remote(&url, &token)?,
+        _ => sql::Db::local(&db_path)?,
+    };
+    // Create the tables; with a remote database, retry while it wakes up.
+    let mut attempt = 0;
+    loop {
+        match db::migrate(&database).await {
+            Ok(()) => break,
+            Err(e) if attempt < 4 => {
+                attempt += 1;
+                tracing::warn!("database not ready ({e}); retrying");
+                tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+            }
+            Err(e) => return Err(e.into()),
+        }
+    }
+    let db_label = database.describe();
+    let state = AppState { db: Arc::new(database) };
 
     // Single-page app: unknown paths fall back to index.html so the
     // client-side router can handle them.
@@ -49,7 +70,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http());
 
-    tracing::info!("Code-Iot listening on http://{addr} (db: {db_path}, web: {})", dist.display());
+    tracing::info!("Code-Iot listening on http://{addr} (db: {db_label}, web: {})", dist.display());
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
     Ok(())
