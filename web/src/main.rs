@@ -10,6 +10,7 @@ mod session;
 use leptos::*;
 use leptos_router::*;
 
+use crate::components::code_bg::CodeBackground;
 use crate::components::shell::Shell;
 use crate::pages::auth::{AuthMode, AuthPage, Welcome};
 use crate::pages::courses::Courses;
@@ -43,6 +44,7 @@ fn App() -> impl IntoView {
 
     view! {
         <Router>
+            <CodeBackground/>
             <Routes>
                 <Route path="/welcome" view=Welcome/>
                 <Route path="/login" view=|| view! { <AuthPage mode=AuthMode::Login/> }/>
