@@ -52,6 +52,7 @@ pub fn open(path: &str) -> rusqlite::Result<Connection> {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct User {
     pub id: i64,
     pub username: String,

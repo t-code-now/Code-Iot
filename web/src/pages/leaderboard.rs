@@ -33,10 +33,10 @@ pub fn LeaderboardPage() -> impl IntoView {
             </div>
 
             <div class="segmented">
-                <button class:active=move || scope.get() == "weekly" on:click=move |_| scope.set("weekly")>
+                <button class:active={move || scope.get() == "weekly"} on:click=move |_| scope.set("weekly")>
                     {session.t("league.week")}
                 </button>
-                <button class:active=move || scope.get() == "all_time" on:click=move |_| scope.set("all_time")>
+                <button class:active={move || scope.get() == "all_time"} on:click=move |_| scope.set("all_time")>
                     {session.t("league.all")}
                 </button>
             </div>

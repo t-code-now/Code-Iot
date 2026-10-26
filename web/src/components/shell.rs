@@ -62,7 +62,7 @@ pub fn StatPills() -> impl IntoView {
     let xp = move || session.profile.with(|p| p.as_ref().map_or(0, |p| p.xp));
     view! {
         <div class="pills">
-            <span class="pill pill-streak" class:lit=move || streak() > 0>
+            <span class="pill pill-streak" class:lit={move || streak() > 0}>
                 <span class="pill-icon">"🔥"</span>{streak}
             </span>
             <span class="pill pill-xp">

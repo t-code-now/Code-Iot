@@ -74,7 +74,7 @@ pub fn Playground() -> impl IntoView {
 
     let tab_button = move |t: Tab, label: &'static str| {
         view! {
-            <button class="pg-tab" class:active=move || tab.get() == t on:click=move |_| tab.set(t)>
+            <button class="pg-tab" class:active={move || tab.get() == t} on:click=move |_| tab.set(t)>
                 {move || if label.starts_with("pg.") { session.t(label)() } else { label }}
             </button>
         }
