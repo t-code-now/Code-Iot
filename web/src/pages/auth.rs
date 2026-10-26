@@ -4,6 +4,7 @@ use leptos::*;
 use leptos_router::*;
 
 use crate::api;
+use crate::components::google::GoogleButton;
 use crate::components::lang_switch::LangSwitch;
 use crate::i18n;
 use crate::session::use_session;
@@ -29,6 +30,7 @@ pub fn Welcome() -> impl IntoView {
                 <p class="welcome-sub">{session.t("welcome.sub")}</p>
                 <a href="/signup" class="btn btn-primary btn-block">{session.t("welcome.start")}</a>
                 <a href="/login" class="btn btn-ghost btn-block">{session.t("welcome.have_account")}</a>
+                <GoogleButton/>
                 <button class="link-btn" on:click=guest>{session.t("welcome.guest")}</button>
             </div>
         </div>
@@ -117,6 +119,8 @@ pub fn AuthPage(mode: AuthMode) -> impl IntoView {
                     {move || if busy.get() { session.t("auth.wait")() } else { session.t(button)() }}
                 </button>
             </form>
+            <div class="auth-or"><span>{session.t("auth.or")}</span></div>
+            <GoogleButton/>
             <p class="auth-switch">
                 {session.t(switch_text)} " " <a href=switch_href>{session.t(switch_label)}</a>
             </p>

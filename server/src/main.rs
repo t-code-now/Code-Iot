@@ -6,9 +6,13 @@
 //!   database (recommended for hosting: data survives restarts)
 //! * `DATABASE_PATH`  – local SQLite file when Turso isn't set, default `codesprout.db`
 //! * `WEB_DIST`       – built frontend folder, default `web/dist`
+//! * `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` – turn on "Continue with Google"
+//! * `PUBLIC_URL`     – the site's address for Google's redirect (Render sets
+//!   `RENDER_EXTERNAL_URL`, which is used when this is missing)
 
 mod db;
 mod error;
+mod google;
 mod routes;
 mod sql;
 mod run;

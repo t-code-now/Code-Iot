@@ -1,0 +1,13 @@
+{
+  "identifier": "default",
+  "description": "The Code-Iot window: core features and opening web links in the system browser.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [{ "url": "https://*" }]
+    }
+  ]
+}

@@ -40,6 +40,23 @@ const SCHEMA: &[&str] = &[
     )",
     "CREATE INDEX IF NOT EXISTS xp_events_by_time ON xp_events(created_at)",
     "CREATE INDEX IF NOT EXISTS sessions_by_user ON sessions(user_id)",
+    "CREATE TABLE IF NOT EXISTS google_accounts (
+        sub      TEXT    PRIMARY KEY,
+        user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        email    TEXT    NOT NULL DEFAULT ''
+    )",
+    "CREATE TABLE IF NOT EXISTS oauth_states (
+        state       TEXT    PRIMARY KEY,
+        poll_id     TEXT,
+        created_at  INTEGER NOT NULL
+    )",
+    "CREATE TABLE IF NOT EXISTS oauth_results (
+        poll_id     TEXT    PRIMARY KEY,
+        token       TEXT,
+        is_new      INTEGER NOT NULL DEFAULT 0,
+        error       TEXT,
+        created_at  INTEGER NOT NULL
+    )",
     "CREATE TABLE IF NOT EXISTS avatars (
         user_id  INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
         data     TEXT    NOT NULL
@@ -289,6 +306,96 @@ pub async fn set_avatar(db: &Db, user_id: i64, avatar: Option<&str>) -> DbResult
     Ok(())
 }
 
+// ---------------------------------------------------------------- Google sign-in
+
+pub async fn google_user(db: &Db, sub: &str) -> DbResult<Option<i64>> {
+    Ok(db
+        .query_one(
+            "SELECT g.user_id FROM google_accounts g JOIN users u ON u.id = g.user_id WHERE g.sub = ?1",
+            args![sub],
+        )
+        .await?
+        .map(|r| r[0].int()))
+}
+
+pub async fn link_google(db: &Db, sub: &str, user_id: i64, email: &str) -> DbResult<()> {
+    db.execute(
+        "INSERT INTO google_accounts (sub, user_id, email) VALUES (?1, ?2, ?3)
+         ON CONFLICT(sub) DO UPDATE SET user_id = excluded.user_id, email = excluded.email",
+        args![sub, user_id, email],
+    )
+    .await?;
+    Ok(())
+}
+
+pub async fn save_oauth_state(db: &Db, state: &str, poll_id: Option<&str>, now: i64) -> DbResult<()> {
+    db.execute(
+        "INSERT INTO oauth_states (state, poll_id, created_at) VALUES (?1, ?2, ?3)",
+        args![state, poll_id, now],
+    )
+    .await?;
+    Ok(())
+}
+
+/// Returns (poll id, created at) and forgets the state, so it works once.
+pub async fn take_oauth_state(db: &Db, state: &str) -> DbResult<Option<(Option<String>, i64)>> {
+    let out = db
+        .run(
+            vec![
+                Stmt::new("SELECT poll_id, created_at FROM oauth_states WHERE state = ?1", args![state]),
+                Stmt::new("DELETE FROM oauth_states WHERE state = ?1", args![state]),
+            ],
+            true,
+        )
+        .await?;
+    Ok(out[0].rows.first().map(|r| (r[0].opt_text(), r[1].int())))
+}
+
+pub async fn save_oauth_result(
+    db: &Db,
+    poll_id: &str,
+    token: Option<&str>,
+    is_new: bool,
+    error: Option<&str>,
+    now: i64,
+) -> DbResult<()> {
+    db.execute(
+        "INSERT INTO oauth_results (poll_id, token, is_new, error, created_at) VALUES (?1, ?2, ?3, ?4, ?5)
+         ON CONFLICT(poll_id) DO UPDATE SET token = excluded.token, is_new = excluded.is_new,
+            error = excluded.error, created_at = excluded.created_at",
+        args![poll_id, token, is_new, error, now],
+    )
+    .await?;
+    Ok(())
+}
+
+/// (token, is new account, error) once the browser sign-in has finished.
+pub async fn take_oauth_result(db: &Db, poll_id: &str) -> DbResult<Option<(Option<String>, bool, Option<String>)>> {
+    let out = db
+        .run(
+            vec![
+                Stmt::new("SELECT token, is_new, error FROM oauth_results WHERE poll_id = ?1", args![poll_id]),
+                Stmt::new("DELETE FROM oauth_results WHERE poll_id = ?1", args![poll_id]),
+            ],
+            true,
+        )
+        .await?;
+    Ok(out[0].rows.first().map(|r| (r[0].opt_text(), r[1].int() != 0, r[2].opt_text())))
+}
+
+/// Forgets unfinished or unclaimed sign-ins older than `before`.
+pub async fn purge_oauth(db: &Db, before: i64) -> DbResult<()> {
+    db.run(
+        vec![
+            Stmt::new("DELETE FROM oauth_states WHERE created_at < ?1", args![before]),
+            Stmt::new("DELETE FROM oauth_results WHERE created_at < ?1", args![before]),
+        ],
+        false,
+    )
+    .await?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -332,6 +439,28 @@ mod tests {
 
         delete_session(&c, "tok").await.unwrap();
         assert_eq!(user_for_token(&c, "tok").await.unwrap(), None);
+    }
+
+    #[tokio::test]
+    async fn google_sign_in_bookkeeping() {
+        let c = mem().await;
+        let id = create_user(&c, "noa", "!google", 1).await.unwrap().unwrap();
+        assert_eq!(google_user(&c, "g-1").await.unwrap(), None);
+        link_google(&c, "g-1", id, "noa@example.com").await.unwrap();
+        assert_eq!(google_user(&c, "g-1").await.unwrap(), Some(id));
+
+        save_oauth_state(&c, "st", Some("poll123"), 100).await.unwrap();
+        assert_eq!(take_oauth_state(&c, "st").await.unwrap(), Some((Some("poll123".into()), 100)));
+        assert_eq!(take_oauth_state(&c, "st").await.unwrap(), None, "a state works only once");
+
+        assert_eq!(take_oauth_result(&c, "poll123").await.unwrap(), None);
+        save_oauth_result(&c, "poll123", Some("tok"), true, None, 100).await.unwrap();
+        assert_eq!(take_oauth_result(&c, "poll123").await.unwrap(), Some((Some("tok".into()), true, None)));
+        assert_eq!(take_oauth_result(&c, "poll123").await.unwrap(), None, "handed out once");
+
+        save_oauth_state(&c, "old", None, 5).await.unwrap();
+        purge_oauth(&c, 50).await.unwrap();
+        assert_eq!(take_oauth_state(&c, "old").await.unwrap(), None);
     }
 
     #[tokio::test]

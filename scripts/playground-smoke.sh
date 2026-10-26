@@ -76,6 +76,20 @@ print("clear:", call("PUT", "/api/me/avatar", {"avatar": None}, tok).get("avatar
 login = call("POST", "/api/auth/login", {"username": name, "password": "secret123"})
 print("login again:", "token" in login, "| completions saved:", call("POST", "/api/lessons/py-1-1/complete", {"correct": 3, "tz_offset_minutes": 120}, tok).get("xp_gained"))
 print("profile after lesson: xp", call("GET", "/api/me", token=tok).get("xp"))
+
+print("--- google")
+print("providers:", call("GET", "/api/auth/providers"))
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+opener = urllib.request.build_opener(NoRedirect)
+def location(path):
+    try:
+        opener.open(B + path, timeout=20); return "(no redirect)"
+    except urllib.error.HTTPError as e:
+        return f"{e.code} {e.headers.get('Location', '')[:160]}"
+print("start:", location("/api/auth/google/start?poll=" + "a" * 32))
+print("callback with a bad state:", location("/api/auth/google/callback?state=nope&code=x"))
+print("poll:", call("GET", "/api/auth/google/poll?id=" + "a" * 32))
 PY
 kill $pid
 for u in https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js \

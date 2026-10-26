@@ -5,6 +5,8 @@
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // Opens links (e.g. "Continue with Google") in the phone's browser.
+        .plugin(tauri_plugin_opener::init())
         .run(tauri::generate_context!())
         .expect("failed to start Code-Iot");
 }

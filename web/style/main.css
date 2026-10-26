@@ -636,3 +636,20 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .avatar-upload { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 .hidden-input { display: none; }
 .avatar-skip { display: block; margin: 8px auto 0; }
+
+/* ---------- Continue with Google ---------- */
+.google-area { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.btn-google {
+  background: #fff; color: #1f1f1f; border: 1px solid #dadce0; box-shadow: 0 4px 0 rgba(8, 12, 32, .35);
+  text-transform: none; letter-spacing: 0; font-weight: 800;
+}
+.google-g { width: 20px; height: 20px; flex: none; }
+.google-wait {
+  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px; border-radius: 14px;
+  background: rgba(18, 26, 56, .88); border: 2px solid var(--line); text-align: center; font-weight: 700;
+}
+.auth-or { display: flex; align-items: center; gap: 10px; margin: 18px 0 14px; color: #fff; font-weight: 800; }
+.auth-or::before, .auth-or::after { content: ""; flex: 1; height: 2px; background: rgba(255, 255, 255, .7); }
+.auth-or span {
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}

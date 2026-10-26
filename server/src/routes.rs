@@ -35,6 +35,10 @@ pub fn api_router(state: AppState) -> Router {
         .route("/api/auth/signup", post(signup))
         .route("/api/auth/login", post(login))
         .route("/api/auth/logout", post(logout))
+        .route("/api/auth/providers", get(crate::google::providers))
+        .route("/api/auth/google/start", get(crate::google::start))
+        .route("/api/auth/google/callback", get(crate::google::callback))
+        .route("/api/auth/google/poll", get(crate::google::poll))
         .route("/api/me", get(me))
         .route("/api/me/avatar", put(set_avatar))
         .route("/api/courses", get(list_courses))
@@ -49,11 +53,11 @@ pub fn api_router(state: AppState) -> Router {
 
 // ---------------------------------------------------------------- helpers
 
-fn now() -> i64 {
+pub(crate) fn now() -> i64 {
     SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs() as i64).unwrap_or(0)
 }
 
-fn random_hex(bytes: usize) -> String {
+pub(crate) fn random_hex(bytes: usize) -> String {
     let mut buf = vec![0u8; bytes];
     rand::thread_rng().fill_bytes(&mut buf);
     buf.iter().map(|b| format!("{b:02x}")).collect()

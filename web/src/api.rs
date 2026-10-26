@@ -54,7 +54,7 @@ async fn handle<T: DeserializeOwned>(resp: Response) -> ApiResult<T> {
     }
 }
 
-fn url(path: &str) -> String {
+pub fn url(path: &str) -> String {
     let base = option_env!("CODESPROUT_API").unwrap_or("");
     format!("{}{path}", base.trim_end_matches('/'))
 }
@@ -79,6 +79,16 @@ async fn put<B: Serialize, T: DeserializeOwned>(path: &str, token: &Option<Strin
 /// Set (or with None, remove) the signed-in user's profile picture.
 pub async fn set_avatar(token: Option<String>, avatar: Option<String>) -> ApiResult<Profile> {
     put("/api/me/avatar", &token, &AvatarRequest { avatar }).await
+}
+
+/// Which extra sign-in methods the server offers, e.g. `{"google": true}`.
+pub async fn providers() -> ApiResult<serde_json::Value> {
+    get("/api/auth/providers", &None).await
+}
+
+/// Has the browser sign-in with id `poll` finished?
+pub async fn google_poll(poll: &str) -> ApiResult<serde_json::Value> {
+    get(&format!("/api/auth/google/poll?id={poll}"), &None).await
 }
 
 pub async fn signup(username: String, password: String) -> ApiResult<AuthResponse> {
