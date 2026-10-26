@@ -1,4 +1,7 @@
-//! Thin HTTP client for the CodeSprout API (same origin, under /api).
+//! Thin HTTP client for the CodeSprout API (under /api).
+//!
+//! The website talks to its own origin. The Android app is built with
+//! `CODESPROUT_API=https://your-server` so it talks to the hosted server.
 
 use codesprout_core::api::*;
 use gloo_net::http::{Request, RequestBuilder, Response};
@@ -51,13 +54,18 @@ async fn handle<T: DeserializeOwned>(resp: Response) -> ApiResult<T> {
     }
 }
 
+fn url(path: &str) -> String {
+    let base = option_env!("CODESPROUT_API").unwrap_or("");
+    format!("{}{path}", base.trim_end_matches('/'))
+}
+
 async fn get<T: DeserializeOwned>(path: &str, token: &Option<String>) -> ApiResult<T> {
-    let resp = authorize(Request::get(path), token).send().await.map_err(network)?;
+    let resp = authorize(Request::get(&url(path)), token).send().await.map_err(network)?;
     handle(resp).await
 }
 
 async fn post<B: Serialize, T: DeserializeOwned>(path: &str, token: &Option<String>, body: &B) -> ApiResult<T> {
-    let req = authorize(Request::post(path), token).json(body).map_err(network)?;
+    let req = authorize(Request::post(&url(path)), token).json(body).map_err(network)?;
     let resp = req.send().await.map_err(network)?;
     handle(resp).await
 }

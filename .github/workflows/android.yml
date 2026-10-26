@@ -1,0 +1,112 @@
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: never
+  # The server the app connects to. Override with a repository variable
+  # named API_URL (Settings → Secrets and variables → Actions → Variables).
+  API_URL: ${{ vars.API_URL || 'https://code-iot.onrender.com' }}
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown,aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            . -> target
+            app -> target
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: trunk,tauri-cli@2
+
+      - name: Build web app for Android
+        working-directory: web
+        run: CODESPROUT_API="$API_URL" trunk build --release 2>&1 | tee -a ../android.log; exit ${PIPESTATUS[0]}
+
+      - name: Build APK
+        working-directory: app
+        run: |
+          set -o pipefail
+          export NDK_HOME="$ANDROID_NDK_LATEST_HOME"
+          {
+            cargo tauri icon icon-source.png
+            cargo tauri android init --ci
+            cargo tauri android build --apk --target aarch64 --target armv7 --target x86_64
+          } 2>&1 | tee -a ../android.log
+
+      - name: Sign APK
+        run: |
+          set -o pipefail
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          APK=$(find app/gen/android -name '*release-unsigned.apk' | head -1)
+          echo "unsigned: $APK" | tee -a android.log
+          if [ -n "$KEYSTORE" ]; then
+            echo "$KEYSTORE" | base64 -d > release.jks
+            PASS="$KEYSTORE_PASSWORD"
+          else
+            PASS=codesprout
+            keytool -genkeypair -keystore release.jks -storepass "$PASS" -keypass "$PASS" \
+              -alias codesprout -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=CodeSprout" 2>&1 | tee -a android.log
+          fi
+          "$BT/zipalign" -f -p 4 "$APK" aligned.apk
+          "$BT/apksigner" sign --ks release.jks --ks-pass "pass:$PASS" --out CodeSprout.apk aligned.apk 2>&1 | tee -a android.log
+          "$BT/apksigner" verify CodeSprout.apk 2>&1 | tee -a android.log
+          ls -la CodeSprout.apk | tee -a android.log
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CodeSprout-android
+          path: CodeSprout.apk
+
+      - name: Publish APK as a release
+        run: |
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          gh release delete android-latest -y --cleanup-tag || true
+          gh release create android-latest CodeSprout.apk --target "${{ github.sha }}" \
+            --title "CodeSprout for Android" \
+            --notes "Latest Android build. On your phone, tap CodeSprout.apk below to download, then open it to install."
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Publish build log
+        if: always()
+        run: |
+          touch android.log
+          echo "status: ${{ job.status }}  commit: ${{ github.sha }}" > summary.txt
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          mkdir -p /tmp/log && cp android.log summary.txt /tmp/log/
+          git stash -u -q || true
+          git checkout --orphan ci-log-android
+          git rm -rf --quiet . || true
+          cp /tmp/log/* .
+          git add android.log summary.txt
+          git commit -m "android log for ${{ github.sha }}"
+          git push -f origin ci-log-android

@@ -1,0 +1,6 @@
+target
+app/target
+app/gen
+web/dist
+*.db
+.git
