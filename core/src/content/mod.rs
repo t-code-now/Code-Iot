@@ -8,11 +8,17 @@
 
 mod arduino;
 mod arduino_lang;
+mod arduino_more;
 mod javascript;
+mod javascript_more;
 mod python;
+mod python_more;
 mod rust;
+mod rust_more;
 mod sql;
+mod sql_more;
 mod web;
+mod web_more;
 
 use std::sync::OnceLock;
 
@@ -67,14 +73,18 @@ pub(crate) fn section(id: &'static str, title: &'static str, lessons: Vec<Lesson
 pub fn catalog() -> &'static [Course] {
     static CATALOG: OnceLock<Vec<Course>> = OnceLock::new();
     CATALOG.get_or_init(|| {
-        vec![
-            python::course(),
-            javascript::course(),
-            web::course(),
-            sql::course(),
-            rust::course(),
-            arduino::course(),
-        ]
+        let mut courses = vec![
+            (python::course(), python_more::extend as fn(&mut Vec<Section>)),
+            (javascript::course(), javascript_more::extend),
+            (web::course(), web_more::extend),
+            (sql::course(), sql_more::extend),
+            (rust::course(), rust_more::extend),
+            (arduino::course(), arduino_more::extend),
+        ];
+        for (course, extend) in &mut courses {
+            extend(&mut course.sections);
+        }
+        courses.into_iter().map(|(c, _)| c).collect()
     })
 }
 
@@ -158,7 +168,21 @@ mod tests {
     fn courses_are_full_curricula() {
         for c in catalog() {
             assert!(c.sections.len() >= 8, "{} has only {} sections", c.id, c.sections.len());
-            assert!(c.lesson_count() >= 25, "{} has only {} lessons", c.id, c.lesson_count());
+            assert!(c.lesson_count() >= 100, "{} has only {} lessons", c.id, c.lesson_count());
+        }
+    }
+
+    /// Every topic ends with a hands-on project lesson.
+    #[test]
+    fn every_section_ends_with_a_project() {
+        for c in catalog() {
+            for s in &c.sections {
+                let last = s.lessons.last().unwrap();
+                assert!(
+                    last.id.ends_with("-p") || s.title.starts_with("Project"),
+                    "{} / {} ends with {} (not a project)", c.id, s.id, last.id
+                );
+            }
         }
     }
 

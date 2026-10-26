@@ -558,3 +558,898 @@ rs-11-4.3.opt1 = היא כותבת ל-stderr, וכך שגיאות נפרדות �
 rs-11-4.3.opt2 = println! לא יכולה להדפיס שגיאות
 rs-11-4.3.opt3 = אין הבדל
 rs-11-4.3.explanation = אפשר להפנות את stderr ואת stdout בנפרד.
+
+// ---- rust_more.rs: section projects and extra sections ----
+
+rs-1-p = פרויקט: טבלת טמפרטורות
+rs-1-p.0.title = מה תבנו
+rs-1-p.0.body = תוכנית שממירה שבוע של מדידות בצלזיוס לפרנהייט, מדפיסה טבלה, ומדווחת על היום הקר ביותר והחם ביותר כ-tuple. היא משתמשת ב-println!, ב-let וב-mut, בהצללה (shadowing), ב-f64 וב-usize, במערכים, ב-tuple ובפונקציות עם ערכי החזרה.
+rs-1-p.1.prompt = פונקציה שמקבלת מספר עשרוני ומחזירה מספר עשרוני.
+rs-1-p.1.explanation = f64 הוא מספר עשרוני של 64 ביט. הביטוי האחרון, בלי נקודה-פסיק, הוא ערך ההחזרה.
+rs-1-p.2.prompt = למה זה לא מתקמפל?
+rs-1-p.2.opt0 = 0.0 הוא לא מספר
+rs-1-p.2.opt1 = total הוא לא mut, ולכן אי אפשר לשנות אותו
+rs-1-p.2.opt2 = ב-Rust אין +=
+rs-1-p.2.opt3 = זה מתקמפל מצוין
+rs-1-p.2.explanation = משתנים הם בלתי ניתנים לשינוי כברירת מחדל; כתבו let mut total = 0.0;
+rs-1-p.3.prompt = הצהירו על מערך בשם temps עם 3 הערכים 18.0, 21.5 ו-19.0 (let ... ;).
+rs-1-p.3.explanation = למערכים יש אורך קבוע; Rust מסיקה [f64; 3].
+rs-1-p.4.prompt = החזירו יחד את האינדקסים של היום הקר ביותר והחם ביותר.
+rs-1-p.4.explanation = tuple מחזיר שני ערכים בבת אחת; let (a, b) = ... מפרק אותו.
+rs-1-p.5.prompt = מה זה מדפיס?
+rs-1-p.5.opt3 = שגיאת קומפילציה
+rs-1-p.5.explanation = הצללה יוצרת משתנה חדש בכל פעם; היא יכולה אפילו לשנות את הטיפוס.
+rs-1-p.6.title = התוכנית המלאה
+rs-1-p.6.body = הדביקו אותה ב-play.rust-lang.org ולחצו Run. אתגר: הדפיסו גם את הטמפרטורה הממוצעת עם {:.1}.
+
+rs-2-p = פרויקט: דוח ציונים
+rs-2-p.0.title = מה תבנו
+rs-2-p.0.body = דוח ציונים: כל ציון הופך לאות עם match על טווחים, if כביטוי בוחר עובר או נכשל, לולאת for עוברת על הציונים, while סופרת לאחור, ו-loop עם break שמחזיר ערך מוצאת את הציון המושלם הראשון.
+rs-2-p.1.prompt = הפכו ציון לאות.
+rs-2-p.1.explanation = match חייב לכסות כל ערך; _ תופס את כל השאר.
+rs-2-p.2.prompt = כתבו שורה אחת: let status = ... עם if כביטוי: "pass" כש-score >= 55, ואחרת "fail".
+rs-2-p.2.explanation = לשני הענפים חייב להיות אותו טיפוס, ולכל ה-if יש ערך.
+rs-2-p.3.prompt = איזה ערך הלולאה הזו נותנת ל-pos?
+rs-2-p.3.explanation = break i מסיים את הלולאה והופך את i (2) לערך של הלולאה.
+rs-2-p.4.prompt = עברו על הציונים יחד עם המיקומים שלהם.
+rs-2-p.4.explanation = enumerate נותנת זוגות (אינדקס, פריט).
+rs-2-p.5.prompt = כמה פעמים זה מדפיס?
+rs-2-p.5.opt3 = לנצח
+rs-2-p.5.explanation = 3, 2, 1, ואז n הוא 0 והלולאה נעצרת.
+rs-2-p.6.title = התוכנית המלאה
+rs-2-p.6.body = אתגר: הוסיפו ציון 'B+' לטווח 85..=89 וספרו כמה תלמידים קיבלו כל אות.
+
+rs-3-p = פרויקט: ערכת כלים לטקסט
+rs-3-p.0.title = מה תבנו
+rs-3-p.0.body = פונקציות עזר לטקסט שמכבדות בעלות: first_word מחזירה slice מסוג &str, longest שואלת שתי מחרוזות, shout מקבלת &mut String כדי לשנות אותה במקום, ויוצרים clone רק איפה שבאמת צריך בעלים שני.
+rs-3-p.1.prompt = החזירו את המילה הראשונה כ-slice של הטקסט המקורי.
+rs-3-p.1.explanation = קבלת &str עובדת גם עם String וגם עם מחרוזות מילוליות; ה-slice מצביע לתוך אותו טקסט.
+rs-3-p.2.prompt = למה זה לא מתקמפל?
+rs-3-p.2.opt0 = אי אפשר להדפיס String
+rs-3-p.2.opt1 = a הועבר ל-b, ולכן אי אפשר להשתמש ב-a יותר
+rs-3-p.2.opt2 = b חייב להיות mut
+rs-3-p.2.opt3 = זה מתקמפל
+rs-3-p.2.explanation = השמה של String מעבירה את הבעלות. השתמשו ב-a.clone() אם צריך שני בעלים, או ב-&a כדי לשאול.
+rs-3-p.3.prompt = כתבו את החתימה של shout: היא מקבלת הפניה ניתנת לשינוי ל-String בשם s ולא מחזירה כלום.
+rs-3-p.3.explanation = &mut מאפשר לפונקציה לשנות את ה-String של מי שקרא לה בלי לקחת בעלות.
+rs-3-p.4.prompt = קראו ל-shout בלי למסור את הבעלות.
+rs-3-p.4.explanation = גם מי שקורא לפונקציה חייב לכתוב &mut, וכך השינוי גלוי.
+rs-3-p.5.prompt = למה אפשר להשתמש ב-i32 אחרי let b = a; אבל ב-String אי אפשר?
+rs-3-p.5.opt0 = i32 הוא Copy: הוא משוכפל ולא מועבר
+rs-3-p.5.opt1 = i32 הוא הפניה
+rs-3-p.5.opt2 = מחרוזות תמיד מושאלות
+rs-3-p.5.opt3 = זה אקראי
+rs-3-p.5.explanation = ערכים פשוטים על המחסנית, כמו מספרים, מממשים את Copy.
+rs-3-p.6.title = התוכנית המלאה
+rs-3-p.6.body = אתגר: כתבו fn word_count(s: &str) -> usize בעזרת s.split_whitespace().count().
+
+rs-4-p = פרויקט: ספרי ספרייה
+rs-4-p.0.title = מה תבנו
+rs-4-p.0.body = struct בשם Book עם בנאי (Book::new), מתודות שקוראות אותו ומשנות אותו (&self ו-&mut self), tuple struct בשם Isbn, ו-Debug, Clone ו-PartialEq שנגזרים אוטומטית, כדי שאפשר יהיה להדפיס, להעתיק ולהשוות ספרים.
+rs-4-p.1.prompt = הגדירו את ה-struct ותנו ל-Rust לכתוב את הקוד של ההדפסה וההשוואה.
+rs-4-p.1.explanation = #[derive(...)] מייצר בשבילכם מימושים של traits.
+rs-4-p.2.prompt = כתבו tuple struct בשם Isbn שמחזיק u64 אחד.
+rs-4-p.2.explanation = ל-tuple struct יש שדות בלי שמות: קוראים אותו עם isbn.0.
+rs-4-p.3.prompt = כתבו את הבנאי.
+rs-4-p.3.explanation = פונקציה משויכת (בלי self) שמחזירה Self היא דפוס הבנאי ב-Rust.
+rs-4-p.4.prompt = borrow משנה את הספר, ולכן היא צריכה self שאפשר לשנות.
+rs-4-p.4.explanation = &mut self מאפשר למתודה לשנות שדות; &self רק קורא אותם.
+rs-4-p.5.prompt = איך קוראים לבנאי?
+rs-4-p.5.explanation = לפונקציות משויכות קוראים בתחביר הנתיב ::.
+rs-4-p.6.title = התוכנית המלאה
+rs-4-p.6.body = אתגר: הוסיפו מתודה give_back ו-struct בשם Library שמחזיק Vec<Book> עם מתודה find(&self, title: &str) -> Option<&Book>.
+
+rs-5-p = פרויקט: מכונה אוטומטית
+rs-5-p.0.title = מה תבנו
+rs-5-p.0.body = מכונה אוטומטית שבנויה עם enums: ערכים של Coin, חיפוש Product שמחזיר Option, enum בשם State שמחזיק נתונים, match ממצה שמטפל בכל מקרה, וגם if let ו-let else למסלולים הנפוצים.
+rs-5-p.1.prompt = כל מטבע יודע מה הערך שלו.
+rs-5-p.1.explanation = match על enum חייב לפרט כל וריאנט (או להשתמש ב-_).
+rs-5-p.2.prompt = מה find("Z9") מחזירה אם לאף מוצר אין את הקוד הזה?
+rs-5-p.2.opt0 = מחרוזת ריקה
+rs-5-p.2.opt3 = היא קורסת (panic)
+rs-5-p.2.explanation = Option הופכת את 'לא נמצא' למפורש: Some(value) או None.
+rs-5-p.3.prompt = קבלו את המוצר או עצרו עם הודעה.
+rs-5-p.3.explanation = let ... else קושר את הערכים או מריץ את בלוק ה-else, שחייב לצאת מהפונקציה.
+rs-5-p.4.prompt = בנו את מצב המכונה עם נתונים בתוך הווריאנטים, בסדר Idle, HasMoney, Dispensing.
+rs-5-p.4.explanation = וריאנטים יכולים להחזיק כלום, tuple, או שדות עם שמות.
+rs-5-p.5.prompt = כתבו כותרת if let שרצה רק כש-state הוא State::HasMoney, וקושרת את הסכום ל-m.
+rs-5-p.5.explanation = if let מטפל בתבנית אחת בלי לפרט את האחרות.
+rs-5-p.6.title = התוכנית המלאה
+rs-5-p.6.body = אתגר: הוסיפו וריאנט Cancelled שמחזיר את כל הכסף, ותנו לקומפיילר להזכיר לכם איפה צריך לטפל בו.
+
+rs-6-p = פרויקט: יומן ציונים לכיתה
+rs-6-p.0.title = מה תבנו
+rs-6-p.0.body = יומן ציונים שממפה את השם של כל תלמיד (String) ל-Vec של ציונים בתוך HashMap: הוספת ציונים עם ה-entry API, חישוב ממוצעים, בניית String של דוח עם push_str ו-format!, והצגת התלמידים לפי סדר האלפבית.
+rs-6-p.1.prompt = הוסיפו ציון, וצרו את הרשימה של התלמיד בפעם הראשונה.
+rs-6-p.1.explanation = entry().or_insert_with() מחזירה את ה-Vec הקיים או Vec ריק חדש, ואליו עושים push.
+rs-6-p.2.prompt = כתבו ביטוי לממוצע של grades: Vec<u32>, כ-f64 (סכום, המרה, חילוק ב-len).
+rs-6-p.2.explanation = מסכמים כ-u32, ואז ממירים את שני המספרים ל-f64 לפני החילוק.
+rs-6-p.3.prompt = למה זה נכשל?
+rs-6-p.3.opt0 = אי אפשר לגשת למחרוזות לפי מספר, כי ב-UTF-8 תו יכול לתפוס כמה בתים
+rs-6-p.3.opt1 = s הוא לא mut
+rs-6-p.3.opt2 = 0 מחוץ לטווח
+rs-6-p.3.opt3 = זה עובד
+rs-6-p.3.explanation = השתמשו ב-s.chars().next() בשביל התו הראשון.
+rs-6-p.4.prompt = בנו את טקסט הדוח.
+rs-6-p.4.explanation = push_str מוסיפה &str; push מוסיפה תו בודד.
+rs-6-p.5.prompt = סדר המעבר על HashMap הוא...
+rs-6-p.5.opt0 = לפי האלפבית
+rs-6-p.5.opt1 = לפי סדר ההכנסה
+rs-6-p.5.opt2 = לא מובטח; ממיינים את המפתחות אם הסדר חשוב
+rs-6-p.5.opt3 = הפוך
+rs-6-p.5.explanation = אספו את המפתחות ל-Vec ומיינו אותם, או השתמשו ב-BTreeMap.
+rs-6-p.6.title = התוכנית המלאה
+rs-6-p.6.body = אתגר: הדפיסו את התלמיד המצטיין (הממוצע הגבוה ביותר) בעזרת איטרטור עם max_by.
+
+rs-7-p = פרויקט: מפענח הגדרות
+rs-7-p.0.title = מה תבנו
+rs-7-p.0.body = מפענח לטקסט הגדרות כמו 'volume=7'. הוא מחזיר Result במקום לקרוס, מגדיר enum בשם ConfigError עם Display, משתמש ב-? כדי להעביר שגיאות הלאה, ונותן ל-main להחליט מה לעשות עם כל סוג של שגיאה.
+rs-7-p.1.prompt = שגיאות בתור enum.
+rs-7-p.1.explanation = כל וריאנט מתאר סוג אחד של בעיה ונושא את הפרטים שלה.
+rs-7-p.2.prompt = מה הפונקציה הזו מחזירה עבור "volume=x"?
+rs-7-p.2.opt1 = Err(ParseIntError)
+rs-7-p.2.opt2 = היא קורסת (panic)
+rs-7-p.2.explanation = parse מחזירה Result; היא לא קורסת.
+rs-7-p.3.prompt = פצלו שורה ונכשלו יפה אם אין בה '='.
+rs-7-p.3.explanation = ok_or הופכת Option ל-Result; ? מחזיר את השגיאה למי שקרא לפונקציה.
+rs-7-p.4.prompt = כתבו את חתימת הפונקציה: parse מקבלת text: &str ומחזירה Result<Settings, ConfigError>.
+rs-7-p.4.explanation = מי שקורא לפונקציה לומד מהטיפוס שהפענוח יכול להיכשל.
+rs-7-p.5.prompt = מתי panic! (או unwrap) מקובלים?
+rs-7-p.5.opt0 = לכל קלט שגוי של משתמש
+rs-7-p.5.opt1 = לבאגים שאף פעם לא אמורים לקרות, או בדוגמאות מהירות ובבדיקות
+rs-7-p.5.opt2 = אף פעם
+rs-7-p.5.opt3 = תמיד, זה פשוט יותר
+rs-7-p.5.explanation = בעיות צפויות (קלט שגוי, קבצים חסרים) צריכות להיות Result.
+rs-7-p.6.title = התוכנית המלאה
+rs-7-p.6.body = אתגר: הוסיפו וריאנט UnknownKey(String) למפתחות שאינם volume או name.
+
+rs-8-p = פרויקט: גלריית צורות
+rs-8-p.0.title = מה תבנו
+rs-8-p.0.body = מודול צורות: trait בשם Shape עם area() חובה ו-describe() עם מימוש ברירת מחדל, structs שמממשים אותו, Vec<Box<dyn Shape>> לפולימורפיזם, פונקציית עזר גנרית largest<T: PartialOrd>, ופריטים עם pub בתוך mod, כך שקוד חיצוני רואה רק את מה שהוא אמור לראות.
+rs-8-p.1.prompt = trait עם מתודה חובה ועם מתודת ברירת מחדל.
+rs-8-p.1.explanation = מי שמממש חייב לכתוב את name ואת area; describe מגיעה בחינם.
+rs-8-p.2.prompt = ממשו את ה-trait עבור Circle (name לפני area).
+rs-8-p.2.explanation = impl Trait for Type, ואז המתודות הנדרשות (כאן name לפני area).
+rs-8-p.3.prompt = הצהירו על shapes: Vec של אובייקטי trait ארוזים מסוג Shape (רק הטיפוס: Vec<...>).
+rs-8-p.3.explanation = גודל של dyn Shape לא ידוע, ולכן כל אחד נכנס ל-Box.
+rs-8-p.4.prompt = פונקציה גנרית שעובדת עם כל טיפוס שאפשר להשוות.
+rs-8-p.4.explanation = PartialOrd מאפשר >; f64 הוא PartialOrd אבל לא Ord.
+rs-8-p.5.prompt = קוד מחוץ ל-mod shapes קורא ל-shapes::Circle { r: 1.0 }. זה נכשל עם 'field r is private'. למה?
+rs-8-p.5.opt0 = Circle הוא לא struct
+rs-8-p.5.opt1 = שדות של struct פרטיים אלא אם מסמנים אותם pub, גם אם ה-struct עצמו pub
+rs-8-p.5.opt2 = mod לא יכול להכיל structs
+rs-8-p.5.opt3 = r חייב להיות מספר שלם
+rs-8-p.5.explanation = הפכו את השדה ל-pub, או הוסיפו בנאי pub.
+rs-8-p.6.title = התוכנית המלאה
+rs-8-p.6.body = אתגר: הוסיפו Triangle ודרסו עבורו את describe().
+
+rs-9-p = פרויקט: מנתח יומנים
+rs-9-p.0.title = מה תבנו
+rs-9-p.0.body = מנתח יומנים על שורות כמו 'ERROR disk full'. שרשראות של איטרטורים סופרות ומסננות שורות, closures לוכדים רמת מינימום, collect בונה Vec, ופונקציה עם lifetime מחזירה את ההודעה הארוכה ביותר כ-slice של הטקסט המקורי.
+rs-9-p.1.prompt = ספרו את שורות השגיאה.
+rs-9-p.1.explanation = filter משאירה שורות מתאימות; count צורכת את האיטרטור ומחזירה כמה יש.
+rs-9-p.2.prompt = מה ה-closure לוכד כאן?
+rs-9-p.2.opt0 = כלום
+rs-9-p.2.opt1 = את min, מהסביבה שמסביבו
+rs-9-p.2.opt2 = את level
+rs-9-p.2.opt3 = עותק של כל התוכנית
+rs-9-p.2.explanation = closures יכולים להשתמש במשתנים מהמקום שבו הם הוגדרו.
+rs-9-p.3.prompt = אספו את השורות שעוברות את הבדיקה important(level(l)) ל-Vec<&str> בשם serious (let serious: Vec<&str> = ...;).
+rs-9-p.3.explanation = collect צריכה לדעת את טיפוס היעד, והוא ניתן כאן בהערת הטיפוס.
+rs-9-p.4.prompt = החזירו את הארוכה מבין שתי שורות כ-slice; שתיהן חיות כל עוד 'a.
+rs-9-p.4.explanation = ה-lifetime קושר את התוצאה לקלטים, כך שהיא לא יכולה לחיות יותר מהם.
+rs-9-p.5.prompt = מתאמי איטרטורים כמו map ו-filter לא עושים כלום עד ש...
+rs-9-p.5.opt0 = קוראים להם פעמיים
+rs-9-p.5.opt1 = צרכן כמו collect, count או לולאת for מושך את הערכים
+rs-9-p.5.opt2 = התוכנית מסתיימת
+rs-9-p.5.opt3 = משכפלים אותם
+rs-9-p.5.explanation = איטרטורים הם עצלים.
+rs-9-p.6.title = התוכנית המלאה
+rs-9-p.6.body = אתגר: בנו HashMap<&str, usize> שסופר שורות לכל רמה, עם fold או עם לולאת for.
+
+rs-10-p = פרויקט: רשימות משימות משותפות
+rs-10-p.0.title = מה תבנו
+rs-10-p.0.body = שני בני משפחה חולקים רשימת משימות אחת. Rc מאפשר לשניהם להיות בעלים שלה, RefCell מאפשר לכל אחד מהם להוסיף פריטים דרך הפניה משותפת, ועץ משימות רקורסיבי משתמש ב-Box לתתי-משימות. תראו גם איך Rc::strong_count משתנה.
+rs-10-p.1.prompt = טיפוס רקורסיבי צריך עקיפה (indirection).
+rs-10-p.1.explanation = בלי Box, Steps היה מכיל את עצמו והיה לו גודל אינסופי.
+rs-10-p.2.prompt = צרו את list: Rc מסביב ל-RefCell מסביב ל-Vec<String> ריק (let list = ...;).
+rs-10-p.2.explanation = Rc לבעלות משותפת, RefCell לשינוי דרכו.
+rs-10-p.3.prompt = תנו בעלים שני והוסיפו פריט דרכו.
+rs-10-p.3.explanation = Rc::clone רק מגדיל את המונה; borrow_mut נותנת גישה זמנית לשינוי.
+rs-10-p.4.prompt = מה קורה אם קוראים ל-borrow_mut() בזמן ש-borrow_mut() אחר עדיין פעיל?
+rs-10-p.4.opt0 = זה עובד
+rs-10-p.4.opt1 = שגיאת קומפילציה
+rs-10-p.4.opt2 = קריסה (panic) בזמן ריצה (already borrowed)
+rs-10-p.4.opt3 = השני מחכה
+rs-10-p.4.explanation = RefCell בודק את חוקי ההשאלה בזמן שהתוכנית רצה.
+rs-10-p.5.prompt = אחרי let dad = Rc::clone(&list); מה הערך של Rc::strong_count(&list)?
+rs-10-p.5.opt3 = זה מעתיק את ה-Vec
+rs-10-p.5.explanation = שני מצביעי Rc הם הבעלים של אותם נתונים.
+rs-10-p.6.title = התוכנית המלאה
+rs-10-p.6.body = אתגר: הוסיפו בעלים שלישי בתוך בלוק, והדפיסו את המונה לפני שהבלוק מסתיים ואחריו.
+
+section.rs-s12 = מחרוזות וטקסט לעומק
+
+rs-12-1 = UTF-8: בתים ותווים
+rs-12-1.0.title = טקסט הוא UTF-8
+rs-12-1.0.body = String ב-Rust הוא בתים של UTF-8. אותיות באנגלית תופסות בית אחד, אותיות בעברית 2, ואימוג'י 4. s.len() סופרת בתים; s.chars().count() סופרת תווים. חיתוך עם &s[a..b] משתמש במיקומי בתים וקורס אם הוא חותך תו באמצע, ולכן לעבודה עם תווים עדיף chars().
+rs-12-1.1.prompt = מה "abc".len() מחזירה?
+rs-12-1.1.explanation = אותיות ASCII תופסות בית אחד כל אחת.
+rs-12-1.2.prompt = מה "שלום".len() מחזירה?
+rs-12-1.2.explanation = כל אות עברית תופסת 2 בתים ב-UTF-8, ו-len סופרת בתים.
+rs-12-1.3.prompt = ספרו את התווים (לא את הבתים).
+rs-12-1.3.explanation = chars() מניבה תווי Unicode; count() סופרת אותם.
+rs-12-1.4.prompt = כתבו ביטוי שהופך את המחרוזת s ל-String חדש (chars, rev, collect).
+rs-12-1.4.explanation = הפיכה של תווים (ולא של בתים) שומרת על עברית ואימוג'י תקינים.
+
+rs-12-2 = פיצול ופענוח
+rs-12-2.0.title = מטקסט לערכים
+rs-12-2.0.body = split(','), split_whitespace() ו-lines() נותנות איטרטורים של חתיכות &str. trim() מסירה רווחים מסביב. parse::<T>() ממירה טקסט למספר (או לכל טיפוס שמממש FromStr) ומחזירה Result, כי ייתכן שהטקסט לא תקין.
+rs-12-2.1.prompt = מה "7 x".parse::<i32>() מחזירה?
+rs-12-2.1.explanation = כל המחרוזת חייבת להיות מספר; "7 x" הוא לא.
+rs-12-2.2.prompt = פצלו לפי פסיקים וקצצו כל חלק.
+rs-12-2.2.explanation = split נותנת את החתיכות הגולמיות; trim מנקה כל אחת.
+rs-12-2.3.prompt = פענחו את הטקסט t ל-f64, ו-0.0 אם זה נכשל (let x: f64 = ...;).
+rs-12-2.3.explanation = unwrap_or מספקת ערך גיבוי למקרה של Err.
+rs-12-2.4.prompt = איזו מתודה מפצלת את "a  b   c" בדיוק ל-["a", "b", "c"]?
+rs-12-2.4.explanation = split(' ') הייתה מייצרת מחרוזות ריקות בין רווחים חוזרים.
+
+rs-12-3 = עיצוב פלט
+rs-12-3.0.title = format! וחבריה
+rs-12-3.0.body = ל-println!, ל-format! ול-write! יש תחביר אחד: {} משתמש ב-Display, {:?} משתמש ב-Debug ו-{:#?} מדפיס יפה. אחרי הנקודתיים: {:>8} מיישר לימין ב-8 עמודות, {:<8} לשמאל, {:^8} למרכז, {:.2} שתי ספרות אחרי הנקודה, {:08.2} עם ריפוד אפסים, ו-{name} קורא משתנה ישירות.
+rs-12-3.1.prompt = מה format!("{:>5}", "ab") מפיקה?
+rs-12-3.1.explanation = > מיישר לימין בתוך רוחב 5.
+rs-12-3.2.prompt = הדפיסו את המחיר עם שתי ספרות אחרי הנקודה ואת תצוגת ה-Debug של וקטור.
+rs-12-3.2.explanation = .2 קובע את הדיוק; :? משתמש בפורמט Debug.
+rs-12-3.3.prompt = כתבו קריאה ל-format! שמרפדת את המספר n באפסים ל-4 ספרות (למשל 7 ← "0007").
+rs-12-3.3.explanation = 0 פירושו ריפוד באפסים; 4 הוא הרוחב.
+
+rs-12-4 = בניית מחרוזות ביעילות
+rs-12-4.0.title = push, +, format! ו-join
+rs-12-4.0.body = push(char) ו-push_str(&str) מוסיפות ל-String במקום. a + &b מעבירה את a ומוסיפה את b. format! בונה String חדש מחלקים. עבור רשימה, אוספים את החלקים ל-Vec<String> וקוראים ל-join(", "). String::with_capacity(n) חוסכת הקצאות חוזרות כשיודעים את הגודל.
+rs-12-4.1.prompt = למה זה נכשל?
+rs-12-4.1.opt0 = אי אפשר לחבר מחרוזות
+rs-12-4.1.opt1 = הצד הימני חייב להיות &str: כתבו a + &b
+rs-12-4.1.opt2 = a חייב להיות mut
+rs-12-4.1.opt3 = זה עובד
+rs-12-4.1.explanation = + לוקח בעלות על ה-String השמאלי ושואל את הימני.
+rs-12-4.2.prompt = חברו את התגיות עם פסיק ורווח.
+rs-12-4.2.explanation = join שמה את המפריד בין הפריטים.
+rs-12-4.3.prompt = הוסיפו את התו '!' ל-String s שאפשר לשנות.
+rs-12-4.3.explanation = push מקבלת char (גרש בודד).
+
+rs-12-5 = עבודה עם תווים
+rs-12-5.0.title = מתודות של char
+rs-12-5.0.body = ל-char יש מתודות שימושיות: is_alphabetic(), is_numeric(), is_whitespace(), is_uppercase(), to_ascii_uppercase(), to_digit(10). משלבים אותן עם filter ו-map כדי לנקות או לנתח טקסט, למשל להשאיר רק אותיות או לחבר את הספרות שבמחרוזת.
+rs-12-5.1.prompt = מה 'ש'.is_alphabetic() מחזירה?
+rs-12-5.1.opt2 = שגיאה
+rs-12-5.1.explanation = is_alphabetic עובדת על כל האותיות ב-Unicode, לא רק באנגלית.
+rs-12-5.2.prompt = השאירו רק את הספרות של מספר טלפון.
+rs-12-5.2.explanation = filter משאירה את התווים שהבדיקה עליהם מחזירה true.
+rs-12-5.3.prompt = מה '7'.to_digit(10) מחזירה?
+rs-12-5.3.explanation = היא מחזירה Option<u32>, כי לא כל תו הוא ספרה.
+
+rs-12-p = פרויקט: ייבוא ציונים
+rs-12-p.0.title = מה תבנו
+rs-12-p.0.body = כלי שמייבא שורות 'name, score', מדלג על שורות פגומות ומדווח עליהן, מנקה שמות (רק אותיות, אות ראשונה גדולה), ומדפיס טבלה מיושרת עם ממוצעים, בעזרת פיצול, פענוח, תווים, בניית מחרוזות ועיצוב מהנושא הזה.
+rs-12-p.1.prompt = פצלו שורה לטקסט של שם ולטקסט של ציון.
+rs-12-p.1.explanation = split_once מחזירה Option של שני החצאים; continue מדלגת לשורה הבאה.
+rs-12-p.2.prompt = נקו את השם: השאירו רק את התווים האלפביתיים של name.trim() ב-String בשם letters.
+rs-12-p.2.explanation = filter ו-collect לתוך String.
+rs-12-p.3.prompt = אות ראשונה גדולה: התו הראשון באות גדולה, השאר באותיות קטנות.
+rs-12-p.3.explanation = מטפלים גם במקרה הריק: שם ריק נשאר ריק.
+rs-12-p.4.prompt = איזו שורה מדפיסה את השם מיושר לשמאל ב-10 עמודות ואת הציון מיושר לימין ב-5?
+rs-12-p.4.explanation = < לשמאל, > לימין, והמספרים הם רוחבים.
+rs-12-p.5.title = התוכנית המלאה
+rs-12-p.5.body = אתגר: קבלו גם ציונים שכתובים כמו "92%" על ידי הסרת ה-% לפני הפענוח.
+
+section.rs-s13 = אוספים לעומק
+
+rs-13-1 = HashSet
+rs-13-1.0.title = ערכים ייחודיים
+rs-13-1.0.body = HashSet<T> שומר כל ערך פעם אחת. insert מחזירה false אם הערך כבר היה שם. contains בודקת שייכות במהירות. פעולות על קבוצות: a.intersection(&b), a.union(&b), a.difference(&b).
+rs-13-1.1.prompt = מה קורה בפעם השנייה שמכניסים את אותו ערך ל-HashSet?
+rs-13-1.1.opt0 = מוסיף כפילות
+rs-13-1.1.opt1 = מחזיר false ולא משנה כלום
+rs-13-1.1.opt2 = קורס (panic)
+rs-13-1.1.opt3 = מחליף את הקבוצה
+rs-13-1.1.explanation = קבוצות שומרות עותק אחד מכל ערך.
+rs-13-1.2.prompt = מיומנויות ששני התלמידים יודעים.
+rs-13-1.2.explanation = intersection מניבה הפניות; cloned הופכת אותן לערכים בבעלות.
+rs-13-1.3.prompt = כתבו ביטוי שמחזיר true כשהקבוצה tags מכילה "urgent".
+rs-13-1.3.explanation = contains היא בדיקה מהירה.
+
+rs-13-2 = BTreeMap
+rs-13-2.0.title = מפה שנשארת ממוינת
+rs-13-2.0.body = BTreeMap<K, V> שומרת את המפתחות שלה לפי הסדר, ולכן מעבר עליה נותן פלט ממוין, ואפשר לבקש טווח של מפתחות, את הרשומה הראשונה או האחרונה. היא אידיאלית לטבלאות מובילים, ללוחות שנה ולכל דבר שמדפיסים לפי הסדר.
+rs-13-2.1.prompt = מתי תבחרו ב-BTreeMap במקום ב-HashMap?
+rs-13-2.1.opt0 = כשצריך רק את החיפושים המהירים ביותר
+rs-13-2.1.opt1 = כשצריך את המפתחות בסדר ממוין או טווחים של מפתחות
+rs-13-2.1.opt2 = אף פעם
+rs-13-2.1.opt3 = כשהמפתחות הם מחרוזות
+rs-13-2.1.explanation = HashMap בדרך כלל קצת יותר מהירה אבל אין לה סדר.
+rs-13-2.2.prompt = קבלו את הרשומות של עשרת הימים הראשונים של אוקטובר.
+rs-13-2.2.explanation = range מחזירה את הרשומות שהמפתחות שלהן נמצאים בטווח שצוין.
+rs-13-2.3.prompt = קבלו את הרשומה עם המפתח הגדול ביותר מה-BTreeMap בשם scores (Option של זוג).
+rs-13-2.3.explanation = מכיוון שהמפתחות ממוינים, לרשומה האחרונה יש את המפתח הגדול ביותר.
+
+rs-13-3 = VecDeque
+rs-13-3.0.title = תור עם שני קצוות
+rs-13-3.0.body = VecDeque<T> מוסיף ומוציא בשני הקצוות במהירות: push_back, push_front, pop_front, pop_back כולן O(1). משתמשים בו לתורים (נכנס ראשון, יוצא ראשון), לחלונות נעים ולמאגרי ביטול/ביצוע מחדש. remove(0) של Vec מזיז את כל השאר, וזה איטי ברשימות גדולות.
+rs-13-3.1.prompt = שרתו לקוחות לפי סדר ההגעה.
+rs-13-3.1.explanation = מוסיפים מאחור ולוקחים מקדימה: תור הוגן.
+rs-13-3.2.prompt = למה Vec::remove(0) איטית בוקטור ארוך?
+rs-13-3.2.opt0 = היא ממיינת
+rs-13-3.2.opt1 = כל שאר האיברים זזים מקום אחד שמאלה
+rs-13-3.2.opt2 = היא מקצה Vec חדש
+rs-13-3.2.opt3 = היא לא איטית
+rs-13-3.2.explanation = זה O(n); VecDeque::pop_front היא O(1).
+rs-13-3.3.prompt = שומרים רק את 3 המדידות האחרונות בחלון נע. אחרי push_back של רביעית, למה קוראים?
+rs-13-3.3.explanation = מוציאים את הישנה ביותר מקדימה.
+
+rs-13-4 = ה-entry API
+rs-13-4.0.title = להכניס או לעדכן בצעד אחד
+rs-13-4.0.body = map.entry(key) מחזירה Entry שאפשר לעבוד איתו: or_insert(v) מכניסה ערך ברירת מחדל ומחזירה הפניה שאפשר לשנות, or_default() משתמשת ב-Default של הטיפוס, ו-and_modify(|v| ...) משנה ערך קיים. כך לא מחפשים את המפתח פעמיים.
+rs-13-4.1.prompt = למה יש * ב-*counts.entry(c).or_insert(0) += 1?
+rs-13-4.1.opt0 = זה כפל
+rs-13-4.1.opt1 = or_insert מחזירה &mut usize, ולכן מבטלים את ההפניה כדי לשנות את המספר
+rs-13-4.1.opt2 = זה מצביע למפה
+rs-13-4.1.opt3 = זה אופציונלי
+rs-13-4.1.explanation = משנים את הערך שההפניה מצביעה עליו.
+rs-13-4.2.prompt = קבצו מילים לפי האות הראשונה שלהן.
+rs-13-4.2.explanation = or_default יוצרת Vec ריק בפעם הראשונה.
+rs-13-4.3.prompt = הוסיפו 1 לציון קיים של "Noa", או הכניסו 1 אם הוא חסר, בעזרת and_modify ו-or_insert.
+rs-13-4.3.explanation = and_modify רצה רק על ערך קיים; or_insert רק על ערך חסר.
+
+rs-13-5 = מיון, dedup ו-retain
+rs-13-5.0.title = לעצב Vec
+rs-13-5.0.body = sort() לטיפוסי Ord; sort_by(|a, b| a.partial_cmp(b).unwrap()) למספרים עשרוניים; sort_by_key(|p| p.age) לפי שדה; std::cmp::Reverse(key) לסדר יורד. dedup() מסירה כפילויות עוקבות (ממיינים קודם). retain(|x| ...) משאירה במקום רק פריטים מתאימים. binary_search עובדת על נתונים ממוינים.
+rs-13-5.1.prompt = למה v.sort() לא מתקמפל עבור Vec<f64>?
+rs-13-5.1.opt0 = אי אפשר להשוות f64
+rs-13-5.1.opt1 = f64 הוא לא Ord כי ל-NaN אין סדר; משתמשים ב-sort_by עם partial_cmp
+rs-13-5.1.opt2 = אי אפשר למיין וקטורים של מספרים עשרוניים
+rs-13-5.1.opt3 = זה מתקמפל
+rs-13-5.1.explanation = total_cmp היא אפשרות נוספת: v.sort_by(|a, b| a.total_cmp(b)).
+rs-13-5.2.prompt = מיינו שחקנים לפי ניקוד, מהגבוה לנמוך.
+rs-13-5.2.explanation = Reverse הופך את ההשוואה של המפתח.
+rs-13-5.3.prompt = הסירו במקום כל משימה שהסתיימה (tasks: Vec<Task> עם שדה bool בשם done).
+rs-13-5.3.explanation = retain שומרת את הפריטים שה-closure מחזיר עבורם true.
+
+rs-13-p = פרויקט: מתזמן משימות
+rs-13-p.0.title = מה תבנו
+rs-13-p.0.body = מתזמן קטן: משימות מחכות בתור VecDeque, BTreeMap מקבץ אותן לפי עדיפות כדי שהדחופות ביותר ירוצו קודם, HashSet מונע שמות משימה כפולים, ספירה לכל תגית משתמשת ב-entry API, ו-retain מנקה משימות שהסתיימו.
+rs-13-p.1.prompt = דחו שמות כפולים.
+rs-13-p.1.explanation = insert מחזירה false כשהשם כבר היה בקבוצה.
+rs-13-p.2.prompt = שימו את המשימה ב-BTreeMap בשם by_priority (u8 ← Vec<Task>), וצרו את ה-Vec אם צריך.
+rs-13-p.2.explanation = כשעוברים על BTreeMap, מספרים נמוכים באים קודם.
+rs-13-p.3.prompt = העבירו את המשימות לתור הריצה לפי סדר העדיפות.
+rs-13-p.3.explanation = BTreeMap כבר נותנת את העדיפויות לפי הסדר; ה-deque שומר על הסדר הזה.
+rs-13-p.4.prompt = אחרי הריצה, איזו קריאה מסירה את המשימות שהסתיימו מתוך history: Vec<Task>?
+rs-13-p.4.explanation = retain שומרת רק משימות שלא הסתיימו.
+rs-13-p.5.title = התוכנית המלאה
+rs-13-p.5.body = אתגר: הוסיפו תגית "urgent" שתמיד קובעת עדיפות 0.
+
+section.rs-s14 = איטרטורים לעומק
+
+rs-14-1 = iter, iter_mut ו-into_iter
+rs-14-1.0.title = שלוש דרכים לעבור בלולאה
+rs-14-1.0.body = v.iter() משאילה כל פריט (&T). v.iter_mut() משאילה כל פריט באופן שמאפשר שינוי (&mut T). v.into_iter() מוציאה את הפריטים (T) וצורכת את ה-Vec. for x in &v הוא iter(), for x in &mut v הוא iter_mut(), ו-for x in v הוא into_iter().
+rs-14-1.1.prompt = אחרי for name in names { ... } (בלי &), אפשר עדיין להשתמש ב-names?
+rs-14-1.1.opt0 = כן
+rs-14-1.1.opt1 = לא: הלולאה הוציאה את הפריטים (into_iter)
+rs-14-1.1.opt2 = רק כדי להדפיס
+rs-14-1.1.opt3 = רק אם הוא mut
+rs-14-1.1.explanation = כתבו for name in &names כדי לשאול במקום.
+rs-14-1.2.prompt = הכפילו כל ציון במקום.
+rs-14-1.2.explanation = iter_mut נותנת &mut; מבטלים את ההפניה כדי לשנות את הערך.
+rs-14-1.3.prompt = איזה טיפוס v.iter() מניבה עבור v: Vec<String>?
+rs-14-1.3.explanation = iter שואלת כל איבר.
+
+rs-14-2 = מימוש Iterator
+rs-14-2.0.title = איטרטור משלכם
+rs-14-2.0.body = ממשו את ה-trait בשם Iterator: קבעו את type Item וכתבו next(&mut self) -> Option<Self::Item>. מחזירים Some(value) לכל ערך ו-None כשמסיימים. אז מקבלים בחינם את כל המתאמים (map, filter, take, sum...).
+rs-14-2.1.prompt = השלימו את מימוש ה-trait.
+rs-14-2.1.explanation = type Item קובע מה next מפיקה; next מחזירה Option כדי שתוכל לומר 'אין יותר'.
+rs-14-2.2.prompt = מה Countdown(3).sum::<u32>() מחזירה?
+rs-14-2.2.explanation = 3 + 2 + 1. sum עובדת כי Countdown מממש את Iterator.
+rs-14-2.3.prompt = האיטרטור Evens שלמעלה אף פעם לא מחזיר None. איך מקבלים בבטחה את 5 הערכים הראשונים שלו?
+rs-14-2.3.explanation = take(5) עוצרת אחרי חמישה ערכים; collect או count על איטרטור אינסופי לא היו מסתיימות.
+
+rs-14-3 = עוד מתאמים
+rs-14-3.0.title = zip, chain, windows ועוד
+rs-14-3.0.body = zip מצמידה שני איטרטורים. chain מחברת אותם אחד אחרי השני. take(n), skip(n), take_while ו-skip_while חותכות לפי מספר או לפי תנאי. step_by(k) לוקחת כל פריט k. rev() הולכת אחורה. על slices, windows(n) נותנת קבוצות חופפות ו-chunks(n) נותנת קבוצות עוקבות.
+rs-14-3.1.prompt = כמה חלונות [1, 2, 3, 4, 5].windows(3) מפיקה?
+rs-14-3.1.explanation = [1,2,3], [2,3,4], [3,4,5].
+rs-14-3.2.prompt = הצמידו כל שם לניקוד שלו.
+rs-14-3.2.explanation = zip עוצרת כשהאיטרטור הקצר יותר נגמר.
+rs-14-3.3.prompt = אספו כל מספר שני מתוך 0..10 (0, 2, 4, 6, 8) ל-Vec בשם evens.
+rs-14-3.3.explanation = step_by(2) מדלגת על כל ערך שני.
+
+rs-14-4 = צריכת איטרטורים
+rs-14-4.0.title = להוציא תשובות
+rs-14-4.0.body = צרכנים מושכים את הערכים: sum, product, count, min, max, min_by_key, max_by, find (ההתאמה הראשונה, Option), position (אינדקס, Option), any ו-all (bool), fold (צירוף לערך אחד), ו-last.
+rs-14-4.1.prompt = מה [3, 8, 2].iter().any(|&x| x > 5) מחזירה?
+rs-14-4.1.explanation = any מחזירה true כשלפחות פריט אחד מתאים.
+rs-14-4.2.prompt = מצאו את היתרה השלילית הראשונה.
+rs-14-4.2.explanation = find מחזירה Option<&T>: ההתאמה הראשונה או None.
+rs-14-4.3.prompt = חשבו את המכפלה של 1..=5 (זה 5 עצרת) כ-u64 בשם f.
+rs-14-4.3.explanation = product מכפילה את כל הפריטים: 120.
+
+rs-14-5 = collect לעומק
+rs-14-5.0.title = מתודה אחת, הרבה תוצאות
+rs-14-5.0.body = collect בונה כל אוסף שמבקשים: Vec<T>, String (מתווים או מ-&str), HashMap<K, V> (מזוגות (K, V)), HashSet<T>. איסוף של איטרטור של Result<T, E> ל-Result<Vec<T>, E> נעצר בשגיאה הראשונה, וזה מצוין לפענוח של רשימה שלמה.
+rs-14-5.1.prompt = מה נותן ["1", "2", "3"].iter().map(|s| s.parse::<i32>()).collect::<Result<Vec<_>, _>>()?
+rs-14-5.1.explanation = כל הפענוחים מצליחים, ולכן הכול Ok עם Vec.
+rs-14-5.2.prompt = בנו מפה מ-name לאורך.
+rs-14-5.2.explanation = איטרטור של זוגות נאסף למפה.
+rs-14-5.3.prompt = הפכו את ה-Vec<char> בשם letters ל-String בשם word עם collect.
+rs-14-5.3.explanation = String מממש FromIterator<char> (וגם <&char>).
+
+rs-14-p = פרויקט: סטטיסטיקות של מעקב כושר
+rs-14-p.0.title = מה תבנו
+rs-14-p.0.body = סטטיסטיקות לשבוע של ספירת צעדים: פענוח הטקסט הגולמי עם collect לתוך Result, איטרטור Days מותאם שנותן שמות לימי השבוע, zip בין הצעדים ליעדים היומיים, ממוצעים נעים של 3 ימים עם windows, היום הטוב ביותר עם max_by_key, רצף עם take_while, וסכומים עם fold.
+rs-14-p.1.prompt = פענחו את כל המספרים, ונכשלו במספר הפגום הראשון.
+rs-14-p.1.explanation = אוספים ל-Result<Vec<_>, _>, ואז ? מעביר שגיאה למי שקרא לפונקציה.
+rs-14-p.2.prompt = איטרטור מותאם על שמות ימי השבוע (קודם ה-struct, ואז type Item לפני next).
+rs-14-p.2.explanation = get מחזירה None אחרי שבת, ו-? מסיים את האיטרציה.
+rs-14-p.3.prompt = חשבו את הממוצעים הנעים של 3 ימים כ-Vec<u32> בשם avg3 בעזרת windows(3) ו-map.
+rs-14-p.3.explanation = כל חלון הוא slice של 3 ימים עוקבים.
+rs-14-p.4.prompt = מצאו את היום הטוב ביותר יחד עם השם שלו.
+rs-14-p.4.explanation = zip מצמידה שמות לצעדים; max_by_key בוחרת את הזוג עם הכי הרבה צעדים.
+rs-14-p.5.prompt = כמה ימים ברציפות מיום ראשון עמדו ביעד של 8000 צעדים: steps.iter().take_while(|&&s| s >= 8000).count() עבור [8200, 10400, 6500, ...]?
+rs-14-p.5.explanation = take_while נעצרת ביום הראשון שמתחת ליעד (6500).
+rs-14-p.6.title = התוכנית המלאה
+rs-14-p.6.body = אתגר: השתמשו ב-zip עם מערך של יעדים כדי להציג אילו ימים לא עמדו ביעד שלהם.
+
+section.rs-s15 = Traits לעומק
+
+rs-15-1 = Display ו-Debug
+rs-15-1.0.title = להדפיס את הטיפוסים שלכם
+rs-15-1.0.body = #[derive(Debug)] נותן פלט {:?} למפתחים. לטקסט שמוצג למשתמשים עם {}, ממשים בעצמכם את std::fmt::Display: כותבים fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result ומשתמשים ב-write!(f, ...). מימוש Display נותן גם את .to_string().
+rs-15-1.1.prompt = ממשו Display עבור Point.
+rs-15-1.1.explanation = write! שולחת טקסט מעוצב לתוך ה-formatter ומחזירה fmt::Result.
+rs-15-1.2.prompt = איזה מהם אפשר לגזור אוטומטית?
+rs-15-1.2.opt2 = את שניהם
+rs-15-1.2.opt3 = אף אחד
+rs-15-1.2.explanation = Rust לא יכולה לנחש איך אתם רוצים שמשתמשים יראו טיפוס, ולכן את Display תמיד כותבים ביד.
+rs-15-1.3.prompt = אחרי מימוש Display עבור Temp, מה Temp(5.0).to_string() מחזירה?
+rs-15-1.3.opt2 = שגיאת קומפילציה
+rs-15-1.3.explanation = to_string מגיעה בחינם עם Display.
+
+rs-15-2 = From, Into ו-TryFrom
+rs-15-2.0.title = המרה בין טיפוסים
+rs-15-2.0.body = ממשים From<A> for B כדי להמיר A ל-B: B::from(a). אז מקבלים בחינם את a.into(). להמרות שיכולות להיכשל, ממשים TryFrom ומחזירים Result. האופרטור ? משתמש ב-From כדי להמיר טיפוסי שגיאה אוטומטית.
+rs-15-2.1.prompt = אפשרו ליצור Username מ-&str.
+rs-15-2.1.explanation = ממשים את From; into() מסופקת אוטומטית.
+rs-15-2.2.prompt = המרה של i64 ל-u8 יכולה להיכשל (למשל 300). איזה trait מתאים?
+rs-15-2.2.explanation = u8::try_from(300i64) מחזירה Err.
+rs-15-2.3.prompt = המירו את ה-i32 בשם n ל-u8 בבטחה, וקבלו Option עם .ok() (let small = ...;).
+rs-15-2.3.explanation = try_from מחזירה Result; .ok() הופכת אותו ל-Option.
+
+rs-15-3 = העמסת אופרטורים
+rs-15-3.0.title = std::ops
+rs-15-3.0.body = ממשים traits מ-std::ops כדי לתת לטיפוסים שלכם אופרטורים: Add בשביל +, Sub בשביל -, Mul בשביל *, AddAssign בשביל +=, Neg בשביל - אונרי. PartialEq ו-PartialOrd (שבדרך כלל נגזרים) נותנים == ו-<.
+rs-15-3.1.prompt = אפשרו לחבר ערכי Money עם +.
+rs-15-3.1.explanation = ל-Add יש טיפוס משויך בשם Output: הטיפוס ש-+ מפיק.
+rs-15-3.2.prompt = איזה trait גורם ל-total += price לעבוד עבור הטיפוס שלכם?
+rs-15-3.2.explanation = += הוא אופרטור נפרד עם trait משלו.
+rs-15-3.3.prompt = האם אפשר לממש Add עבור i32 ו-String בתוך ה-crate שלכם?
+rs-15-3.3.opt0 = כן
+rs-15-3.3.opt1 = לא: חוק היתום (orphan rule) דורש שה-trait או הטיפוס יהיו שלכם
+rs-15-3.3.opt2 = רק עם unsafe
+rs-15-3.3.opt3 = רק בבדיקות
+rs-15-3.3.explanation = אפשר לממש traits זרים עבור הטיפוסים שלכם, או traits שלכם עבור טיפוסים זרים.
+
+rs-15-4 = טיפוסים משויכים וביטויי where
+rs-15-4.0.title = קוד גנרי נקי יותר
+rs-15-4.0.body = לחלק מה-traits יש טיפוסים משויכים (Iterator::Item, Add::Output). בפונקציות גנריות, הגבלות ארוכות נקראות טוב יותר בביטוי where: fn report<T>(items: &[T]) where T: Display + PartialOrd { ... }. impl Trait בתור טיפוס של ארגומנט הוא צורה קצרה למקרים פשוטים.
+rs-15-4.1.prompt = קבלו כל איטרטור של מספרים.
+rs-15-4.1.explanation = Item = u32 מגביל את הטיפוס המשויך.
+rs-15-4.2.prompt = למה להשתמש בביטוי where?
+rs-15-4.2.opt0 = הוא חובה בגנריקה
+rs-15-4.2.opt1 = הוא שומר על הגבלות ארוכות קריאות
+rs-15-4.2.opt2 = הוא הופך קוד למהיר יותר
+rs-15-4.2.opt3 = הוא מחליף traits
+rs-15-4.2.explanation = אותה משמעות כמו הגבלות בתוך <...>, פשוט קל יותר לקרוא.
+rs-15-4.3.prompt = כתבו את שורת ה-where שדורשת ש-T יממש גם את Display וגם את Clone.
+rs-15-4.3.explanation = מחברים הגבלות עם +.
+
+rs-15-5 = Default ודפוס ה-Builder
+rs-15-5.0.title = ברירות מחדל הגיוניות
+rs-15-5.0.body = #[derive(Default)] ממלא כל שדה בערך ברירת המחדל שלו (0, false, String ריק, None). תחביר העדכון ..Default::default() מאפשר לקבוע רק חלק מהשדות. builder מציע מתודות בשרשרת (with_x(self, x) -> Self) להגדרה קריאה של אובייקטים עם הרבה אפשרויות.
+rs-15-5.1.prompt = מה הערך של Settings::default().name?
+rs-15-5.1.opt1 = String ריק
+rs-15-5.1.opt3 = שגיאת קומפילציה
+rs-15-5.1.explanation = String::default() הוא "".
+rs-15-5.2.prompt = קבעו רק את עוצמת הקול והשאירו את שאר ברירות המחדל.
+rs-15-5.2.explanation = ..Default::default() ממלא את שאר השדות.
+rs-15-5.3.prompt = כתבו מתודת builder בשם dark שמקבלת mut self ו-on: bool, קובעת את השדה ומחזירה Self (בשורה אחת).
+rs-15-5.3.explanation = קבלת self לפי ערך והחזרה שלו מאפשרות לשרשר קריאות.
+
+rs-15-p = פרויקט: טיפוס Money
+rs-15-p.0.title = מה תבנו
+rs-15-p.0.body = טיפוס Money שנשמר באגורות (מספרים שלמים, בלי שגיאות של מספרים עשרוניים) עם: Display בתור ₪12.50, From<u32> לשקלים שלמים, TryFrom<&str> לפענוח של "12.50", Add ו-AddAssign, Sum כדי שאיטרטורים יוכלו לסכם מחירים, Default לאפס, וסדר נגזר כדי שאפשר יהיה להשוות ולמיין מחירים.
+rs-15-p.1.prompt = הציגו כסף עם ₪ ושתי ספרות אחרי הנקודה.
+rs-15-p.1.explanation = השקלים הם agorot / 100; האגורות שנשארות (% 100) מרופדות לשתי ספרות.
+rs-15-p.2.prompt = פענחו את "12.50" ל-Money, או היכשלו (קודם type Error; מפענחים שקלים לפני אגורות).
+rs-15-p.2.explanation = מפצלים בנקודה, מפענחים את שני החצאים (מרפדים '5' ל-'50'), ומחברים לאגורות.
+rs-15-p.3.prompt = ממשו את Sum כדי ש-.sum::<Money>() יעבוד: השלימו את fn sum<I: Iterator<Item = Money>>(iter: I) -> Self { ... } עם fold (כתבו רק את ביטוי הגוף).
+rs-15-p.3.explanation = מתחילים מאפס ומוסיפים כל Money בעזרת מימוש ה-Add שלנו.
+rs-15-p.4.prompt = למה לשמור אגורות כמספר שלם במקום שקלים כ-f64?
+rs-15-p.4.opt0 = מספרים שלמים יפים יותר
+rs-15-p.4.opt1 = מספרים עשרוניים לא יכולים לייצג בדיוק סכומים כמו 0.1, ולכן הסכומים סוטים; מספרים שלמים מתחברים בדיוק
+rs-15-p.4.opt2 = f64 לא יכול להיות שלילי
+rs-15-p.4.opt3 = אין סיבה
+rs-15-p.4.explanation = כסף צריך תמיד להיות יחידות שלמות של המטבע הקטן ביותר.
+rs-15-p.5.title = התוכנית המלאה
+rs-15-p.5.body = אתגר: ממשו Mul<u32> כדי שתוכלו לכתוב price * 3 עבור שלושה פריטים.
+
+section.rs-s16 = מודולים, Crates ובדיקות
+
+rs-16-1 = מודולים ונתיבים
+rs-16-1.0.title = לארגן קוד
+rs-16-1.0.body = mod יוצר מודול; פריטים בתוכו פרטיים אלא אם מסמנים אותם pub. מתייחסים אליהם עם נתיבים: crate::shapes::Circle (מוחלט), super::helper (מודול ההורה), self::x. use מכניס נתיב לטווח ההכרה. בפרויקט אמיתי, mod shapes; בתוך main.rs או lib.rs טוען את הקובץ src/shapes.rs (או src/shapes/mod.rs).
+rs-16-1.1.prompt = מחוץ ל-mod bank, אפשר לקרוא ישירות את account.balance בקוד שלמעלה?
+rs-16-1.1.opt0 = כן
+rs-16-1.1.opt1 = לא: השדה הוא לא pub; משתמשים במתודה balance()
+rs-16-1.1.opt2 = רק עם use
+rs-16-1.1.opt3 = רק ב-main
+rs-16-1.1.explanation = שדות פרטיים מגנים על הכללים של ה-struct; מתודות pub נותנות גישה מבוקרת.
+rs-16-1.2.prompt = בתוך src/main.rs, טענו את src/utils.rs והכניסו את הפונקציה שלו לטווח ההכרה.
+rs-16-1.2.explanation = mod מצהיר על המודול (וטוען את הקובץ שלו); use מקצר את הנתיב.
+rs-16-1.3.prompt = בתוך mod tests, כתבו את שורת ה-use שמייבאת הכול ממודול ההורה.
+rs-16-1.3.explanation = super הוא מודול ההורה; * מכניס את כל הפריטים שלו, הציבוריים והפרטיים, בשביל הבדיקות.
+
+rs-16-2 = Cargo ותלויות
+rs-16-2.0.title = פרויקטים ו-crates
+rs-16-2.0.body = cargo new app יוצר פרויקט עם Cargo.toml ו-src/main.rs (cargo new --lib בשביל ספרייה). מוסיפים crates מ-crates.io תחת [dependencies] (או עם cargo add rand). cargo build מקמפל, cargo run בונה ומריץ, cargo check הוא קומפילציה מהירה בלי פלט, ו---release מפעיל אופטימיזציות.
+rs-16-2.1.prompt = איזו פקודה בודקת הכי מהר שהקוד מתקמפל, בלי לייצר תוכנית?
+rs-16-2.1.explanation = cargo check מדלגת על יצירת הקוד, ולכן היא מצוינת בזמן עריכה.
+rs-16-2.2.prompt = הוסיפו את ה-crate בשם chrono עם ה-feature שלו serde.
+rs-16-2.2.explanation = features מפעילים חלקים אופציונליים של crate.
+rs-16-2.3.prompt = מה version = "0.8" עבור rand מאפשרת?
+rs-16-2.3.opt0 = בדיוק 0.8.0
+rs-16-2.3.opt1 = כל גרסת 0.8.x תואמת (העדכנית ביותר בעדכון)
+rs-16-2.3.opt2 = כל גרסה
+rs-16-2.3.opt3 = רק 0.9
+rs-16-2.3.explanation = Cargo משתמשת בגרסאות סמנטיות; Cargo.lock מקבע אחר כך את הגרסה המדויקת.
+
+rs-16-3 = בדיקות יחידה
+rs-16-3.0.title = #[test]
+rs-16-3.0.body = שמים בדיקות ליד הקוד בתוך #[cfg(test)] mod tests. כל פונקציית #[test] עוברת אלא אם היא קורסת (panic). assert!(cond), assert_eq!(left, right) ו-assert_ne! בודקות תוצאות. #[should_panic] מצפה לקריסה. מריצים את כולן עם cargo test.
+rs-16-3.1.prompt = סמנו פונקציה כבדיקה ובדקו שוויון.
+rs-16-3.1.explanation = assert_eq! מציגה את שני הערכים כשהיא נכשלת.
+rs-16-3.2.prompt = למה יש #[cfg(test)] על mod tests?
+rs-16-3.2.opt0 = זה חובה כדי להריץ
+rs-16-3.2.opt1 = קוד הבדיקות מתקמפל רק בשביל cargo test, לא בתוכנית האמיתית
+rs-16-3.2.opt2 = זה מאיץ את הבדיקות
+rs-16-3.2.opt3 = זה מסתיר כישלונות
+rs-16-3.2.explanation = cfg = קומפילציה מותנית.
+rs-16-3.3.prompt = כתבו את התכונה שמסמנת בדיקה שחייבת לקרוס.
+rs-16-3.3.explanation = הבדיקה עוברת רק אם הקוד קורס.
+
+rs-16-4 = בדיקת Result, בדיקות אינטגרציה ובדיקות תיעוד
+rs-16-4.0.title = עוד סוגים של בדיקות
+rs-16-4.0.body = בדיקה יכולה להחזיר Result<(), E> ולהשתמש ב-? בפנים. בדיקות אינטגרציה נמצאות בתיקייה tests/ ומשתמשות בספרייה שלכם כמו משתמש חיצוני. גם דוגמאות קוד בהערות תיעוד /// מתקמפלות ורצות ב-cargo test, ולכן התיעוד לא יכול להתיישן.
+rs-16-4.1.prompt = איפה שמים בדיקות אינטגרציה בפרויקט Cargo?
+rs-16-4.1.opt0 = src/tests.rs
+rs-16-4.1.opt1 = בתיקייה tests/ בשורש הפרויקט
+rs-16-4.1.opt2 = Cargo.toml
+rs-16-4.1.opt3 = בתוך main()
+rs-16-4.1.explanation = כל קובץ בתיקייה tests/ מתקמפל כ-crate נפרד שמשתמש בספרייה שלכם.
+rs-16-4.2.prompt = בדיקה שיכולה להשתמש ב-?.
+rs-16-4.2.explanation = אם ? נתקל בשגיאה, הבדיקה נכשלת עם השגיאה הזו.
+rs-16-4.3.prompt = מה קורה לדוגמת קוד בתוך /// ``` ``` כשמריצים cargo test?
+rs-16-4.3.opt0 = שום דבר
+rs-16-4.3.opt1 = היא מתקמפלת ורצה כבדיקת תיעוד
+rs-16-4.3.opt2 = היא נמחקת
+rs-16-4.3.opt3 = היא מודפסת
+rs-16-4.3.explanation = בדיקות תיעוד שומרות על הדוגמאות נכונות.
+
+rs-16-5 = כלים: fmt, clippy ותיעוד
+rs-16-5.0.title = לתת לכלים לעזור
+rs-16-5.0.body = cargo fmt מעצב את הקוד בסגנון הסטנדרטי. cargo clippy הוא linter עם מאות רמזים (קוד שלא בשימוש, clone מיותרים, דפוסים פשוטים יותר). cargo doc --open בונה תיעוד HTML מהערות ///. הרצה של fmt ו-clippy ב-CI שומרת על הקוד של צוות אחיד.
+rs-16-5.1.prompt = איזה כלי מציע שיפורים כמו הסרת clone מיותר?
+rs-16-5.1.explanation = clippy הוא ה-linter של Rust.
+rs-16-5.2.prompt = כתבו הערת תיעוד לפונקציה הבאה.
+rs-16-5.2.explanation = הערות /// מתעדות את הפריט שמתחתיהן ומופיעות ב-cargo doc.
+rs-16-5.3.prompt = איזו פקודת cargo מעצבת את כל הקוד?
+rs-16-5.3.explanation = היא משתמשת ב-rustfmt עם הסגנון הסטנדרטי.
+
+rs-16-p = פרויקט: ספריית מחשבון עם בדיקות
+rs-16-p.0.title = מה תבנו
+rs-16-p.0.body = מחשבון קטן לביטויים בכתיב פוסטפיקסי (RPN) כמו "3 4 + 2 *", שמאורגן במודול עם API ציבורי ושגיאה מותאמת, מתועד עם ///, ומכוסה בבדיקות יחידה: מקרים רגילים, שגיאות שמוחזרות כ-Result, ובדיקת should_panic לבדיקת באג פנימי.
+rs-16-p.1.prompt = ה-API הציבורי של המודול calc.
+rs-16-p.1.explanation = גם טיפוס השגיאה וגם הפונקציה חייבים להיות pub כדי שאפשר יהיה להשתמש בהם מחוץ למודול.
+rs-16-p.2.prompt = לולאת החישוב עם מחסנית (שולפים את b לפני a).
+rs-16-p.2.explanation = מספרים נדחפים למחסנית; אופרטור שולף שני ערכים (קודם b), מפעיל את עצמו ודוחף את התוצאה.
+rs-16-p.3.prompt = כתבו שורת בדיקת יחידה שבודקת ש-eval("3 4 + 2 *") מחזירה Ok(14.0).
+rs-16-p.3.explanation = PartialEq על CalcError מאפשר להשוות את ה-Result כולו.
+rs-16-p.4.prompt = "5 0 /" צריך לתת Err(DivideByZero), לא קריסה. איזה סוג בדיקה בודק את זה?
+rs-16-p.4.opt2 = לא צריך בדיקה
+rs-16-p.4.opt3 = הערת תיעוד
+rs-16-p.4.explanation = שגיאות צפויות הן ערכים; בודקים אותן עם assert_eq!. should_panic מיועד לבאגים שחייבים לקרוס.
+rs-16-p.5.title = התוכנית המלאה
+rs-16-p.5.body = שמרו אותה כ-src/lib.rs בפרויקט שנוצר עם cargo new --lib calc והריצו cargo test. אתגר: הוסיפו את האופרטור ^ (חזקה) ובדיקה בשבילו.
+
+section.rs-s17 = מקביליות
+
+rs-17-1 = Threads
+rs-17-1.0.title = לעשות דברים באותו זמן
+rs-17-1.0.body = std::thread::spawn מריצה closure על thread חדש ומחזירה JoinHandle. קוראים ל-handle.join() כדי לחכות לו ולקבל את התוצאה שלו. משתמשים ב-closures עם move כדי שה-thread יהיה הבעלים של הנתונים שהוא משתמש בהם; הקומפיילר עוצר אתכם משיתוף נתונים בצורה לא בטוחה.
+rs-17-1.1.prompt = הפעילו thread שהוא הבעלים של name, ואז חכו לו.
+rs-17-1.1.explanation = move מעבירה את הבעלות לתוך ה-closure; join מחכה שה-thread יסתיים.
+rs-17-1.2.prompt = למה הקומפיילר דוחה את thread::spawn(|| println!("{}", v.len())) כש-v הוא Vec מקומי?
+rs-17-1.2.opt0 = threads לא יכולים להדפיס
+rs-17-1.2.opt1 = ה-thread עלול לחיות יותר זמן מ-v, ולכן לשאול אותו לא בטוח; משתמשים ב-move
+rs-17-1.2.opt2 = אי אפשר להשתמש ב-Vec ב-threads
+rs-17-1.2.opt3 = זה מותר
+rs-17-1.2.explanation = threads שנוצרים עם spawn דורשים נתונים 'static, ולכן הם חייבים להיות הבעלים של מה שהם משתמשים בו.
+rs-17-1.3.prompt = שני threads מדפיסים שורות. באיזה סדר השורות מופיעות?
+rs-17-1.3.opt0 = תמיד thread 1 קודם
+rs-17-1.3.opt1 = לא מובטח; מערכת ההפעלה מתזמנת אותם
+rs-17-1.3.opt2 = לפי האלפבית
+rs-17-1.3.opt3 = תמיד בסדר הפוך
+rs-17-1.3.explanation = אל תסמכו על סדר בין threads בלי סנכרון.
+
+rs-17-2 = ערוצים
+rs-17-2.0.title = לשלוח הודעות בין threads
+rs-17-2.0.body = std::sync::mpsc::channel() נותנת שולח (tx) ומקבל (rx). threads שולחים ערכים עם tx.send(v); המקבל מקבל אותם עם rx.recv() או בלולאה for v in rx. mpsc פירושו הרבה יצרנים וצרכן אחד: משכפלים את tx לכל thread יצרן.
+rs-17-2.1.prompt = צרו ערוץ ותנו לכל עובד שולח משלו.
+rs-17-2.1.explanation = כל יצרן צריך עותק משלו של השולח.
+rs-17-2.2.prompt = למה לקרוא ל-drop(tx) לפני הלולאה על rx?
+rs-17-2.2.opt0 = כדי לשחרר זיכרון
+rs-17-2.2.opt1 = הלולאה מסתיימת רק כשכל השולחים נעלמו; ה-tx המקורי היה גורם לה לחכות לנצח
+rs-17-2.2.opt2 = drop שולחת הודעה
+rs-17-2.2.opt3 = אין בזה צורך
+rs-17-2.2.explanation = המעבר על rx נעצר כשכל השולחים שוחררו.
+rs-17-2.3.prompt = שלחו את ה-String בשם msg דרך tx, וקרסו אם המקבל נעלם (שורה אחת).
+rs-17-2.3.explanation = send מחזירה Err רק כשהמקבל שוחרר.
+
+rs-17-3 = מצב משותף עם Arc ו-Mutex
+rs-17-3.0.title = הרבה threads, ערך אחד
+rs-17-3.0.body = Rc לא בטוח ל-threads; Arc (ספירת הפניות אטומית) כן. Mutex<T> מאפשר רק ל-thread אחד בכל רגע לגשת לערך: lock() מחזירה guard שמשתמשים בו כמו ב-&mut T, והנעילה משתחררת כשה-guard יוצא מטווח ההכרה. Arc<Mutex<T>> הוא השילוב הסטנדרטי.
+rs-17-3.1.prompt = למה Arc ולא Rc בין threads?
+rs-17-3.1.opt0 = Arc קצר יותר
+rs-17-3.1.opt1 = Arc מעדכן את המונה שלו באופן אטומי, ולכן בטוח לשתף אותו בין threads
+rs-17-3.1.opt2 = Rc לא יכול להחזיק Mutex
+rs-17-3.1.opt3 = אין הבדל
+rs-17-3.1.explanation = הקומפיילר דוחה Rc ב-threads כי הוא לא Send.
+rs-17-3.2.prompt = תנו לכל thread ידית משלו למפה המשותפת והוסיפו לה.
+rs-17-3.2.explanation = Arc::clone משתפת בעלות; lock נותנת גישה בלעדית כל עוד ה-guard חי.
+rs-17-3.3.prompt = מתי ה-Mutex משתחרר?
+rs-17-3.3.opt0 = אף פעם
+rs-17-3.3.opt1 = כשה-guard שהוחזר מ-lock() משוחרר (יוצא מטווח ההכרה)
+rs-17-3.3.opt2 = אחרי שנייה
+rs-17-3.3.opt3 = כשקוראים ל-unlock()
+rs-17-3.3.explanation = שמרו על טווח הכרה קצר ל-guard כדי לא לחסום threads אחרים.
+
+rs-17-4 = Scoped threads
+rs-17-4.0.title = לשאול נתונים בתוך threads
+rs-17-4.0.body = std::thread::scope מאפשרת ל-threads לשאול נתונים מקומיים, כי מובטח שכל ה-threads ב-scope יסתיימו לפני שהוא חוזר. אין צורך ב-move, ב-Arc או ב-'static לשיתוף לקריאה בלבד. זו הדרך הפשוטה ביותר לחלק עבודה על slice.
+rs-17-4.1.prompt = למה scoped threads יכולים לשאול נתונים בלי move?
+rs-17-4.1.opt0 = הם מעתיקים הכול
+rs-17-4.1.opt1 = ה-scope מחכה לכל ה-threads שלו, ולכן הנתונים המושאלים חיים יותר מהם
+rs-17-4.1.opt2 = הם לא threads אמיתיים
+rs-17-4.1.opt3 = הם משתמשים ב-unsafe
+rs-17-4.1.explanation = בודק ההשאלות יכול להוכיח שההפניות נשארות תקפות.
+rs-17-4.2.prompt = חלקו את העבודה לחתיכות וסכמו כל אחת ב-scoped thread משלה.
+rs-17-4.2.explanation = s.spawn מפעילה thread שקשור ל-scope; move מעבירה את ההפניה לחתיכה פנימה.
+rs-17-4.3.prompt = לנתונים לקריאה בלבד שמשתמשים בהם כמה threads שמסתיימים לפני ש-main ממשיכה, מה הכי פשוט?
+rs-17-4.3.opt1 = thread::scope עם הפניות רגילות
+rs-17-4.3.opt2 = משתנים גלובליים
+rs-17-4.3.opt3 = ערוצים
+rs-17-4.3.explanation = אין צורך בנעילה כשאף אחד לא כותב.
+
+rs-17-5 = Send, Sync ו-atomics
+rs-17-5.0.title = איך Rust מונעת מרוצי נתונים
+rs-17-5.0.body = Send פירושו שאפשר להעביר ערך ל-thread אחר; Sync פירושו שאפשר לשתף אותו בין threads דרך הפניה. הקומפיילר בודק את זה אוטומטית, ולכן מרוצי נתונים (data races) הם שגיאות קומפילציה ב-Rust בטוח. בשביל מונה פשוט, AtomicUsize עם fetch_add קל יותר מ-Mutex.
+rs-17-5.1.prompt = איזה טיפוס הוא לא Send (אי אפשר להעביר אותו ל-thread אחר)?
+rs-17-5.1.explanation = המונה הלא-אטומי של Rc היה גורם למרוץ; משתמשים ב-Arc.
+rs-17-5.2.prompt = ספרו בקשות מהרבה threads בלי Mutex.
+rs-17-5.2.explanation = פעולות אטומיות בטוחות בלי נעילות עבור ערכים פשוטים.
+rs-17-5.3.prompt = ב-Rust בטוח, מה קורה אם שני threads יכולים לכתוב לאותו משתנה בו-זמנית?
+rs-17-5.3.opt0 = תוצאות אקראיות בזמן ריצה
+rs-17-5.3.opt1 = זה לא מתקמפל
+rs-17-5.3.opt2 = הכתיבה האחרונה מנצחת
+rs-17-5.3.opt3 = התוכנית מאטה
+rs-17-5.3.explanation = בעלות ו-Send/Sync הופכים מרוצי נתונים לבלתי אפשריים בקוד בטוח.
+
+rs-17-p = פרויקט: ספירת מילים במקביל
+rs-17-p.0.title = מה תבנו
+rs-17-p.0.body = ספירת מילים בכמה מסמכים במקביל: scoped threads מחלקים את העבודה, כל thread שולח את הספירות החלקיות שלו דרך ערוץ, ה-thread הראשי ממזג אותן ל-HashMap, Arc<Mutex<Vec>> משותף אוסף הודעות התקדמות, ו-AtomicUsize סופר את המסמכים שעובדו.
+rs-17-p.1.prompt = כל thread סופר את המילים במסמך שלו.
+rs-17-p.1.explanation = ה-entry API סופר בלי לחפש את המפתח פעמיים.
+rs-17-p.2.prompt = הריצו scoped thread אחד לכל מסמך ושלחו את התוצאות בחזרה.
+rs-17-p.2.explanation = כל thread מקבל שולח משלו; שחרור השולח המקורי מאפשר ללולאה של rx להסתיים.
+rs-17-p.3.prompt = מזגו מפה חלקית אחת בשם part לתוך total: לכל (word, n) ב-part, הוסיפו n לרשומה של total (כתבו את לולאת ה-for בשורה אחת).
+rs-17-p.3.explanation = אותו דפוס entry, אבל מוסיפים n במקום 1.
+rs-17-p.4.prompt = איזה טיפוס משותף מאפשר לכל thread להוסיף שורת התקדמות לאותו Vec בבטחה?
+rs-17-p.4.explanation = Arc לשיתוף בין threads, Mutex לשינוי בטוח.
+rs-17-p.5.title = התוכנית המלאה
+rs-17-p.5.body = אתגר: חלקו מסמך אחד ארוך מאוד לחתיכות של 1,000 מילים וספרו את החתיכות במקביל.
+
+section.rs-s18 = קבצים, קלט/פלט וכלי שורת פקודה
+
+rs-18-1 = ארגומנטים משורת הפקודה
+rs-18-1.0.title = std::env::args
+rs-18-1.0.body = std::env::args() הוא איטרטור על הארגומנטים של התוכנית; הראשון הוא הנתיב של התוכנית עצמה. אוספים אותם ל-Vec<String>, או משתמשים ב-skip(1) כדי להתעלם משם התוכנית. כלים גדולים יותר משתמשים לעיתים קרובות ב-crate בשם clap בשביל דגלים וטקסט עזרה.
+rs-18-1.1.prompt = מה זה args[0]?
+rs-18-1.1.opt0 = הארגומנט הראשון שהמשתמש הקליד
+rs-18-1.1.opt1 = השם או הנתיב של התוכנית עצמה
+rs-18-1.1.opt2 = ריק
+rs-18-1.1.opt3 = התיקייה הנוכחית
+rs-18-1.1.explanation = הארגומנטים של המשתמש מתחילים באינדקס 1.
+rs-18-1.2.prompt = אספו רק את הארגומנטים של המשתמש.
+rs-18-1.2.explanation = skip(1) משמיטה את הנתיב של התוכנית.
+rs-18-1.3.prompt = בדקו דגל: כתבו ביטוי שמחזיר true כש-args מכיל "-i" (args: Vec<String>).
+rs-18-1.3.explanation = any סורקת את הארגומנטים ומחפשת את הדגל.
+
+rs-18-2 = קריאת קבצים
+rs-18-2.0.title = fs ו-BufReader
+rs-18-2.0.body = std::fs::read_to_string(path) קוראת קובץ שלם לתוך String ומחזירה io::Result. בקבצים גדולים, קוראים שורה אחרי שורה: BufReader::new(File::open(path)?).lines(). כל שורה היא בעצמה Result, כי הקריאה יכולה להיכשל באמצע.
+rs-18-2.1.prompt = קראו את כל הקובץ, והעבירו שגיאות הלאה.
+rs-18-2.1.explanation = ? מחזיר את ה-io::Error למי שקרא לפונקציה במקום לקרוס.
+rs-18-2.2.prompt = למה BufReader עדיף על read_to_string עבור קובץ יומן של 5 GB?
+rs-18-2.2.opt0 = זה קצר יותר
+rs-18-2.2.opt1 = הוא קורא קצת בכל פעם במקום לטעון הכול לזיכרון
+rs-18-2.2.opt2 = זו הדרך היחידה לקרוא טקסט
+rs-18-2.2.opt3 = הוא מדלג על שגיאות
+rs-18-2.2.explanation = קריאה בזרם שומרת על שימוש קטן בזיכרון.
+rs-18-2.3.prompt = בתוך פונקציה שמחזירה io::Result, עברו בלולאה על השורות של reader, כשכל שורה היא String (רק את הכותרת של ה-for).
+rs-18-2.3.explanation = אחר כך משתמשים ב-let line = line?; בתוך הלולאה.
+
+rs-18-3 = כתיבת קבצים
+rs-18-3.0.title = fs::write, File ו-writeln!
+rs-18-3.0.body = std::fs::write(path, text) יוצרת או מחליפה קובץ בקריאה אחת. להרבה כתיבות, File::create(path)? ו-writeln!(file, ...)?; עוטפים ב-BufWriter בשביל מהירות. כדי להוסיף לקובץ קיים, משתמשים ב-OpenOptions::new().append(true).create(true).open(path).
+rs-18-3.1.prompt = מה fs::write("notes.txt", "hi") עושה אם ב-notes.txt כבר יש טקסט?
+rs-18-3.1.opt0 = מוסיף "hi" בסוף
+rs-18-3.1.opt1 = מחליף את כל התוכן ב-"hi"
+rs-18-3.1.opt2 = נכשל
+rs-18-3.1.opt3 = שואל את המשתמש
+rs-18-3.1.explanation = השתמשו ב-OpenOptions עם append(true) כדי להוסיף במקום.
+rs-18-3.2.prompt = כתבו שורה לתוך קובץ פתוח.
+rs-18-3.2.explanation = writeln! עובדת כמו println! אבל לתוך כל writer, ומחזירה Result.
+rs-18-3.3.prompt = איזה trait חייב להיות בטווח ההכרה (use std::io::...) כדי לקרוא ל-writeln! על File?
+rs-18-3.3.explanation = writeln! קוראת למתודות מה-trait בשם Write.
+
+rs-18-4 = שגיאות ב-main וקודי יציאה
+rs-18-4.0.title = Box<dyn Error> ו-process::exit
+rs-18-4.0.body = main יכולה להחזיר Result<(), Box<dyn std::error::Error>>, כך ש-? עובד עם כל טיפוס שגיאה, וכישלון מדפיס את השגיאה ויוצא עם קוד 1. מדפיסים הודעות לבני אדם ל-stderr עם eprintln!. std::process::exit(2) מסיימת את התוכנית עם קוד מסוים שסקריפטים יכולים לבדוק.
+rs-18-4.1.prompt = למה Box<dyn Error> בטיפוס ההחזרה של main?
+rs-18-4.1.opt0 = זה מהיר יותר
+rs-18-4.1.opt1 = הוא יכול להחזיק כל טיפוס שגיאה, ולכן ? עובד גם עם שגיאות io וגם עם שגיאות פענוח
+rs-18-4.1.opt2 = הוא מסתיר שגיאות
+rs-18-4.1.opt3 = זה חובה
+rs-18-4.1.explanation = כל שגיאה מומרת לאובייקט ה-trait הארוז.
+rs-18-4.2.prompt = דווחו על בעיית שימוש וצאו עם קוד 2.
+rs-18-4.2.explanation = שגיאות הולכות ל-stderr כדי שלא יתערבבו עם הפלט הרגיל.
+rs-18-4.3.prompt = לפי המוסכמה, איזה קוד יציאה פירושו הצלחה?
+rs-18-4.3.explanation = 0 הוא הצלחה; כל דבר אחר הוא סוג כלשהו של כישלון.
+
+rs-18-5 = קריאה מ-stdin
+rs-18-5.0.title = קלט אינטראקטיבי וצינורות
+rs-18-5.0.body = io::stdin().read_line(&mut buf) קוראת שורה אחת (כולל תו השורה החדשה, אז מקצצים אותו). כדי לקרוא את כל מה שמוזרם לתוכנית בצינור (cat file | myprog), עוברים בלולאה על io::stdin().lines(). כך הכלי שלכם עובד גם באופן אינטראקטיבי וגם בצינורות.
+rs-18-5.1.prompt = קראו שורה אחת מהמקלדת.
+rs-18-5.1.explanation = read_line מוסיפה לתוך ה-String שנותנים לה.
+rs-18-5.2.prompt = למה לקרוא ל-input.trim() אחרי read_line?
+rs-18-5.2.opt0 = כדי להפוך לאותיות גדולות
+rs-18-5.2.opt1 = הטקסט כולל את תו השורה החדשה (ואולי \r) בסוף
+rs-18-5.2.opt2 = כדי לפענח אותו
+rs-18-5.2.opt3 = אין בזה צורך
+rs-18-5.2.explanation = פענוח של "42\n" כמספר היה נכשל בלי trim.
+rs-18-5.3.prompt = עברו בלולאה על כל שורה בקלט הסטנדרטי (רק הכותרת; כל פריט הוא io::Result<String>).
+rs-18-5.3.explanation = אחר כך let line = line?; בפנים.
+
+rs-18-p = פרויקט: grep קטן
+rs-18-p.0.title = מה תבנו
+rs-18-p.0.body = כלי חיפוש לשורת הפקודה כמו grep: minigrep [-i] <pattern> <file> מדפיס שורות מתאימות עם מספרי שורות. הוא מפענח ארגומנטים, קורא את הקובץ עם BufReader, תומך בדגל שמתעלם מגודל אותיות, כותב שגיאות ל-stderr עם קודי יציאה נכונים, ומחזיר Box<dyn Error> מ-main. כשמריצים אותו בלי ארגומנטים, הוא יוצר קובץ הדגמה ומחפש בו.
+rs-18-p.1.prompt = הפרידו את הדגל משאר הארגומנטים.
+rs-18-p.1.explanation = any מזהה את הדגל; filter משאירה את התבנית ואת שם הקובץ.
+rs-18-p.2.prompt = חפשו בקובץ שורה אחרי שורה.
+rs-18-p.2.explanation = פותחים עם BufReader, מוציאים את ה-Result של כל שורה עם ?, משווים, ומדפיסים התאמות עם מספרים.
+rs-18-p.3.prompt = מספר שגוי של ארגומנטים: הדפיסו את שורת השימוש ל-stderr וצאו עם קוד 2 (שתי פקודות בשורה אחת).
+rs-18-p.3.explanation = stderr להודעות, וקוד שאינו אפס לכישלון.
+rs-18-p.4.prompt = הקובץ לא קיים. כש-main מחזירה Result<(), Box<dyn Error>> ויש File::open(path)?, מה קורה?
+rs-18-p.4.opt0 = קריסה עם stack trace
+rs-18-p.4.opt1 = main מחזירה את השגיאה: היא מודפסת וקוד היציאה הוא 1
+rs-18-p.4.opt2 = שום דבר לא מודפס
+rs-18-p.4.opt3 = הוא יוצר את הקובץ
+rs-18-p.4.explanation = הודעת שגיאה נקייה וקוד כישלון, בלי קריסה.
+rs-18-p.5.title = התוכנית המלאה
+rs-18-p.5.body = בנו אותה עם cargo new minigrep, הדביקו את זה ב-src/main.rs ונסו cargo run -- -i rust demo.txt. אתגר: הוסיפו דגל -c שמדפיס רק את מספר השורות המתאימות.
+
+section.rs-s19 = Rust אסינכרוני
+
+rs-19-1 = למה אסינכרוני?
+rs-19-1.0.title = לחכות בלי לחסום
+rs-19-1.0.body = הרבה תוכניות מבלות את רוב הזמן בהמתנה: לרשת, למסד נתונים או לטיימר. async fn מחזירה future, ערך שיסתיים מאוחר יותר. .await עוצרת את המשימה הנוכחית (לא את כל ה-thread) עד שהיא מוכנה, כך ש-thread אחד יכול ללהטט באלפי משימות. futures הם עצלים: שום דבר לא קורה עד שמחכים להם או מפעילים אותם עם spawn.
+rs-19-1.1.prompt = מה עושה קריאה ל-fetch_price("tea") בלי .await?
+rs-19-1.1.opt0 = מריצה אותה מיד
+rs-19-1.1.opt1 = יוצרת future שלא עושה כלום עד שמחכים לו
+rs-19-1.1.opt2 = קורסת (panic)
+rs-19-1.1.opt3 = מחזירה 42
+rs-19-1.1.explanation = הקומפיילר אפילו מזהיר על futures שלא נעשה בהם שימוש.
+rs-19-1.2.prompt = אסינכרוניות עוזרת הכי הרבה ל...
+rs-19-1.2.opt0 = חישובים כבדים על כל ליבות המעבד
+rs-19-1.2.opt1 = הרבה משימות שבעיקר מחכות לקלט/פלט (רשת, קבצים, טיימרים)
+rs-19-1.2.opt2 = סקריפטים קצרים בודדים
+rs-19-1.2.opt3 = מיון מערכים
+rs-19-1.2.explanation = לעבודה כבדה על המעבד, threads (או rayon) מתאימים יותר.
+rs-19-1.3.prompt = סמנו את הפונקציה כאסינכרונית וחכו לתוצאה.
+rs-19-1.3.explanation = .await נכתבת אחרי ה-future, בלי סוגריים.
+
+rs-19-2 = סביבת הריצה tokio
+rs-19-2.0.title = מי מריץ את ה-futures?
+rs-19-2.0.body = הספרייה הסטנדרטית של Rust מגדירה futures אבל לא כוללת סביבת ריצה שמריצה אותם. tokio היא הפופולרית ביותר: מוסיפים tokio = { version = "1", features = ["full"] } ושמים #[tokio::main] על async fn main. tokio::time::sleep היא הגרסה האסינכרונית של thread::sleep. (השרת של Code-Iot עצמו רץ על tokio, עם תשתית האינטרנט axum.)
+rs-19-2.1.prompt = הפכו את main לאסינכרונית עם tokio.
+rs-19-2.1.explanation = התכונה מפעילה את סביבת הריצה ומריצה את ה-future של main.
+rs-19-2.2.prompt = למה אסור לקרוא ל-std::thread::sleep בתוך קוד אסינכרוני?
+rs-19-2.2.opt0 = זה איטי יותר להקליד
+rs-19-2.2.opt1 = היא חוסמת את כל ה-thread העובד ומקפיאה כל משימה אחרת שעליו
+rs-19-2.2.opt2 = היא קורסת
+rs-19-2.2.opt3 = זה בסדר
+rs-19-2.2.explanation = השתמשו ב-tokio::time::sleep(...).await, שעוצרת רק את המשימה הנוכחית.
+rs-19-2.3.prompt = כתבו את השורה שעוצרת את המשימה הנוכחית ל-2 שניות עם tokio.
+rs-19-2.3.explanation = sleep מחזירה future שחייבים לחכות לו.
+
+rs-19-3 = להריץ futures במקביל
+rs-19-3.0.title = join!, spawn ו-JoinSet
+rs-19-3.0.body = המתנה ל-future אחד אחרי השני מריצה אותם ברצף. tokio::join!(a, b) מריץ כמה futures במקביל ומחכה לכולם. tokio::spawn מפעיל משימה עצמאית (היא צריכה נתונים 'static, כמו threads) ומחזיר JoinHandle. JoinSet מנהל הרבה משימות שהופעלו ונותן תוצאות כשהן מסתיימות.
+rs-19-3.1.prompt = כל fetch לוקחת שנייה. כמה זמן לוקח a.await; b.await; לעומת tokio::join!(a, b)?
+rs-19-3.1.opt0 = שנייה לעומת 2 שניות
+rs-19-3.1.opt1 = 2 שניות לעומת בערך שנייה
+rs-19-3.1.opt2 = 2 שניות לעומת 2 שניות
+rs-19-3.1.opt3 = שנייה לעומת שנייה
+rs-19-3.1.explanation = המתנות ברצף מצטברות; join! מחפיף את ההמתנה.
+rs-19-3.2.prompt = הפעילו משימת רקע וחכו לתוצאה שלה.
+rs-19-3.2.explanation = המתנה ל-JoinHandle נותנת Result<T, JoinError>.
+rs-19-3.3.prompt = עברו בלולאה עד שכל המשימות ב-JoinSet בשם set הסתיימו, וקשרו כל תוצאה ל-res (רק את הכותרת).
+rs-19-3.3.explanation = join_next מחזירה None כשהקבוצה ריקה.
+
+rs-19-4 = ערוצים, זמן קצוב ו-select!
+rs-19-4.0.title = לתאם בין משימות
+rs-19-4.0.body = tokio::sync::mpsc::channel(capacity) עובד כמו הערוץ של std, אבל send ו-recv אסינכרוניות. tokio::time::timeout(duration, fut) נותנת Err אם ה-future לוקח יותר מדי זמן. tokio::select! מחכה למי שמסתיים ראשון מבין כמה futures ומבטל את השאר.
+rs-19-4.1.prompt = שלחו תוצאות ממשימות לאוסף מרכזי.
+rs-19-4.1.explanation = גם send וגם recv אסינכרוניות בערוץ של tokio.
+rs-19-4.2.prompt = מה timeout(Duration::from_secs(1), task).await מחזירה אם task לוקחת 3 שניות?
+rs-19-4.2.opt0 = את הערך של המשימה אחרי 3 שניות
+rs-19-4.2.opt1 = Err(Elapsed) אחרי בערך שנייה
+rs-19-4.2.opt2 = היא מחכה לנצח
+rs-19-4.2.opt3 = קריסה
+rs-19-4.2.explanation = ה-future הפנימי משוחרר (מבוטל) כשהזמן נגמר.
+rs-19-4.3.prompt = tokio::select! { a = fast() => ..., b = slow() => ... } — מה קורה ל-slow() כש-fast() מסתיימת קודם?
+rs-19-4.3.opt0 = היא ממשיכה לרוץ ברקע
+rs-19-4.3.opt1 = היא משוחררת (מבוטלת)
+rs-19-4.3.opt2 = גם היא מסתיימת
+rs-19-4.3.opt3 = שני הענפים רצים
+rs-19-4.3.explanation = select! לוקח את הענף הראשון שמוכן ומשחרר את האחרים.
+
+rs-19-5 = אסינכרוני בעולם האמיתי
+rs-19-5.0.title = שרתים ולקוחות ברשת
+rs-19-5.0.body = רוב ה-Rust האסינכרוני הוא קוד רשת. axum (שבה משתמש Code-Iot) בונה שרתי אינטרנט: כל מטפל בבקשה הוא async fn. reqwest הוא לקוח HTTP אסינכרוני. sqlx מדבר עם מסדי נתונים באופן אסינכרוני. לעבודה כבדה על המעבד או לעבודה חוסמת בתוך קוד אסינכרוני, משתמשים ב-tokio::task::spawn_blocking, כדי ש-threads של סביבת הריצה יישארו פנויים.
+rs-19-5.1.prompt = למה השרת של Code-Iot מגבב סיסמאות בתוך spawn_blocking?
+rs-19-5.1.opt0 = Argon2 מחייבת את זה
+rs-19-5.1.opt1 = גיבוב הוא עבודת מעבד איטית שהייתה חוסמת בקשות אחרות על אותו thread של סביבת הריצה
+rs-19-5.1.opt2 = כדי להפוך אותו לאסינכרוני
+rs-19-5.1.opt3 = כדי לחסוך זיכרון
+rs-19-5.1.explanation = עבודה חוסמת שייכת למאגר ה-threads החוסמים.
+rs-19-5.2.prompt = מטפל אסינכרוני בנתיב שמחזיר טקסט.
+rs-19-5.2.explanation = מטפלים הם פונקציות אסינכרוניות; get רושמת אחד לבקשות GET.
+rs-19-5.3.prompt = איזה crate הוא לקוח ה-HTTP האסינכרוני הפופולרי ביותר ב-Rust?
+rs-19-5.3.explanation = reqwest::get(url).await?.text().await? מוריד עמוד.
+
+rs-19-p = פרויקט: בודק מחירים אסינכרוני
+rs-19-p.0.title = מה תבנו
+rs-19-p.0.body = בודק מחירים ששואל כמה חנויות (מדומות) באותו זמן: כל חנות היא משימה שהופעלה עם spawn ועם השהיה שנראית אקראית, התוצאות חוזרות דרך ערוץ mpsc, זמן קצוב מוותר על חנויות איטיות, והסיכום מציג את ההצעה הזולה ביותר. היא רצה על tokio; הוסיפו tokio = { version = "1", features = ["full"] } ל-Cargo.toml.
+rs-19-p.1.prompt = דמו חנות אחת: חכו, ואז החזירו מחיר.
+rs-19-p.1.explanation = ה-sleep של tokio עוצרת רק את המשימה הזו.
+rs-19-p.2.prompt = הפעילו משימה אחת לכל חנות, כל אחת עם זמן קצוב, ששולחת תוצאות לערוץ.
+rs-19-p.2.explanation = כל משימה מקבלת שולח משלה; timeout הופך חנויות איטיות ל-None בעזרת ok().
+rs-19-p.3.prompt = אחרי הלולאה, שחררו את השולח המקורי כדי שלולאת הקבלה תוכל להסתיים (שורה אחת).
+rs-19-p.3.explanation = rx.recv() מחזירה None ברגע שכל השולחים נעלמו.
+rs-19-p.4.prompt = שלוש חנויות עונות אחרי 120, 300 ו-900 מילישניות, עם זמן קצוב של 500 מילישניות. בערך כמה זמן לוקחת כל הבדיקה?
+rs-19-p.4.opt1 = בערך 500 מילישניות
+rs-19-p.4.explanation = המשימות רצות במקביל, והאיטית ביותר נקטעת ב-500 מילישניות.
+rs-19-p.5.title = התוכנית המלאה
+rs-19-p.5.body = צרו אותה עם cargo new prices, הוסיפו את tokio ל-Cargo.toml, הדביקו ב-src/main.rs והריצו cargo run. אתגר: נסו שוב פעם אחת חנות שהזמן שלה נגמר לפני שמוותרים.

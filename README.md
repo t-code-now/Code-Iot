@@ -6,24 +6,24 @@ A learn-to-code app in the style of bite-sized coding apps, written entirely in 
 - **Frontend:** Leptos compiled to WebAssembly, mobile-first dark UI
 - **Core:** dependency-free crate with all course content and game logic, shared by both
 
-**English and Hebrew (עברית).** The whole interface and all 320 lessons are available in both languages, with a full right-to-left layout for Hebrew. Switch from the welcome screen or Profile. Code always stays in English and left-to-right, as in a real editor.
+**English and Hebrew (עברית).** The whole interface and all 617 lessons are available in both languages, with a full right-to-left layout for Hebrew. Switch from the welcome screen or Profile. Code always stays in English and left-to-right, as in a real editor.
 
 **Everything is open.** No locked lessons, no hearts/energy, no paywall. Every course and every lesson can be opened from the start. An account is only needed to save progress; you can also try it as a guest.
 
 ## Features
 
-- 6 complete courses — 320 lessons, 868 exercises plus a teaching card in every lesson:
+- 6 complete courses — 617 lessons (at least 100 per course) and 2,712 steps (teaching cards and exercises). Every topic ends with a project lesson that uses that topic's own material:
 
   | Course     | Sections | Lessons | Covers |
   |------------|---------:|--------:|--------|
-  | Python     | 12 | 57 | basics, strings, logic, loops, lists/tuples, dicts/sets, functions & recursion, errors/files/modules, **OOP** (classes, inheritance, polymorphism, dunder methods, properties, abstract classes), generators, decorators, dataclasses, type hints, project |
-  | JavaScript | 12 | 55 | basics, logic, loops, functions & closures, arrays, objects & JSON, **OOP** (classes, getters/setters, inheritance, static/private, prototypes, polymorphism), errors, modules, async/promises/fetch, DOM, Map/Set, localStorage, project |
-  | HTML & CSS | 10 | 38 | HTML structure, semantic HTML, forms, selectors, cascade, box model, flexbox, grid, responsive design, transitions, animations, variables, project |
-  | SQL        | 10 | 36 | SELECT, filtering, sorting, CASE, aggregates, GROUP BY/HAVING, joins, subqueries, CTEs, INSERT/UPDATE/DELETE, table design, keys, indexes, transactions, views, window functions, project |
-  | Rust       | 11 | 43 | basics, control flow, ownership & borrowing, structs, enums & match, collections, error handling, **traits & generics** (Rust's OOP), closures, iterators, lifetimes, smart pointers, project |
-  | Arduino    | 18 | 91 | **the full Arduino language from scratch** (syntax, every data type, literals, casting, all operators incl. bitwise, control flow, functions/scope/static/references/overloading/recursion, arrays, C strings & String, pointers, structs, enums, built-in library, preprocessor, multi-file sketches, PROGMEM, **OOP**: classes, constructors, encapsulation, inheritance, virtual/polymorphism, static, templates), then electronics, digital & analog I/O, PWM, sound, servos, motors, Serial/I²C/SPI, sensors, interrupts, state machines, EEPROM, project |
+  | Python     | 18 | 104 | basics, strings, logic, loops, lists/tuples, dicts/sets, functions & recursion, errors/files/modules, **OOP** (classes, inheritance, polymorphism, dunder methods, properties, abstract classes), generators, decorators, dataclasses, type hints, text processing & regex, the standard library, functional Python, context managers, testing & debugging, algorithms & data structures, project |
+  | JavaScript | 18 | 102 | basics, logic, loops, functions & closures, arrays, objects & JSON, **OOP** (classes, getters/setters, inheritance, static/private, prototypes, polymorphism), errors, modules, async/promises/fetch, DOM, Map/Set, localStorage, strings & regex, advanced functions, iterators & generators, advanced async, testing & debugging, data structures & algorithms, project |
+  | HTML & CSS | 19 | 101 | HTML structure, semantic HTML, forms, selectors, cascade, box model, flexbox, grid, responsive design, transitions, animations, variables, accessibility, advanced selectors, typography & web fonts, images & media, advanced layout, modern CSS, forms in depth, CSS architecture, publishing, project |
+  | SQL        | 19 | 101 | SELECT, filtering, sorting, CASE, aggregates, GROUP BY/HAVING, joins, subqueries, CTEs, INSERT/UPDATE/DELETE, table design, keys, indexes, transactions, views, window functions, text, dates & times, NULL logic, advanced joins, recursive queries, upserts & JSON, query performance, security, project |
+  | Rust       | 19 | 101 | basics, control flow, ownership & borrowing, structs, enums & match, collections, error handling, **traits & generics** (Rust's OOP), closures, iterators, lifetimes, smart pointers, strings, collections/iterators/traits in depth, modules & testing, concurrency, files & CLI tools, async, project |
+  | Arduino    | 18 | 108 | **the full Arduino language from scratch** (syntax, every data type, literals, casting, all operators incl. bitwise, control flow, functions/scope/static/references/overloading/recursion, arrays, C strings & String, pointers, structs, enums, built-in library, preprocessor, multi-file sketches, PROGMEM, **OOP**: classes, constructors, encapsulation, inheritance, virtual/polymorphism, static, templates), then electronics, digital & analog I/O, PWM, sound, servos, motors, Serial/I²C/SPI, sensors, interrupts, state machines, EEPROM, project |
 
-  Each course ends with a project you build step by step.
+  Every section ends with a project, and each course ends with a final project you build step by step.
 - Winding lesson path per course with sections, checkmarks and a "START" marker
 - Lesson player: teaching cards, multiple choice, tap-to-fill code blanks, line reordering, type-in answers
 - Check button with green/red feedback sheet, correct answer and explanation
