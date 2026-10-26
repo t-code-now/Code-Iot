@@ -1,15 +1,15 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "CodeSprout",
+  "productName": "Code-IoT",
   "version": "0.1.0",
-  "identifier": "com.tcodenow.codesprout",
+  "identifier": "com.tcodenow.codeiot",
   "build": {
     "frontendDist": "../web/dist"
   },
   "app": {
     "windows": [
       {
-        "title": "CodeSprout",
+        "title": "Code-IoT",
         "width": 420,
         "height": 860
       }

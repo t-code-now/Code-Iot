@@ -9,7 +9,7 @@ use crate::session::use_session;
 
 const KEY: &str = "cs.playground";
 
-const STARTER_HTML: &str = "<h1>Hello, CodeSprout!</h1>\n<button id=\"btn\">Click me</button>\n<p id=\"out\"></p>";
+const STARTER_HTML: &str = "<h1>Hello, Code-IoT!</h1>\n<button id=\"btn\">Click me</button>\n<p id=\"out\"></p>";
 const STARTER_CSS: &str = "body {\n  font-family: sans-serif;\n  padding: 16px;\n}\nh1 { color: #10b981; }\nbutton {\n  padding: 8px 16px;\n  border-radius: 8px;\n}";
 const STARTER_JS: &str = "let clicks = 0;\ndocument.getElementById(\"btn\").onclick = () => {\n  clicks++;\n  document.getElementById(\"out\").textContent = `Clicked ${clicks} times`;\n};";
 

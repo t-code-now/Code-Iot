@@ -21,7 +21,7 @@ pub fn Welcome() -> impl IntoView {
             <div class="welcome-top"><LangSwitch/></div>
             <div class="welcome-hero">
                 <div class="logo-mark">"🌱"</div>
-                <h1 class="welcome-title">"CodeSprout"</h1>
+                <h1 class="welcome-title">"Code-IoT"</h1>
                 <p class="welcome-sub">{session.t("welcome.sub")}</p>
                 <div class="welcome-langs">
                     <span>"🐍"</span><span>"⚡"</span><span>"🌐"</span><span>"🗄️"</span><span>"🦀"</span><span>"🔌"</span>

@@ -1,4 +1,4 @@
-# CodeSprout 🌱
+# Code-IoT 🌱
 
 A learn-to-code app in the style of bite-sized coding apps, written entirely in Rust:
 
@@ -112,7 +112,7 @@ the content tests catch broken exercises (missing tiles, bad indexes, duplicate 
 
 ## Note
 
-CodeSprout is an independent project. It is not affiliated with or endorsed by Mimo,
+Code-IoT is an independent project. It is not affiliated with or endorsed by Mimo,
 and uses its own name, design and course content.
 
 ## License

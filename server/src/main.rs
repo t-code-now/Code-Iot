@@ -1,4 +1,4 @@
-//! CodeSprout server: JSON API under /api plus the built web app.
+//! Code-IoT server: JSON API under /api plus the built web app.
 //!
 //! Environment variables (all optional):
 //! * `ADDR`           – listen address, default `0.0.0.0:3000`
@@ -47,7 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http());
 
-    tracing::info!("CodeSprout listening on http://{addr} (db: {db_path}, web: {})", dist.display());
+    tracing::info!("Code-IoT listening on http://{addr} (db: {db_path}, web: {})", dist.display());
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
     Ok(())

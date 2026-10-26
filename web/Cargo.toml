@@ -1,6 +1,6 @@
 [package]
 name = "codesprout-web"
-description = "Leptos (WebAssembly) frontend for CodeSprout"
+description = "Leptos (WebAssembly) frontend for Code-IoT"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

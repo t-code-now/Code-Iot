@@ -1,4 +1,4 @@
-//! Thin HTTP client for the CodeSprout API (under /api).
+//! Thin HTTP client for the Code-IoT API (under /api).
 //!
 //! The website talks to its own origin. The Android app is built with
 //! `CODESPROUT_API=https://your-server` so it talks to the hosted server.

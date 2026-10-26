@@ -1,6 +1,6 @@
 [package]
 name = "codesprout-app"
-description = "Android app shell for CodeSprout (Tauri)"
+description = "Android app shell for Code-IoT (Tauri)"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"

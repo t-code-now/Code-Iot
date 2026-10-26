@@ -1,4 +1,4 @@
-//! CodeSprout web app (Leptos, client-side rendered to WebAssembly).
+//! Code-IoT web app (Leptos, client-side rendered to WebAssembly).
 
 mod api;
 mod components;
