@@ -1,0 +1,1258 @@
+// Arduino — Hebrew translation. Keys match the English content; code stays in English.
+course.arduino.description = מסלול Arduino מלא: סקיצות, C++ למיקרו-בקרים, יסודות אלקטרוניקה, קלט ופלט דיגיטלי ואנלוגי, PWM, זמזמים, מנועי סרוו ומנועים, Serial/I2C/SPI, חיישנים, פסיקות, מחלקות ופרויקט מסכם.
+
+section.ino-s1 = צעדים ראשונים
+
+ino-1-1 = מה זה Arduino?
+ino-1-1.0.title = מחשב זעיר לאלקטרוניקה
+ino-1-1.0.body = בלוח Arduino יש מיקרו-בקר: מחשב קטן שמריץ תוכנית אחת ושולט בפינים שמחוברים לנורות LED, כפתורים, חיישנים ומנועים. כותבים את התוכנית ("סקיצה") ב-Arduino IDE בשפת C++, ואז מעלים אותה דרך USB. ל-Uno, הלוח הקלאסי, יש 14 פינים דיגיטליים (0–13) ו-6 כניסות אנלוגיות (A0–A5).
+ino-1-1.1.prompt = איך נקראת תוכנית ל-Arduino?
+ino-1-1.1.opt0 = אפליקציה
+ino-1-1.1.opt1 = סקיצה (sketch)
+ino-1-1.1.opt2 = סקריפט
+ino-1-1.1.opt3 = כרטיס קושחה
+ino-1-1.1.explanation = תוכניות Arduino נקראות סקיצות.
+ino-1-1.2.prompt = באיזו שפה כותבים סקיצות Arduino?
+ino-1-1.2.explanation = Arduino משתמשת ב-C++ עם אוסף של פונקציות מובנות שימושיות.
+ino-1-1.3.prompt = כמה פיני כניסה אנלוגיים יש ל-Arduino Uno?
+ino-1-1.3.explanation = A0 עד A5: שש כניסות אנלוגיות.
+
+ino-1-2 = setup() ו-loop()
+ino-1-2.0.title = לכל סקיצה יש שתי פונקציות
+ino-1-2.0.body = setup() רצה פעם אחת כשהלוח נדלק או מאותחל, ולכן שם מגדירים את הפינים. אחר כך loop() רצה שוב ושוב, לנצח. ל-Arduino אין מערכת הפעלה; הסקיצה שלכם היא הדבר היחיד שרץ.
+ino-1-2.1.prompt = כמה פעמים רצה setup()?
+ino-1-2.1.opt0 = אף פעם
+ino-1-2.1.opt1 = פעם אחת בכל הדלקה או איתחול
+ino-1-2.1.opt2 = כל שנייה
+ino-1-2.1.opt3 = לנצח
+ino-1-2.1.explanation = setup רצה פעם אחת בהתחלה.
+ino-1-2.2.prompt = השלימו את הסקיצה הריקה.
+ino-1-2.2.explanation = סקיצות Arduino משתמשות ב-setup() וב-loop() במקום ב-main().
+ino-1-2.3.prompt = מה פירוש void ב-void loop()?
+ino-1-2.3.opt0 = הפונקציה ריקה
+ino-1-2.3.opt1 = הפונקציה לא מחזירה ערך
+ino-1-2.3.opt2 = הפונקציה פרטית
+ino-1-2.3.opt3 = היא רצה פעם אחת
+ino-1-2.3.explanation = void הוא טיפוס ההחזרה של פונקציות שלא מחזירות כלום.
+
+ino-1-3 = הבהוב (Blink)
+ino-1-3.0.title = ה-Hello World של החומרה
+ino-1-3.0.body = pinMode מגדירה פין כ-INPUT או OUTPUT. ‏digitalWrite קובעת פין פלט כ-HIGH (5V) או LOW (0V). delay משהה למספר אלפיות שנייה. LED_BUILTIN היא הנורה שעל הלוח (פין 13 ב-Uno).
+ino-1-3.1.prompt = הדליקו את הנורה.
+ino-1-3.1.explanation = HIGH שם 5V על הפין.
+ino-1-3.2.prompt = כמה זמן משהה delay(500)?
+ino-1-3.2.opt0 = ‏500 שניות
+ino-1-3.2.opt1 = חצי שנייה
+ino-1-3.2.opt2 = ‏5 שניות
+ino-1-3.2.opt3 = ‏500 מיקרו-שניות
+ino-1-3.2.explanation = delay מקבלת אלפיות שנייה: 500ms = ‏0.5 שנייה.
+ino-1-3.3.prompt = סדרו את loop() כך שהנורה תהבהב.
+ino-1-3.3.explanation = הדלקה, המתנה, כיבוי, המתנה — ואז loop() חוזרת.
+ino-1-3.4.prompt = הגדירו את פין 8 עבור נורת LED.
+ino-1-3.4.explanation = פינים שמפעילים משהו הם פיני פלט.
+
+ino-1-4 = המוניטור הטורי (Serial Monitor)
+ino-1-4.0.title = הדפסה מהלוח
+ino-1-4.0.body = Serial.begin(9600) מתחילה תקשורת עם המחשב במהירות 9600 baud. ‏Serial.print ו-Serial.println שולחות טקסט שאפשר לקרוא ב-Serial Monitor של ה-IDE, וזו הדרך העיקרית לדבג סקיצה.
+ino-1-4.1.prompt = התחילו תקשורת טורית.
+ino-1-4.1.explanation = חייבים לקרוא ל-Serial.begin(baud) ב-setup().
+ino-1-4.2.prompt = מה ההבדל בין print ל-println?
+ino-1-4.2.opt0 = אין הבדל
+ino-1-4.2.opt1 = println מוסיפה שורה חדשה אחרי הטקסט
+ino-1-4.2.opt2 = print מהירה יותר
+ino-1-4.2.opt3 = println מדפיסה פעמיים
+ino-1-4.2.explanation = println מסיימת את השורה.
+ino-1-4.3.prompt = ה-Serial Monitor מציג תווים משובשים. מה הסיבה הסבירה ביותר?
+ino-1-4.3.opt0 = כבל USB תקול
+ino-1-4.3.opt1 = מהירות ה-baud שלו לא תואמת ל-Serial.begin()
+ino-1-4.3.opt2 = הנורה כבויה
+ino-1-4.3.opt3 = delay קצר מדי
+ino-1-4.3.explanation = שני הצדדים חייבים להשתמש באותה מהירות.
+
+section.inol-s1 = השפה: תחביר וסוגי נתונים
+
+inol-1-1 = פקודות, בלוקים והערות
+inol-1-1.0.title = הדקדוק של סקיצה
+inol-1-1.0.body = קוד Arduino הוא C++. כל הוראה (פקודה) מסתיימת בנקודה-פסיק. סוגריים מסולסלים { } מקבצים פקודות לבלוקים. // מתחיל הערה של שורה אחת ו-/* … */ עוטף הערה של כמה שורות. C++ רגישה לאותיות גדולות וקטנות: digitalWrite ו-DigitalWrite הם שמות שונים.
+inol-1-1.1.prompt = מה מסיים כמעט כל פקודה בקוד Arduino?
+inol-1-1.1.opt0 = נקודה
+inol-1-1.1.opt1 = נקודה-פסיק ;
+inol-1-1.1.opt2 = שורה חדשה
+inol-1-1.1.opt3 = נקודתיים :
+inol-1-1.1.explanation = נקודה-פסיק חסרה היא שגיאת הקומפילציה הנפוצה ביותר.
+inol-1-1.2.prompt = האם זה יתקמפל?
+inol-1-1.2.opt0 = כן
+inol-1-1.2.opt1 = לא: הפונקציה היא pinMode, ושמות רגישים לאותיות גדולות וקטנות
+inol-1-1.2.opt2 = רק בלוחות Mega
+inol-1-1.2.opt3 = כן, אבל עם אזהרה
+inol-1-1.2.explanation = PinMode עם P גדולה לא קיימת.
+inol-1-1.3.prompt = כתבו הערה של כמה שורות.
+inol-1-1.3.explanation = ‏/* פותח ו-*/ סוגר הערת בלוק.
+
+inol-1-2 = הצהרה על משתנים
+inol-1-2.0.title = טיפוס, שם, ערך
+inol-1-2.0.body = מצהירים על משתנה עם טיפוס ושם, ואפשר לתת לו ערך התחלתי. שמות יכולים להכיל אותיות, ספרות וקווים תחתונים אבל לא להתחיל בספרה. השתמשו בשמות ברורים ב-camelCase.
+inol-1-2.1.prompt = איזה שם משתנה חוקי?
+inol-1-2.1.explanation = בלי ספרה בהתחלה, בלי מקף, ומילות מפתח כמו int שמורות.
+inol-1-2.2.prompt = הצהירו על מספר שלם בשם speed עם הערך 100.
+inol-1-2.2.explanation = טיפוס, שם, =, ערך, נקודה-פסיק.
+inol-1-2.3.prompt = מה הערך של int מקומי שהוצהר בלי ערך?
+inol-1-2.3.opt0 = תמיד 0
+inol-1-2.3.opt1 = לא מוגדר (זבל)
+inol-1-2.3.opt3 = שגיאת קומפילציה
+inol-1-2.3.explanation = תמיד אתחלו משתנים מקומיים. (משתנים גלובליים מתחילים ב-0.)
+
+inol-1-3 = טיפוסים שלמים
+inol-1-3.0.title = גודל חשוב במיקרו-בקר
+inol-1-3.0.body = ב-Uno: char/byte הם 8 ביט, int/word הם 16 ביט, long הוא 32 ביט. טיפוסים עם סימן מחזיקים שליליים; טיפוסים בלי סימן מחזיקים רק חיוביים אבל מגיעים גבוה פי שניים. byte = ‏8 ביט בלי סימן (0–255), ‏word = ‏16 ביט בלי סימן (0–65,535).
+inol-1-3.1.prompt = כמה בתים תופס int ב-Arduino Uno?
+inol-1-3.1.explanation = int הוא 16 ביט = 2 בתים בלוחות AVR.
+inol-1-3.2.prompt = איזה טיפוס צריך לשמור את 50,000?
+inol-1-3.2.opt2 = unsigned int (או long)
+inol-1-3.2.explanation = ‏50,000 גבוה מהמגבלה של int, ‏32,767.
+inol-1-3.3.prompt = מה sizeof(long) ב-Uno (בבתים)?
+inol-1-3.3.explanation = long הוא 32 ביט.
+inol-1-3.4.prompt = איזה טווח מכסה byte?
+inol-1-3.4.opt0 = ‏−128 עד 127
+inol-1-3.4.opt1 = ‏0 עד 255
+inol-1-3.4.opt2 = ‏0 עד 1023
+inol-1-3.4.opt3 = ‏0 עד 65,535
+inol-1-3.4.explanation = byte הוא 8 ביט בלי סימן.
+
+inol-1-4 = גלישה (Overflow)
+inol-1-4.0.title = כשמספרים "מסתובבים"
+inol-1-4.0.body = אם ערך עובר את הגבול של הטיפוס שלו, הוא מסתובב (גולש). טיפוסים בלי סימן מסתובבים מהמקסימום חזרה ל-0 ומ-0 למקסימום. זה מקור קלאסי לבאגים, למשל עם millis().
+inol-1-4.1.prompt = מה הערך של b אחרי byte b = 250; b += 10;?
+inol-1-4.1.explanation = 260 − 256 = 4.
+inol-1-4.2.prompt = למה int ms = 60 * 1000; הוא באג ב-Uno?
+inol-1-4.2.opt0 = אסור לכפול
+inol-1-4.2.opt1 = ‏60000 לא נכנס ב-int של 16 ביט, ולכן הוא גולש
+inol-1-4.2.opt2 = זה צריך להיות 60 / 1000
+inol-1-4.2.opt3 = זה בסדר
+inol-1-4.2.explanation = השתמשו ב-long או בליטרל unsigned long: ‏60000UL.
+inol-1-4.3.prompt = byte x = 0; x = x - 1; מה הערך של x?
+inol-1-4.3.explanation = ערכים בלי סימן מסתובבים מ-0 למקסימום.
+
+inol-1-5 = מספרים עשרוניים
+inol-1-5.0.title = float ו-double
+inol-1-5.0.body = float שומר מספרים עשרוניים עם כ-6–7 ספרות משמעותיות. ב-Uno, ‏double זהה ל-float ‏(32 ביט). חישובים עשרוניים איטיים יותר מחישובים שלמים ב-AVR ואינם מדויקים, לכן לעולם אל תשוו floats עם ==.
+inol-1-5.1.prompt = כמה ספרות משמעותיות שומר float?
+inol-1-5.1.opt3 = ללא הגבלה
+inol-1-5.1.explanation = ל-float של 32 ביט יש דיוק של כ-6–7 ספרות.
+inol-1-5.2.prompt = למה להימנע מ-if (x == 0.3) עם floats?
+inol-1-5.2.opt0 = ‏0.3 אינו מספר
+inol-1-5.2.opt1 = שגיאות עיגול גורמות לערכים להיות שונים מעט
+inol-1-5.2.opt2 = == לא עובד ב-C++
+inol-1-5.2.opt3 = זה מהיר מדי
+inol-1-5.2.explanation = השוו עם סובלנות קטנה במקום.
+inol-1-5.3.prompt = הדפיסו את t עם 2 ספרות אחרי הנקודה.
+inol-1-5.3.explanation = הארגומנט השני של print עבור floats הוא מספר הספרות אחרי הנקודה.
+
+inol-1-6 = char ו-bool
+inol-1-6.0.title = תווים הם מספרים
+inol-1-6.0.body = char מחזיק תו אחד בגרש בודד, ונשמר כקוד ה-ASCII שלו: 'A' הוא 65, 'a' הוא 97, '0' הוא 48. ‏bool מחזיק true או false ‏(true הוא 1, false הוא 0).
+inol-1-6.1.prompt = מהו קוד ה-ASCII של 'A'?
+inol-1-6.1.explanation = A גדולה היא 65.
+inol-1-6.2.prompt = מה זה 'a' + 1 כ-char?
+inol-1-6.2.opt2 = ‏98 כטקסט
+inol-1-6.2.opt3 = שגיאה
+inol-1-6.2.explanation = הוספת 1 לקוד 97 נותנת 98, שהוא 'b'.
+inol-1-6.3.prompt = מה מהבאים הוא ליטרל char?
+inol-1-6.3.explanation = char נכתב בגרש בודד; מרכאות כפולות יוצרות מחרוזת.
+inol-1-6.4.prompt = מה הערך המספרי של true?
+inol-1-6.4.explanation = true מומר ל-1 ו-false ל-0.
+
+inol-1-7 = ליטרלים
+inol-1-7.0.title = כתיבת מספרים
+inol-1-7.0.body = אפשר לכתוב מספרים בעשרוני (255), בהקסדצימלי עם 0x ‏(0xFF), או בבינארי עם 0b ‏(0b11111111). סיומות קובעות את הטיפוס: U ל-unsigned, ‏L ל-long, ‏UL ל-unsigned long.
+inol-1-7.1.prompt = מה זה 0x1F בעשרוני?
+inol-1-7.1.explanation = 1 × 16 + 15 = 31.
+inol-1-7.2.prompt = מה זה 0b1010 בעשרוני?
+inol-1-7.2.explanation = 8 + 2 = 10.
+inol-1-7.3.prompt = הפכו את הליטרל ל-unsigned long.
+inol-1-7.3.explanation = UL = unsigned long.
+
+inol-1-8 = המרת טיפוסים ו-casting
+inol-1-8.0.title = שינוי טיפוסים
+inol-1-8.0.body = C++ ממירה טיפוסים אוטומטית במקרים רבים, ולפעמים מאבדת מידע: השמת float ל-int משמיטה את הספרות העשרוניות. ‏cast ממיר במפורש: (float)x או float(x).
+inol-1-8.1.prompt = מה זה (int)7.9?
+inol-1-8.1.explanation = המרה ל-int חותכת לכיוון האפס.
+inol-1-8.2.prompt = int a = 5, b = 2; float f = a / b; מה הערך של f?
+inol-1-8.2.opt3 = שגיאה
+inol-1-8.2.explanation = a / b היא חלוקה שלמה (2), ואז מומרת ל-2.0.
+inol-1-8.3.prompt = המירו כדי לקבל 2.5.
+inol-1-8.3.explanation = המרת אחד האופרנדים מאלצת חלוקה עשרונית.
+
+section.inol-s2 = השפה: אופרטורים
+
+inol-2-1 = חשבון
+inol-2-1.0.title = ‏+ − * / %
+inol-2-1.0.body = החשבון עובד כמו במתמטיקה עם סדר הפעולות הרגיל (* / % לפני + −). חלוקה שלמה משמיטה את השארית; % מחזיר את השארית ועובד רק על מספרים שלמים.
+inol-2-1.1.prompt = מה זה 17 % 5?
+inol-2-1.1.explanation = 17 = 3 × 5 + 2.
+inol-2-1.2.prompt = מה זה 10 - 4 / 2?
+inol-2-1.2.explanation = קודם חלוקה: 4 / 2 = 2, ואז 10 − 2 = 8.
+inol-2-1.3.prompt = מהו שימוש נפוץ ב-% בסקיצות?
+inol-2-1.3.opt0 = אחוזים
+inol-2-1.3.opt1 = בדיקה אם מספר זוגי או סיבוב של מונה
+inol-2-1.3.opt2 = הערות
+inol-2-1.3.opt3 = מצביעים
+inol-2-1.3.explanation = n % 2 == 0 בודק זוגיות; i % 8 עובר במחזור 0–7.
+
+inol-2-2 = השמה והגדלה
+inol-2-2.0.title = קיצורים
+inol-2-2.0.body = אופרטורים מורכבים משלבים חשבון והשמה: x += 5,‏ x -= 2,‏ x *= 3,‏ x /= 2,‏ x %= 4. ‏++ ו-‏-- מוסיפים או מפחיתים אחד. קידומת (++x) משנה את x לפני שהערך שלו בשימוש; סיומת (x++) משתמשת קודם בערך הישן.
+inol-2-2.1.prompt = int a = 5; int b = a++; מה הערך של b?
+inol-2-2.1.explanation = סיומת מחזירה את הערך הישן ואז מגדילה.
+inol-2-2.2.prompt = int a = 5; int c = ++a; מה הערך של c?
+inol-2-2.2.explanation = קידומת מגדילה קודם.
+inol-2-2.3.prompt = חלקו את total בחצי.
+inol-2-2.3.explanation = x /= 2 פירושו x = x / 2.
+
+inol-2-3 = השוואה ולוגיקה
+inol-2-3.0.title = תנאים
+inol-2-3.0.body = ‏== != < > <= >= משווים ערכים ומחזירים bool. ‏&& (וגם), || (או) ו-! (לא) משלבים אותם. ‏&& ו-|| מקצרים: הצד הימני לא מחושב אם השמאלי כבר קבע את התוצאה.
+inol-2-3.1.prompt = מה זה (5 > 3) && (2 > 4)?
+inol-2-3.1.opt2 = ‏1 ו-0
+inol-2-3.1.opt3 = שגיאה
+inol-2-3.1.explanation = ההשוואה השנייה שקרית, לכן && שקרי.
+inol-2-3.2.prompt = מה פירוש חישוב מקוצר עבור a() || b()?
+inol-2-3.2.opt0 = שתיהן תמיד רצות
+inol-2-3.2.opt1 = b() לא רצה אם a() מחזירה true
+inol-2-3.2.opt2 = a() לא רצה
+inol-2-3.2.opt3 = הן רצות במקביל
+inol-2-3.2.explanation = התוצאה כבר ידועה אחרי צד שמאלי אמיתי.
+inol-2-3.3.prompt = בדקו ש-x אינו שווה ל-0.
+inol-2-3.3.explanation = ב-C++ כותבים != ל"לא שווה".
+
+inol-2-4 = אופרטורים על ביטים
+inol-2-4.0.title = עבודה עם ביטים בודדים
+inol-2-4.0.body = מיקרו-בקרים אורזים לעיתים קרובות דגלים בביטים. & (AND) משאיר ביטים שדולקים בשניהם, | (OR) מדליק ביטים מכל אחד, ^ (XOR) הופך ביטים ששונים, ~ (NOT) הופך כל ביט.
+inol-2-4.1.prompt = מה זה 6 & 3?
+inol-2-4.1.explanation = 0b110 & 0b011 = 0b010 = 2.
+inol-2-4.2.prompt = מה זה 6 | 3?
+inol-2-4.2.explanation = 0b110 | 0b011 = 0b111 = 7.
+inol-2-4.3.prompt = מה זה 5 ^ 1?
+inol-2-4.3.explanation = 0b101 ^ 0b001 = 0b100 = 4.
+inol-2-4.4.prompt = איזה אופרטור מדליק ביט בלי לשנות את האחרים?
+inol-2-4.4.explanation = flags |= mask מדליק את הביטים של המסכה.
+
+inol-2-5 = הזזות ביטים
+inol-2-5.0.title = ‏<< ו->>
+inol-2-5.0.body = ‏<< מזיז ביטים שמאלה (כל צעד מכפיל ב-2), >> מזיז ימינה (כל צעד מחלק ב-2). 1 << n הוא ערך שרק הביט n דולק בו, דרך נפוצה לבנות מסכות.
+inol-2-5.1.prompt = מה זה 1 << 4?
+inol-2-5.1.explanation = 1 שהוזז שמאלה 4 פעמים = 2⁴ = 16.
+inol-2-5.2.prompt = מה זה 64 >> 3?
+inol-2-5.2.explanation = 64 / 2³ = 8.
+inol-2-5.3.prompt = כבו את ביט 3 של flags.
+inol-2-5.3.explanation = AND עם מסכה הפוכה מכבה את הביט הזה.
+
+inol-2-6 = האופרטור המשולש וסדר פעולות
+inol-2-6.0.title = condition ? a : b
+inol-2-6.0.body = האופרטור המשולש בוחר אחד משני ערכים בביטוי. כשסדר הפעולות לא ברור, הוסיפו סוגריים: הם לא עולים כלום ומונעים באגים.
+inol-2-6.1.prompt = מה הערך של v?
+inol-2-6.1.explanation = 4 זוגי, לכן נבחר הערך הראשון.
+inol-2-6.2.prompt = בחרו HIGH כשדולק, אחרת LOW.
+inol-2-6.2.explanation = condition ? valueIfTrue : valueIfFalse.
+inol-2-6.3.prompt = ב-C++, מה מחושב קודם: && או ||?
+inol-2-6.3.opt2 = תמיד משמאל לימין
+inol-2-6.3.opt3 = מה שארוך יותר
+inol-2-6.3.explanation = ל-&& יש קדימות גבוהה מ-||, לכן השתמשו בסוגריים כדי להבהיר.
+
+section.inol-s3 = השפה: בקרת זרימה
+
+inol-3-1 = if,‏ else if,‏ else
+inol-3-1.0.title = קבלת החלטות
+inol-3-1.0.body = if מריץ את הבלוק שלו כשהתנאי מתקיים; else if בודק תנאים נוספים; else תופס את השאר. סוגריים מסולסלים אופציונליים לפקודה בודדת, אבל שימוש קבוע בהם מונע באגים.
+inol-3-1.1.prompt = מה מודפס כש-temp = 18?
+inol-3-1.1.opt3 = כלום
+inol-3-1.1.explanation = 18 > 18 שקרי, לכן מגיעים ל-else.
+inol-3-1.2.prompt = מה הבאג?
+inol-3-1.2.opt0 = אין באג
+inol-3-1.2.opt1 = ה-; אחרי if (ready) מסיים את ה-if, לכן start() תמיד רצה
+inol-3-1.2.opt2 = חסר else
+inol-3-1.2.opt3 = ready חייב להיות int
+inol-3-1.2.explanation = נקודה-פסיק תועה יוצרת פקודת if ריקה.
+inol-3-1.3.prompt = סדרו את הקוד שמדליק את המאוורר מעל 28 ומכבה אחרת.
+inol-3-1.3.explanation = בלוק if, בלוק else, סוגר סוגר.
+
+inol-3-2 = switch / case
+inol-3-2.0.title = בחירה מבין ערכים קבועים
+inol-3-2.0.body = switch משווה מספר שלם או char לתוויות case. כל case מסתיים בדרך כלל ב-break; אחרת הביצוע נופל למקרה הבא. default מטפל בכל השאר. אי אפשר לבצע switch על String.
+inol-3-2.1.prompt = מה קורה בלי break בסוף case?
+inol-3-2.1.opt0 = שגיאת קומפילציה
+inol-3-2.1.opt1 = הביצוע ממשיך למקרה הבא
+inol-3-2.1.opt2 = ה-switch מתחיל מחדש
+inol-3-2.1.opt3 = כלום
+inol-3-2.1.explanation = זה נקרא fall-through ("נפילה").
+inol-3-2.2.prompt = טפלו בכל ערך שאין לו case.
+inol-3-2.2.explanation = default תופס ערכים שלא הותאמו.
+inol-3-2.3.prompt = איזה טיפוס אי אפשר להשתמש בו ב-switch?
+inol-3-2.3.explanation = switch צריך טיפוס שלם.
+
+inol-3-3 = לולאות for
+inol-3-3.0.title = ספירה
+inol-3-3.0.body = for (init; condition; update) מריצה את הבלוק כל עוד התנאי מתקיים. משתנה הלולאה יכול לספור למעלה, למטה או בקפיצות.
+inol-3-3.1.prompt = כמה פעמים רצה for (int i = 2; i < 8; i += 2)?
+inol-3-3.1.explanation = i = 2, 4, 6.
+inol-3-3.2.prompt = ספרו לאחור מ-5 עד 1.
+inol-3-3.2.explanation = ממשיכים כל עוד i >= 1, ומקטינים בכל פעם.
+inol-3-3.3.prompt = מה הערך של sum אחרי הלולאה הזו?
+inol-3-3.3.explanation = 1 + 2 + 3 + 4 = 10.
+
+inol-3-4 = while ו-do…while
+inol-3-4.0.title = לולאות תנאי
+inol-3-4.0.body = while בודקת את התנאי קודם ויכולה לרוץ אפס פעמים. do…while מריצה את הגוף פעם אחת לפני הבדיקה. בתוך loop(), לולאת while שלא נגמרת מקפיאה את כל השאר, לכן ודאו שהתנאי משתנה.
+inol-3-4.1.prompt = כמה פעמים יכול לרוץ גוף של לולאת while?
+inol-3-4.1.opt0 = לפחות פעם אחת
+inol-3-4.1.opt1 = אפס פעמים או יותר
+inol-3-4.1.opt2 = בדיוק פעם אחת
+inol-3-4.1.opt3 = תמיד לנצח
+inol-3-4.1.explanation = אם התנאי שקרי בהתחלה, היא לא רצה.
+inol-3-4.2.prompt = איזו לולאה תמיד מריצה את הגוף שלה לפחות פעם אחת?
+inol-3-4.2.explanation = התנאי נבדק בסוף.
+
+inol-3-5 = break,‏ continue ו-return
+inol-3-5.0.title = לקפוץ החוצה
+inol-3-5.0.body = break יוצא מהלולאה הפנימית ביותר (או מ-switch). continue מדלג לסבב הבא. return יוצא מכל הפונקציה, אפשר עם ערך. ב-loop(), ‏return פשוט מתחיל מוקדם את המעבר הבא של loop().
+inol-3-5.1.prompt = מה מדפיסה הלולאה שלמעלה?
+inol-3-5.1.explanation = 3 מדולג והלולאה נעצרת ב-6.
+inol-3-5.2.prompt = צאו מהפונקציה מוקדם אם החיישן לא מוכן.
+inol-3-5.2.explanation = return יוצא מהפונקציה.
+
+inol-3-6 = לולאות מקוננות
+inol-3-6.0.title = לולאות בתוך לולאות
+inol-3-6.0.body = הלולאה הפנימית מסתיימת במלואה בכל צעד של הלולאה החיצונית. שימושי לרשתות כמו מטריצות LED ולוחות מקשים.
+inol-3-6.1.prompt = כמה מספרים מדפיס הקוד שלמעלה?
+inol-3-6.1.explanation = ‏3 שורות × 4 עמודות.
+inol-3-6.2.prompt = בלולאות מקוננות, ממה יוצא break?
+inol-3-6.2.opt0 = משתי הלולאות
+inol-3-6.2.opt1 = רק מהלולאה הפנימית ביותר
+inol-3-6.2.opt2 = מהפונקציה
+inol-3-6.2.explanation = break יוצא רק מהלולאה שהוא נמצא בה ישירות.
+
+section.inol-s4 = השפה: פונקציות וטווח הכרה
+
+inol-4-1 = כתיבת פונקציות
+inol-4-1.0.title = טיפוס החזרה, שם, פרמטרים
+inol-4-1.0.body = לפונקציה יש טיפוס החזרה (void אם היא לא מחזירה כלום), שם, פרמטרים עם טיפוסים בסוגריים, וגוף. return מחזירה ערך לקורא.
+inol-4-1.1.prompt = החזירו את הערך הגדול.
+inol-4-1.1.explanation = טיפוס ההחזרה הוא int; ‏return מחזירה את a.
+inol-4-1.2.prompt = מה מחזירה פונקציית void?
+inol-4-1.2.opt1 = כלום
+inol-4-1.2.opt3 = int
+inol-4-1.2.explanation = void פירושו בלי ערך החזרה.
+inol-4-1.3.prompt = מה מחזירה add(7, 8)?
+inol-4-1.3.explanation = 7 + 8 = 15.
+
+inol-4-2 = טווח הכרה (Scope)
+inol-4-2.0.title = איפה משתנה קיים
+inol-4-2.0.body = משתנים גלובליים מוצהרים מחוץ לכל הפונקציות ונראים בכל מקום. משתנים מקומיים קיימים רק בתוך הבלוק שבו הוצהרו. משתנה מקומי באותו שם מסתיר את הגלובלי.
+inol-4-2.1.prompt = איפה נראה משתנה שהוצהר בתוך loop()?
+inol-4-2.1.opt0 = בכל מקום
+inol-4-2.1.opt1 = רק בתוך loop()
+inol-4-2.1.opt2 = רק ב-setup()
+inol-4-2.1.opt3 = בסקיצות אחרות
+inol-4-2.1.explanation = הוא מקומי לפונקציה הזו.
+inol-4-2.2.prompt = למה לשמור מונים שצריכים לשרוד בין מעברי loop() כגלובליים (או static)?
+inol-4-2.2.opt0 = גלובליים מהירים יותר
+inol-4-2.2.opt1 = משתנים מקומיים נוצרים מחדש בכל ריצה של loop()
+inol-4-2.2.opt2 = משתנים מקומיים לא יכולים להיות int
+inol-4-2.2.opt3 = Arduino דורש את זה
+inol-4-2.2.explanation = משתנה מקומי ב-loop() מתחיל מחדש בכל מעבר.
+
+inol-4-3 = משתנים מקומיים סטטיים
+inol-4-3.0.title = לזכור בין קריאות
+inol-4-3.0.body = משתנה מקומי static נוצר פעם אחת ושומר את ערכו בין קריאות לפונקציה, אבל עדיין נראה רק בתוך הפונקציה.
+inol-4-3.1.prompt = מה מדפיסה הקריאה השלישית ל-countPresses()?
+inol-4-3.1.opt3 = שגיאה
+inol-4-3.1.explanation = presses שומר את ערכו: 1, 2, 3.
+inol-4-3.2.prompt = שמרו את lastTime בין מעברי loop() בלי משתנה גלובלי.
+inol-4-3.2.explanation = משתנים מקומיים static נשמרים בין קריאות.
+
+inol-4-4 = העברה לפי ערך מול לפי הפניה
+inol-4-4.0.title = עותקים והפניות
+inol-4-4.0.body = בדרך כלל פונקציה מקבלת עותק של כל ארגומנט (העברה לפי ערך), כך ששינויים לא משפיעים על הקורא. הוספת & לפרמטר מעבירה הפניה, כך שהפונקציה עובדת על המשתנה של הקורא. ‏const & חוסך העתקה של אובייקטים גדולים בלי לאפשר שינויים.
+inol-4-4.1.prompt = אחרי int n = 5; addOneCopy(n); מה הערך של n?
+inol-4-4.1.opt3 = לא מוגדר
+inol-4-4.1.explanation = הפונקציה שינתה את העותק שלה.
+inol-4-4.2.prompt = אפשרו לפונקציה לשנות את המשתנה של הקורא.
+inol-4-4.2.explanation = int &value הוא פרמטר הפניה.
+inol-4-4.3.prompt = למה לכתוב void print(const String &s)?
+inol-4-4.3.opt0 = כדי לשנות את s
+inol-4-4.3.opt1 = כדי להימנע מהעתקת ה-String ולהבטיח לא לשנות אותו
+inol-4-4.3.opt2 = זה נדרש ל-Strings
+inol-4-4.3.opt3 = כדי להפוך אותו ל-static
+inol-4-4.3.explanation = const & יעיל ובטוח.
+
+inol-4-5 = העמסה וארגומנטי ברירת מחדל
+inol-4-5.0.title = פונקציות גמישות
+inol-4-5.0.body = C++ מאפשרת כמה פונקציות באותו שם עם טיפוסים או מספר פרמטרים שונים (העמסה, overloading). לפרמטרים יכולים להיות גם ערכי ברירת מחדל שמשמשים כשהקורא לא מעביר אותם.
+inol-4-5.1.prompt = כמה פעמים blink(13, 4) מהבהבת?
+inol-4-5.1.explanation = times = 4, ו-ms משתמש בברירת המחדל שלו.
+inol-4-5.2.prompt = איזו קריאה משתמשת ב-show(float)?
+inol-4-5.2.explanation = 3.5 הוא ערך עשרוני.
+inol-4-5.3.prompt = תנו ל-ms ברירת מחדל של 100.
+inol-4-5.3.explanation = ברירות מחדל נכתבות param = value.
+
+inol-4-6 = הצהרות מוקדמות ורקורסיה
+inol-4-6.0.title = להצהיר לפני שמגדירים
+inol-4-6.0.body = הצהרה מוקדמת (prototype) מצהירה על החתימה של פונקציה לפני שהגוף שלה מופיע, כך שקוד שמעליה יכול לקרוא לה. ה-Arduino IDE מייצר הצהרות כאלה לקבצי .ino אוטומטית, אבל בקבצי .h/.cpp כותבים אותן בעצמכם. פונקציה יכולה גם לקרוא לעצמה (רקורסיה), אבל זיכרון המחסנית זעיר ב-Uno, לכן השתמשו בזה בזהירות.
+inol-4-6.1.prompt = מה מכילה הצהרה מוקדמת?
+inol-4-6.1.opt0 = את כל הגוף
+inol-4-6.1.opt1 = את טיפוס ההחזרה, השם וטיפוסי הפרמטרים, ומסתיימת ב-;
+inol-4-6.1.opt2 = רק את השם
+inol-4-6.1.opt3 = הערה
+inol-4-6.1.explanation = זו החתימה בלי הגוף.
+inol-4-6.2.prompt = מה מחזירה factorial(4)?
+inol-4-6.2.explanation = 4 × 3 × 2 × 1 = 24.
+inol-4-6.3.prompt = למה להיזהר מרקורסיה עמוקה ב-Uno?
+inol-4-6.3.opt0 = רקורסיה אסורה
+inol-4-6.3.opt1 = כל קריאה משתמשת בזיכרון מחסנית, ויש רק 2KB של SRAM
+inol-4-6.3.opt2 = הקומפילציה איטית יותר
+inol-4-6.3.opt3 = זה שובר את Serial
+inol-4-6.3.explanation = יותר מדי קריאות מקוננות גורמות לגלישת מחסנית ומקריסות את הסקיצה.
+
+section.inol-s5 = השפה: מערכים ומחרוזות
+
+inol-5-1 = מערכים
+inol-5-1.0.title = רשימות של ערכים
+inol-5-1.0.body = מערך מחזיק מספר קבוע של ערכים מטיפוס אחד. מצהירים עליו עם גודל או עם רשימת אתחול. האינדקסים הם מ-0 עד size − 1, ו-C++ לא בודקת גבולות.
+inol-5-1.1.prompt = מהו האינדקס התקין האחרון של int a[8]?
+inol-5-1.1.explanation = האינדקסים הם 0 עד 7.
+inol-5-1.2.prompt = הצהירו על מערך של 3 בתים.
+inol-5-1.2.explanation = הגודל נכתב בסוגריים מרובעים.
+inol-5-1.3.prompt = מה זה pins[1] ב-{2, 3, 4, 5}?
+inol-5-1.3.explanation = אינדקס 1 הוא הפריט השני.
+
+inol-5-2 = מעבר על מערכים ו-sizeof
+inol-5-2.0.title = מספר האיברים
+inol-5-2.0.body = sizeof נותן גודל בבתים, לכן מספר האיברים הוא sizeof(arr) / sizeof(arr[0]). השתמשו בזה בלולאות כדי שימשיכו לעבוד כשמוסיפים איברים.
+inol-5-2.1.prompt = עבור int a[6] ב-Uno, מה sizeof(a) בבתים?
+inol-5-2.1.explanation = ‏6 איברים × 2 בתים.
+inol-5-2.2.prompt = חשבו את מספר האיברים.
+inol-5-2.2.explanation = סך הבתים חלקי הבתים לכל איבר.
+inol-5-2.3.prompt = מה הממוצע של {2, 4, 6} בחישוב שלם?
+inol-5-2.3.explanation = (2 + 4 + 6) / 3 = 4.
+
+inol-5-3 = מערכים דו-ממדיים
+inol-5-3.0.title = רשתות
+inol-5-3.0.body = מערך דו-ממדי הוא מערך של מערכים: type name[rows][cols]. ניגשים עם name[row][col]. מצוין למטריצות LED, מפות וטבלאות חיפוש.
+inol-5-3.1.prompt = מה זה smile[0][1]?
+inol-5-3.1.opt3 = שגיאה
+inol-5-3.1.explanation = שורה 0, עמודה 1.
+inol-5-3.2.prompt = כמה איברים מחזיק int grid[4][3]?
+inol-5-3.2.explanation = 4 × 3 = 12.
+
+inol-5-4 = מחרוזות C (מערכי char)
+inol-5-4.0.title = טקסט בדרך הקלאסית
+inol-5-4.0.body = מחרוזת C היא מערך char שמסתיים בתו נסתר '\0' (תו סיום). הפונקציות של string.h עובדות עליהן: strlen (אורך), strcpy (העתקה), strcat (הוספה) ו-strcmp (השוואה; 0 פירושו שוות). לעולם אל תשוו מחרוזות C עם ==.
+inol-5-4.1.prompt = מה זה sizeof("Hi") (כולל תו הסיום)?
+inol-5-4.1.explanation = ‏'H',‏ 'i' ו-'\0'.
+inol-5-4.2.prompt = מה מחזירה strcmp(a, b) כשהמחרוזות שוות?
+inol-5-4.2.explanation = 0 פירושו שאין הבדל.
+inol-5-4.3.prompt = קבלו את האורך של msg.
+inol-5-4.3.explanation = strlen סופרת תווים לפני תו הסיום.
+inol-5-4.4.prompt = למה char buf[5] = "Hello"; היא בעיה?
+inol-5-4.4.opt0 = זה בסדר
+inol-5-4.4.opt1 = אין מקום לתו הסיום '\0'
+inol-5-4.4.opt2 = char לא יכול להחזיק אותיות
+inol-5-4.4.opt3 = מחרוזות חייבות להיות גלובליות
+inol-5-4.4.explanation = "Hello" צריכה 6 תווים כולל תו הסיום.
+
+inol-5-5 = המחלקה String
+inol-5-5.0.title = אובייקטי טקסט נוחים
+inol-5-5.0.body = המחלקה String של Arduino גדלה אוטומטית ויש לה מתודות שימושיות: length(),‏ indexOf(),‏ substring(),‏ toInt(),‏ toFloat(),‏ equals או ==, ‏toUpperCase() (משנה את ה-String במקום) ו-+ לחיבור. קל להשתמש בה, אבל בלוחות קטנים שימוש כבד בסקיצות שרצות זמן רב עלול לפצל את הזיכרון.
+inol-5-5.1.prompt = מה זה String("hello").length()?
+inol-5-5.1.explanation = חמישה תווים.
+inol-5-5.2.prompt = מה מחזירה String("abcdef").substring(2, 4)?
+inol-5-5.2.explanation = מאינדקס 2 ועד 4 (לא כולל).
+inol-5-5.3.prompt = המירו את הטקסט למספר.
+inol-5-5.3.explanation = String::toInt ממירה ספרות ל-int.
+inol-5-5.4.prompt = בניגוד למחרוזות C, אפשר להשוות Strings עם…
+inol-5-5.4.opt0 = רק strcmp
+inol-5-5.4.opt2 = אי אפשר להשוות אותן
+inol-5-5.4.explanation = המחלקה String מעמיסה את ==.
+
+inol-5-6 = פענוח פקודות טוריות
+inol-5-6.0.title = לחבר את כישורי הטקסט
+inol-5-6.0.body = קוראים שורה שלמה עם Serial.readStringUntil('\n'), מקצצים רווחים, ואז מפצלים אותה לפקודה ולערך.
+inol-5-6.1.prompt = עבור השורה "led 128", מה הערך של value?
+inol-5-6.1.explanation = הטקסט שאחרי הרווח מומר ל-128.
+inol-5-6.2.prompt = הסירו רווחים מסביב.
+inol-5-6.2.explanation = String::trim משנה את ה-String במקום.
+
+section.inol-s6 = השפה: מצביעים, Structs ו-Enums
+
+inol-6-1 = מצביעים
+inol-6-1.0.title = כתובות בזיכרון
+inol-6-1.0.body = כל משתנה נמצא בכתובת בזיכרון. &x נותן את הכתובת של x. מצביע (int *p) שומר כתובת, ו-*p קורא או כותב את הערך שהוא מצביע עליו (dereference). nullptr פירושו "מצביע על כלום".
+inol-6-1.1.prompt = אחרי int x = 5; int *p = &x; *p = 8; מה הערך של x?
+inol-6-1.1.opt2 = הכתובת
+inol-6-1.1.explanation = כתיבה דרך המצביע משנה את x.
+inol-6-1.2.prompt = שמרו את הכתובת של count ב-ptr.
+inol-6-1.2.explanation = & לוקח כתובת.
+inol-6-1.3.prompt = מה פירוש *p כש-p הוא מצביע?
+inol-6-1.3.opt0 = כפל ב-p
+inol-6-1.3.opt1 = הערך בכתובת ששמורה ב-p
+inol-6-1.3.opt2 = הכתובת של p
+inol-6-1.3.opt3 = הערה
+inol-6-1.3.explanation = זה dereferencing.
+
+inol-6-2 = מצביעים ומערכים
+inol-6-2.0.title = מערכים "מתפרקים" למצביעים
+inol-6-2.0.body = שם של מערך מתנהג כמצביע לאיבר הראשון שלו. חשבון מצביעים זז באיברים שלמים: p + 1 מצביע לאיבר הבא, ו-p[i] זהה ל-*(p + i). פונקציות מקבלות מערכים כמצביעים, לכן מעבירים גם את האורך.
+inol-6-2.1.prompt = עבור int a[] = {4, 7, 9}; int *p = a; מה זה *(p + 2)?
+inol-6-2.1.explanation = p + 2 מצביע ל-a[2].
+inol-6-2.2.prompt = למה sum() מקבלת פרמטר len נפרד?
+inol-6-2.2.opt0 = רק עניין של סגנון
+inol-6-2.2.opt1 = בתוך הפונקציה המערך הוא רק מצביע, לכן הגודל שלו לא ידוע
+inol-6-2.2.opt2 = אי אפשר להעביר מערכים
+inol-6-2.2.opt3 = len מאיץ את זה
+inol-6-2.2.explanation = sizeof על מצביע נותן את גודל המצביע, לא את גודל המערך.
+
+inol-6-3 = Structs
+inol-6-3.0.title = קיבוץ נתונים קשורים
+inol-6-3.0.body = struct אורז כמה משתנים (חברים) לטיפוס אחד. ניגשים לחברים עם נקודה, או עם -> דרך מצביע. מערכים של structs הם דרך מסודרת לתאר חומרה.
+inol-6-3.1.prompt = הגדירו struct לקריאת חיישן.
+inol-6-3.1.explanation = struct Name { members };
+inol-6-3.2.prompt = איך ניגשים ל-interval דרך המצביע p?
+inol-6-3.2.explanation = ‏-> הוא קיצור של (*p).interval.
+inol-6-3.3.prompt = מה זה leds[1].pin בקוד שלמעלה?
+inol-6-3.3.explanation = האיבר השני אותחל עם פין 13.
+
+inol-6-4 = Enums
+inol-6-4.0.title = קבועים עם שמות
+inol-6-4.0.body = enum נותן שמות לקבוצה של קבועים שלמים, וכך מצבים נקראים בקלות. enum class היא הצורה המודרנית הבטוחה יותר: השמות שלה בטווח משלה (Color::Red) ולא מומרים בשקט ל-int.
+inol-6-4.1.prompt = ב-enum Mode { OFF, ON, BLINK }; מה הערך של BLINK?
+inol-6-4.1.explanation = הספירה מתחילה ב-0.
+inol-6-4.2.prompt = השתמשו בערך של ה-enum בטווח.
+inol-6-4.2.explanation = לערכי enum class ניגשים עם ::.
+inol-6-4.3.prompt = למה להעדיף enum class?
+inol-6-4.3.opt0 = היא משתמשת בפחות זיכרון
+inol-6-4.3.opt1 = שמות לא מתנגשים וערכים לא מומרים בשקט ל-int
+inol-6-4.3.opt2 = Arduino דורש את זה
+inol-6-4.3.opt3 = היא מהירה יותר
+inol-6-4.3.explanation = היא קפדנית ובטוחה יותר.
+
+inol-6-5 = typedef,‏ using ו-const
+inol-6-5.0.title = לתת שמות לטיפוסים ולהגן על ערכים
+inol-6-5.0.body = typedef או using יוצרים כינוי קצר לטיפוס. const פירושו שהערך לא יכול להשתנות. constexpr מבקש מהקומפיילר לחשב את הערך בזמן קומפילציה.
+inol-6-5.1.prompt = צרו כינוי טיפוס בשם Pin.
+inol-6-5.1.explanation = using Alias = Type;
+inol-6-5.2.prompt = מה זה uint8_t?
+inol-6-5.2.opt0 = int של 16 ביט עם סימן
+inol-6-5.2.opt1 = מספר שלם בן 8 ביט בלי סימן (אותו טווח כמו byte)
+inol-6-5.2.opt2 = float
+inol-6-5.2.opt3 = מצביע
+inol-6-5.2.explanation = הטיפוסים ברוחב קבוע (uint8_t,‏ int16_t,‏ uint32_t…) אומרים בדיוק כמה ביטים יש להם.
+
+section.inol-s7 = השפה: פונקציות מובנות
+
+inol-7-1 = פונקציות מתמטיות
+inol-7-1.0.title = מתמטיקה מוכנה
+inol-7-1.0.body = Arduino מספקת abs,‏ min,‏ max,‏ constrain,‏ map,‏ sq (ריבוע), sqrt,‏ pow ואת הפונקציות הטריגונומטריות (sin,‏ cos ברדיאנים).
+inol-7-1.1.prompt = מה זה max(-4, -9)?
+inol-7-1.1.explanation = ‏−4 גדול מ-‏−9.
+inol-7-1.2.prompt = מה זה sq(7)?
+inol-7-1.2.explanation = 7 × 7.
+inol-7-1.3.prompt = מה מחזירה constrain(-20, 0, 100)?
+inol-7-1.3.explanation = ערכים מתחת למינימום נחתכים אליו.
+inol-7-1.4.prompt = מה זה map(3, 0, 6, 0, 60)?
+inol-7-1.4.explanation = 3 נמצא באמצע בין 0 ל-6, לכן התוצאה באמצע בין 0 ל-60.
+
+inol-7-2 = מספרים אקראיים
+inol-7-2.0.title = random() ו-randomSeed()
+inol-7-2.0.body = random(max) מחזירה 0 עד max − 1, ו-random(min, max) מחזירה min עד max − 1. בלי זרע (seed), הרצף זהה אחרי כל איתחול; זרעו אותו ברעש מפין אנלוגי לא מחובר.
+inol-7-2.1.prompt = איזה טווח מפיקה random(1, 7)?
+inol-7-2.1.opt0 = ‏1 עד 7
+inol-7-2.1.opt1 = ‏1 עד 6
+inol-7-2.1.opt2 = ‏0 עד 6
+inol-7-2.1.opt3 = ‏0 עד 7
+inol-7-2.1.explanation = הגבול העליון לא נכלל.
+inol-7-2.2.prompt = למה לקרוא ל-randomSeed(analogRead(A5))?
+inol-7-2.2.opt0 = כדי לקרוא חיישן
+inol-7-2.2.opt1 = כדי שהרצף האקראי יהיה שונה אחרי כל איתחול
+inol-7-2.2.opt2 = כדי להאיץ את random()
+inol-7-2.2.opt3 = Serial דורש את זה
+inol-7-2.2.explanation = פין לא מחובר נותן רעש בלתי צפוי.
+inol-7-2.3.prompt = בחרו אינדקס אקראי של LED עבור 4 נורות (0–3).
+inol-7-2.3.explanation = random(4) נותנת 0, 1, 2 או 3.
+
+inol-7-3 = פונקציות זמן
+inol-7-3.0.title = millis,‏ micros,‏ delay,‏ delayMicroseconds
+inol-7-3.0.body = millis() מחזירה אלפיות שנייה מההפעלה (מסתובבת אחרי כ-49.7 ימים); micros() מחזירה מיקרו-שניות (רזולוציה של 4µs ב-Uno של 16MHz, מסתובבת אחרי כ-70 דקות). delay() ו-delayMicroseconds() משהות את הסקיצה.
+inol-7-3.1.prompt = מה נותן רזולוציית זמן עדינה יותר?
+inol-7-3.1.opt3 = הן שוות
+inol-7-3.1.explanation = micros סופרת מיקרו-שניות.
+inol-7-3.2.prompt = איך מודדים זמן שעבר בבטחה גם כשיש סיבוב?
+inol-7-3.2.opt1 = now - start >= interval עם unsigned long
+inol-7-3.2.opt2 = לאתחל את הלוח כל יום
+inol-7-3.2.opt3 = להשתמש ב-float
+inol-7-3.2.explanation = חיסור בלי סימן מטפל בסיבוב נכון.
+
+inol-7-4 = עוזרים לביטים ובתים
+inol-7-4.0.title = bitRead,‏ bitWrite,‏ highByte…
+inol-7-4.0.body = Arduino עוטפת טריקים נפוצים של ביטים: bitRead(x, n),‏ bitSet(x, n),‏ bitClear(x, n),‏ bitWrite(x, n, value),‏ bit(n) (= 1 << n), ו-highByte/lowByte לפיצול ערך של 16 ביט.
+inol-7-4.1.prompt = מה זה bit(3)?
+inol-7-4.1.explanation = 1 << 3 = 8.
+inol-7-4.2.prompt = מה זה bitRead(0b1000, 3)?
+inol-7-4.2.explanation = ביט 3 (סופרים מ-0 מימין) דולק.
+inol-7-4.3.prompt = הדליקו את ביט 4 של status.
+inol-7-4.3.explanation = bitSet קובעת ביט אחד ל-1.
+
+inol-7-5 = פונקציות תווים
+inol-7-5.0.title = סיווג תווים
+inol-7-5.0.body = isDigit,‏ isAlpha,‏ isAlphaNumeric,‏ isSpace,‏ isUpperCase וחברותיהן בודקות char. הן שימושיות לאימות קלט. ממירים תו ספרה למספר שלו עם c - '0'.
+inol-7-5.1.prompt = מה זה '9' - '0'?
+inol-7-5.1.explanation = ASCII ‏57 − 48 = 9.
+inol-7-5.2.prompt = מה מחזירה isDigit('a')?
+inol-7-5.2.opt3 = שגיאה
+inol-7-5.2.explanation = 'a' היא אות, לא ספרה.
+
+section.inol-s8 = השפה: קדם-מעבד ומבנה התוכנית
+
+inol-8-1 = ‏#include ו-#define
+inol-8-1.0.title = לפני הקומפילציה
+inol-8-1.0.body = שורות שמתחילות ב-# הן הוראות קדם-מעבד, שמטופלות לפני שהקוד מתקמפל. ‏#include מדביק קובץ כותרת: <...> לספריות, "..." לקבצים בסקיצה שלכם. ‏#define מבצע החלפת טקסט; מאקרו עם פרמטרים צריך סוגריים מסביב להכול.
+inol-8-1.1.prompt = בלי סוגריים, #define SQ(x) x * x — מה זה SQ(2 + 1)?
+inol-8-1.1.explanation = זה מתפרש ל-2 + 1 * 2 + 1 = 5. לכן מאקרו צריך סוגריים.
+inol-8-1.2.prompt = כללו קובץ מתיקיית הסקיצה שלכם.
+inol-8-1.2.explanation = מרכאות מחפשות קודם בתיקיית הסקיצה.
+inol-8-1.3.prompt = האם שורות #define מסתיימות בנקודה-פסיק?
+inol-8-1.3.opt0 = כן, תמיד
+inol-8-1.3.opt1 = לא
+inol-8-1.3.opt2 = רק למספרים
+inol-8-1.3.opt3 = רק ב-setup()
+inol-8-1.3.explanation = נקודה-פסיק הייתה הופכת לחלק מטקסט ההחלפה.
+
+inol-8-2 = קומפילציה מותנית
+inol-8-2.0.title = ‏#if,‏ #ifdef,‏ #endif
+inol-8-2.0.body = מקמפלים קוד רק כשסמל מוגדר. זו הדרך המקובלת להוסיף פלט דיבאג שנעלם מהגרסה הסופית.
+inol-8-2.1.prompt = עם #define DEBUG 0, למה מתקמפל LOG("hi")?
+inol-8-2.1.opt1 = לכלום
+inol-8-2.1.opt2 = לשגיאה
+inol-8-2.1.opt3 = להערה
+inol-8-2.1.explanation = ענף ה-#else מגדיר את LOG(x) כריק.
+inol-8-2.2.prompt = סיימו את הבלוק המותנה.
+inol-8-2.2.explanation = כל #if/#ifdef צריך #endif.
+
+inol-8-3 = סקיצות מרובות קבצים
+inol-8-3.0.title = לשוניות, קבצי כותרת וקבצי מקור
+inol-8-3.0.body = סקיצות גדולות מתפצלות ללשוניות: קובץ כותרת .h מצהיר על דברים, קובץ .cpp מממש אותם, וה-.ino כולל את קובץ הכותרת. שומרי הכללה (#pragma once או #ifndef/#define/#endif) מונעים הכללה כפולה של קובץ כותרת. בקבצי .cpp מוסיפים #include <Arduino.h> כדי לקבל את pinMode וחברותיה.
+inol-8-3.1.prompt = מה נכנס לקובץ כותרת .h?
+inol-8-3.1.opt0 = רק המימוש המלא
+inol-8-3.1.opt1 = הצהרות (prototypes, הגדרות מחלקות, קבועים)
+inol-8-3.1.opt3 = כלום
+inol-8-3.1.explanation = המימושים נכנסים ל-.cpp.
+inol-8-3.2.prompt = מנעו הכללה כפולה של קובץ הכותרת.
+inol-8-3.2.explanation = #pragma once הוא שומר הכללה נפוץ.
+inol-8-3.3.prompt = מה קובץ .cpp חייב לכלול כדי להשתמש ב-digitalWrite?
+inol-8-3.3.opt3 = כלום
+inol-8-3.3.explanation = קבצי .ino מקבלים את זה אוטומטית; קבצי .cpp לא.
+
+inol-8-4 = PROGMEM והמאקרו F()
+inol-8-4.0.title = לשמור קבועים בזיכרון ההבזק
+inol-8-4.0.body = נתונים קבועים מועתקים בדרך כלל ל-SRAM הנדיר. PROGMEM משאיר אותם בזיכרון ההבזק (flash) של 32KB; ‏F("...") עושה את אותו הדבר למחרוזות שמועברות ל-print.
+inol-8-4.1.prompt = למה להשתמש ב-F() ב-Serial.println(F("Hello"))?
+inol-8-4.1.opt0 = עיצוב
+inol-8-4.1.opt1 = הטקסט נשאר בזיכרון ההבזק במקום להשתמש ב-SRAM
+inol-8-4.1.opt2 = כדי להדפיס מהר יותר
+inol-8-4.1.opt3 = Serial דורש את זה
+inol-8-4.1.explanation = חוסך RAM בלוחות עם 2KB בלבד.
+inol-8-4.2.prompt = איפה נמצאים נתוני PROGMEM?
+inol-8-4.2.opt1 = בזיכרון ההבזק (זיכרון התוכנית)
+inol-8-4.2.opt3 = במחשב
+inol-8-4.2.explanation = PROGMEM = program memory (זיכרון התוכנית).
+
+section.inol-s9 = השפה: תכנות מונחה עצמים
+
+inol-9-1 = מחלקות ואובייקטים
+inol-9-1.0.title = נתונים ועוד התנהגות
+inol-9-1.0.body = מחלקה אורזת משתנים (חברים) ופונקציות (מתודות). אובייקט הוא מופע של מחלקה. במחלקה, החברים פרטיים כברירת מחדל; את החלקים שאחרים יכולים להשתמש בהם שמים תחת public:. שימו לב לנקודה-פסיק אחרי הסוגר הסוגר.
+inol-9-1.1.prompt = מהו אובייקט?
+inol-9-1.1.opt0 = הגדרה של מחלקה
+inol-9-1.1.opt1 = מופע שנוצר ממחלקה
+inol-9-1.1.opt2 = ספרייה
+inol-9-1.1.opt3 = פין
+inol-9-1.1.explanation = המחלקה היא השרטוט; אובייקטים נבנים ממנה.
+inol-9-1.2.prompt = מה חסר?
+inol-9-1.2.opt0 = שום דבר
+inol-9-1.2.opt1 = נקודה-פסיק אחרי הסוגר הסוגר
+inol-9-1.2.opt2 = בנאי
+inol-9-1.2.explanation = הגדרות מחלקה מסתיימות ב-};
+inol-9-1.3.prompt = קראו למתודה על האובייקט.
+inol-9-1.3.explanation = משתמשים ב-. לאובייקטים (ו-‏-> למצביעים לאובייקטים).
+
+inol-9-2 = בנאים ורשימות אתחול
+inol-9-2.0.title = אתחול אובייקטים
+inol-9-2.0.body = לבנאי יש את שם המחלקה ואין לו טיפוס החזרה; הוא רץ כשהאובייקט נוצר. רשימת אתחול (אחרי נקודתיים) קובעת חברים ישירות. הגדרת חומרה כמו pinMode שייכת למתודת begin() שנקראת מ-setup(), כי אובייקטים גלובליים נבנים לפני שהלוח מוכן לגמרי.
+inol-9-2.1.prompt = כתבו את רשימת האתחול של הבנאי.
+inol-9-2.1.explanation = רשימת אתחול מתחילה בנקודתיים.
+inol-9-2.2.prompt = איזה טיפוס החזרה יש לבנאי?
+inol-9-2.2.opt1 = אין בכלל
+inol-9-2.2.opt3 = שם המחלקה
+inol-9-2.2.explanation = בנאים לא מצהירים על טיפוס החזרה.
+inol-9-2.3.prompt = למה לקרוא ל-pinMode ב-begin() ולא בבנאי?
+inol-9-2.3.opt0 = בנאים לא יכולים לקרוא לפונקציות
+inol-9-2.3.opt1 = אובייקטים גלובליים נבנים לפני שהחומרה אותחלה לגמרי
+inol-9-2.3.opt2 = pinMode עובדת רק ב-loop()
+inol-9-2.3.opt3 = כדי לחסוך זיכרון
+inol-9-2.3.explanation = רוב ספריות Arduino משתמשות בתבנית begin().
+
+inol-9-3 = כימוס
+inol-9-3.0.title = נתונים פרטיים, ממשק ציבורי
+inol-9-3.0.body = שמרו נתונים כפרטיים וחשפו מתודות שאוכפות את הכללים. const אחרי מתודה פירושו שהיא לא משנה את האובייקט. getters מחזירים ערכים; setters מאמתים אותם.
+inol-9-3.1.prompt = מה שומרת setTarget(50)?
+inol-9-3.1.explanation = constrain מגבילה אותו ל-30.
+inol-9-3.2.prompt = סמנו את ה-getter כמתודה שלא משנה את האובייקט.
+inol-9-3.2.explanation = מתודת const מבטיחה לא לשנות חברים.
+inol-9-3.3.prompt = למה להפוך את target לפרטי?
+inol-9-3.3.opt0 = פרטי מהיר יותר
+inol-9-3.3.opt1 = כדי שישתנה רק דרך setTarget, ששומרת אותו בטווח
+inol-9-3.3.opt2 = חברים ציבוריים לא עובדים
+inol-9-3.3.opt3 = כדי להסתיר אותו מ-Serial
+inol-9-3.3.explanation = זה כימוס.
+
+inol-9-4 = אובייקטים שלא חוסמים
+inol-9-4.0.title = הרבה דברים בבת אחת
+inol-9-4.0.body = תנו לכל אובייקט מתודת update() שמשתמשת ב-millis(). קריאה ל-update() על כל אובייקט בכל מעבר של loop מאפשרת להם לרוץ באופן עצמאי, וזה המפתח לריבוי משימות ב-Arduino.
+inol-9-4.1.prompt = למה update() משתמשת ב-millis() ולא ב-delay()?
+inol-9-4.1.opt0 = millis מדויקת יותר
+inol-9-4.1.opt1 = כדי ששני המהבהבים ירוצו באותו זמן בלי לחסום זה את זה
+inol-9-4.1.opt2 = delay לא עובדת במחלקות
+inol-9-4.1.opt3 = כדי לחסוך זיכרון
+inol-9-4.1.explanation = קוד שלא חוסם מאפשר לאובייקטים לחלוק את loop().
+inol-9-4.2.prompt = סדרו את loop() כך ששלושה אובייקטים ירוצו יחד.
+inol-9-4.2.explanation = קוראים ל-update() של כל אובייקט בכל מעבר.
+
+inol-9-5 = ירושה
+inol-9-5.0.title = שימוש חוזר במחלקת בסיס
+inol-9-5.0.body = class Child : public Parent יורשת את החברים הציבוריים של האב. הבת מוסיפה או מתאימה התנהגות. קוראים לבנאי של האב ברשימת האתחול.
+inol-9-5.1.prompt = גרמו ל-Relay לרשת מ-Device.
+inol-9-5.1.explanation = class Child : public Parent.
+inol-9-5.2.prompt = מה פירוש protected?
+inol-9-5.2.opt0 = נראה בכל מקום
+inol-9-5.2.opt1 = נראה במחלקה ובמחלקות הבת שלה, לא מבחוץ
+inol-9-5.2.opt2 = לקריאה בלבד
+inol-9-5.2.opt3 = נשמר ב-EEPROM
+inol-9-5.2.explanation = מחלקות בת יכולות להשתמש ב-pin; קוד אחר לא.
+inol-9-5.3.prompt = האם bz יכול לקרוא ל-begin()?
+inol-9-5.3.opt0 = לא
+inol-9-5.3.opt1 = כן, היא עוברת בירושה מ-Device
+inol-9-5.3.opt2 = רק אחרי beep()
+inol-9-5.3.opt3 = רק אם begin היא static
+inol-9-5.3.explanation = החברים הציבוריים של האב עוברים בירושה.
+
+inol-9-6 = פונקציות וירטואליות ופולימורפיזם
+inol-9-6.0.title = ממשק אחד, מימושים רבים
+inol-9-6.0.body = סמנו מתודה במחלקת הבסיס כ-virtual כדי שקריאה דרך מצביע או הפניה לבסיס תריץ את הגרסה של הבת. ‏= 0 הופך אותה לוירטואלית טהורה: הבסיס הופך למופשט ומחלקות הבת חייבות לממש אותה. override מבקש מהקומפיילר לבדוק שאתם באמת דורסים משהו.
+inol-9-6.1.prompt = אפשרו למחלקות בת לדרוס את update().
+inol-9-6.1.explanation = virtual מאפשר dynamic dispatch.
+inol-9-6.2.prompt = מה פירוש ‎= 0 אחרי מתודה וירטואלית?
+inol-9-6.2.opt0 = היא מחזירה 0
+inol-9-6.2.opt1 = היא וירטואלית טהורה: מחלקות בת חייבות לממש אותה
+inol-9-6.2.opt2 = היא מבוטלת
+inol-9-6.2.opt3 = היא רצה בהפעלה
+inol-9-6.2.explanation = מחלקה עם מתודה וירטואלית טהורה היא מופשטת.
+inol-9-6.3.prompt = למה פולימורפיזם שימושי כאן?
+inol-9-6.3.opt0 = הוא משתמש בפחות זיכרון הבזק
+inol-9-6.3.opt1 = הלולאה יכולה לקרוא כל סוג חיישן באותה דרך
+inol-9-6.3.opt2 = analogRead דורשת אותו
+inol-9-6.3.opt3 = הוא חוסך מצביעים
+inol-9-6.3.explanation = מחלקות חיישן חדשות עובדות בלי לשנות את הלולאה.
+
+inol-9-7 = חברים סטטיים ותבניות
+inol-9-7.0.title = נתונים ברמת המחלקה וקוד גנרי
+inol-9-7.0.body = חבר static שייך למחלקה ומשותף לכל האובייקטים. תבנית (template) כותבת פונקציה או מחלקה אחת שעובדת לטיפוסים רבים; הקומפיילר יוצר גרסה לכל טיפוס שמשתמשים בו.
+inol-9-7.1.prompt = אחרי יצירת שלושה אובייקטי Led, מה הערך של Led::count?
+inol-9-7.1.opt3 = לכל אחד יש משלו
+inol-9-7.1.explanation = מונה משותף אחד שהוגדל שלוש פעמים.
+inol-9-7.2.prompt = הצהירו על פרמטר טיפוס של תבנית.
+inol-9-7.2.explanation = template <typename T> מציג טיפוס גנרי.
+inol-9-7.3.prompt = מה מחזירה biggest('a', 'z')?
+inol-9-7.3.explanation = ל-'z' יש קוד ASCII גבוה יותר.
+
+section.ino-s3 = יסודות אלקטרוניקה
+
+ino-3-1 = מתח, זרם והתנגדות
+ino-3-1.0.title = חוק אוהם
+ino-3-1.0.body = מתח (V, וולט) הוא "לחץ" חשמלי, זרם (I, אמפר) הוא הזרימה, והתנגדות (R, אוהם Ω) מתנגדת לזרימה. חוק אוהם קושר ביניהם: V = I × R.
+ino-3-1.1.prompt = באיזו יחידה מודדים התנגדות?
+ino-3-1.1.opt0 = וולט
+ino-3-1.1.opt1 = אמפר
+ino-3-1.1.opt2 = אוהם
+ino-3-1.1.opt3 = ואט
+ino-3-1.1.explanation = התנגדות נמדדת באוהם (Ω).
+ino-3-1.2.prompt = איזה זרם (ב-mA) עובר דרך 1000Ω ב-5V?
+ino-3-1.2.explanation = I = 5 / 1000 = 0.005A = 5mA.
+ino-3-1.3.prompt = אם ההתנגדות עולה והמתח נשאר זהה, הזרם…
+ino-3-1.3.opt0 = עולה
+ino-3-1.3.opt1 = יורד
+ino-3-1.3.opt2 = נשאר זהה
+ino-3-1.3.opt3 = מתהפך
+ino-3-1.3.explanation = I = V / R, לכן R גדול יותר נותן I קטן יותר.
+
+ino-3-2 = מטריצות ניסוי ומעגלים
+ino-3-2.0.title = לבנות בלי להלחים
+ino-3-2.0.body = מטריצת ניסוי (breadboard) מחזיקה רכיבים וחוטים. באמצע, כל שורה קצרה של 5 חורים מחוברת; הפסים הארוכים בצדדים מובילים מתח (+) ואדמה (−). מעגל חייב להיות לולאה סגורה מ-+ חזרה לאדמה (GND).
+ino-3-2.1.prompt = למה מעגל צריך חיבור חזרה ל-GND?
+ino-3-2.1.opt0 = הוא לא צריך
+ino-3-2.1.opt1 = הזרם צריך לולאה שלמה כדי לזרום
+ino-3-2.1.opt2 = כדי שיהיה מהיר יותר
+ino-3-2.1.opt3 = כדי לקרר את הלוח
+ino-3-2.1.explanation = בלי לולאה סגורה, אין זרם.
+ino-3-2.2.prompt = במטריצת ניסוי, אילו חורים מחוברים?
+ino-3-2.2.opt0 = כל החורים
+ino-3-2.2.opt1 = כל שורה קצרה של 5 באמצע; הפסים הארוכים בצדדים
+ino-3-2.2.opt2 = רק אלכסונים
+ino-3-2.2.opt3 = אף אחד, חייבים להלחים
+ino-3-2.2.explanation = כך מטריצות ניסוי מחווטות מבפנים.
+
+ino-3-3 = נורות LED ונגדים
+ino-3-3.0.title = להגן על נורות LED
+ino-3-3.0.body = נורות LED מוליכות רק בכיוון אחד: הרגל הארוכה (אנודה, +) לצד החיובי. הן צריכות נגד מגביל זרם, אחרת הן נשרפות. R = (מתח הספק − מתח הנורה) / הזרם הרצוי. נורה אדומה (~2V) ב-20mA מ-5V צריכה (5 − 2) / 0.02 = 150Ω; ‏220Ω היא הבחירה הבטוחה הנפוצה.
+ino-3-3.1.prompt = איזו רגל של הנורה הולכת לכיוון הצד החיובי?
+ino-3-3.1.opt0 = הרגל הקצרה (קתודה)
+ino-3-3.1.opt1 = הרגל הארוכה (אנודה)
+ino-3-3.1.opt2 = כל אחת מהן
+ino-3-3.1.opt3 = אף אחת
+ino-3-3.1.explanation = רגל ארוכה = אנודה = חיובי.
+ino-3-3.2.prompt = איזה נגד (באוהם) צריך לנורה של 3V ב-20mA מ-5V?
+ino-3-3.2.explanation = (5 − 3) / 0.02 = 100Ω.
+ino-3-3.3.prompt = מה קורה לנורת LED שמחוברת ל-5V בלי נגד?
+ino-3-3.3.opt0 = היא מאירה חלש
+ino-3-3.3.opt1 = זורם יותר מדי זרם והיא עלולה להישרף
+ino-3-3.3.opt2 = כלום
+ino-3-3.3.opt3 = היא מהבהבת
+ino-3-3.3.explanation = הנגד מגביל את הזרם.
+
+ino-3-4 = מגבלות פינים ובטיחות
+ino-3-4.0.title = לא לשרוף את הלוח
+ino-3-4.0.body = פיני ה-Uno מוציאים 5V וצריכים לספק לא יותר מכ-20mA כל אחד (40mA הוא המקסימום המוחלט). מנועים, ממסרים ורצועות LED צריכים הרבה יותר, לכן מפעילים אותם דרך טרנזיסטור או לוח דרייבר עם ספק כוח משלהם. לעולם אל תחברו פין שמוגדר כ-OUTPUT ישירות ל-GND או ל-5V.
+ino-3-4.1.prompt = מהו הזרם הרציף הבטוח לכל פין ב-Uno?
+ino-3-4.1.opt0 = בערך 1mA
+ino-3-4.1.opt1 = בערך 20mA
+ino-3-4.1.opt2 = בערך 500mA
+ino-3-4.1.opt3 = בערך 2A
+ino-3-4.1.explanation = כוונו ל-~20mA; ‏40mA הוא הגבול המוחלט.
+ino-3-4.2.prompt = איך צריך להפעיל מנוע DC?
+ino-3-4.2.opt0 = ישירות מפין דיגיטלי
+ino-3-4.2.opt1 = דרך טרנזיסטור או דרייבר מנוע עם ספק מתאים
+ino-3-4.2.opt2 = מהפין האנלוגי
+ino-3-4.2.opt3 = מפין ה-RX
+ino-3-4.2.explanation = פינים לא יכולים לספק זרמים של מנוע.
+
+section.ino-s4 = קלט ופלט דיגיטלי
+
+ino-4-1 = כמה פלטים: רמזור
+ino-4-1.0.title = כמה נורות
+ino-4-1.0.body = כל נורה מקבלת פין ונגד משלה. הדלקה שלהן ברצף עם השהיות יוצרת רמזור.
+ino-4-1.1.prompt = סדרו את השלב הצהוב.
+ino-4-1.1.explanation = הדלקה, המתנה, כיבוי.
+ino-4-1.2.prompt = כמה זמן נמשך מחזור מלא של הלולאה שלמעלה?
+ino-4-1.2.opt0 = ‏3 שניות
+ino-4-1.2.opt1 = ‏5 שניות
+ino-4-1.2.opt2 = ‏7 שניות
+ino-4-1.2.opt3 = ‏9 שניות
+ino-4-1.2.explanation = 3 + 1 + 3 = 7 שניות.
+
+ino-4-2 = קריאת כפתור
+ino-4-2.0.title = digitalRead
+ino-4-2.0.body = מגדירים את הפין כ-INPUT וקוראים אותו עם digitalRead, שמחזירה HIGH או LOW. כפתור מחבר את הפין ל-5V כשלוחצים עליו, ונגד pull-down ‏(10kΩ) ל-GND שומר אותו LOW בשאר הזמן.
+ino-4-2.1.prompt = קראו את פין הכפתור.
+ino-4-2.1.explanation = digitalRead מחזירה HIGH או LOW.
+ino-4-2.2.prompt = בלי נגד pull-down (או pull-up), כניסה של כפתור שלא נלחץ…
+ino-4-2.2.opt0 = קוראת LOW באופן אמין
+ino-4-2.2.opt1 = "מרחפת" וקוראת ערכים אקראיים
+ino-4-2.2.opt2 = קוראת HIGH באופן אמין
+ino-4-2.2.opt3 = פוגעת בלוח
+ino-4-2.2.explanation = כניסה לא מחוברת קולטת רעש.
+
+ino-4-3 = INPUT_PULLUP
+ino-4-3.0.title = נגדי pull-up מובנים
+ino-4-3.0.body = INPUT_PULLUP מפעיל נגד בתוך השבב שמושך את הפין ל-HIGH. מחברים את הכפתור בין הפין ל-GND, כך שלא צריך נגד נוסף. הלוגיקה הפוכה: לחיצה קוראת LOW.
+ino-4-3.1.prompt = עם INPUT_PULLUP, מה קורא כפתור לחוץ?
+ino-4-3.1.opt3 = זה מתחלף
+ino-4-3.1.explanation = הכפתור מחבר את הפין ל-GND.
+ino-4-3.2.prompt = הפעילו את נגד ה-pull-up הפנימי.
+ino-4-3.2.explanation = INPUT_PULLUP מפעיל את הנגד הפנימי.
+
+ino-4-4 = ניקוי ריטוט ושינויי מצב
+ino-4-4.0.title = לחיצות נקיות
+ino-4-4.0.body = כפתורים מכניים "מקפצים": לחיצה אחת נראית כמו כמה לחיצות מהירות. מזהים את המעבר מלא-לחוץ ללחוץ, ומתעלמים משינויים לזמן קצר (debouncing).
+ino-4-4.1.prompt = מה זה ריטוט (bouncing)?
+ino-4-4.1.opt0 = איתחול של הלוח
+ino-4-4.1.opt1 = מגעי הכפתור מהבהבים ויוצרים כמה קריאות לכל לחיצה
+ino-4-4.1.opt2 = חוט רופף
+ino-4-4.1.opt3 = רעש ב-Serial
+ino-4-4.1.explanation = מגעי המתכת קופצים פיזית במשך כמה אלפיות שנייה.
+ino-4-4.2.prompt = הפכו את מצב הנורה.
+ino-4-4.2.explanation = ! הופך bool.
+ino-4-4.3.prompt = למה להשוות את state ל-lastState?
+ino-4-4.3.opt0 = כדי לחסוך זיכרון
+ino-4-4.3.opt1 = כדי להגיב פעם אחת לכל לחיצה ולא ברציפות כל עוד הכפתור לחוץ
+ino-4-4.3.opt2 = digitalRead דורשת את זה
+ino-4-4.3.opt3 = כדי לנקות ריטוט אוטומטית
+ino-4-4.3.explanation = פועלים רק על השינוי (הקצה).
+
+ino-4-5 = תזמון בלי delay()
+ino-4-5.0.title = millis() לריבוי משימות
+ino-4-5.0.body = delay() מקפיאה את כל הסקיצה: שום דבר אחר לא יכול לקרות. millis() מחזירה את אלפיות השנייה מההפעלה; משווים אותה לזמן שמור כדי לעשות דברים בזמנים קבועים בזמן שהלולאה ממשיכה לרוץ. שומרים זמנים ב-unsigned long ומשתמשים בחיסור, שנשאר נכון כש-millis() מסתובבת אחרי ~49 ימים.
+ino-4-5.1.prompt = מהי הבעיה העיקרית של delay()?
+ino-4-5.1.opt0 = היא לא מדויקת
+ino-4-5.1.opt1 = היא חוסמת: הסקיצה לא יכולה לעשות שום דבר אחר בזמן ההמתנה
+ino-4-5.1.opt2 = היא משתמשת ביותר מדי זיכרון
+ino-4-5.1.opt3 = היא עובדת רק על פין 13
+ino-4-5.1.explanation = בזמן delay() מתעלמים מכפתורים ומחיישנים.
+ino-4-5.2.prompt = בדקו אם עבר פרק הזמן.
+ino-4-5.2.explanation = מחסירים את הזמן השמור כדי לקבל את הזמן שעבר.
+ino-4-5.3.prompt = איזה טיפוס צריך להחזיק ערכי millis()?
+ino-4-5.3.explanation = millis() מחזירה unsigned long; ‏int היה גולש אחרי ~32 שניות.
+
+section.ino-s5 = קלט אנלוגי ו-PWM
+
+ino-5-1 = analogRead
+ino-5-1.0.title = קריאת מתחים
+ino-5-1.0.body = analogRead(A0) מודדת את המתח בפין אנלוגי ומחזירה 0–1023 (‏10 ביט): ‏0 עבור 0V, ‏1023 עבור 5V. פוטנציומטר (כפתור סיבובי) שמחובר בין 5V ל-GND והפין האמצעי שלו ל-A0 נותן טווח רציף.
+ino-5-1.1.prompt = איזה טווח מחזירה analogRead ב-Uno?
+ino-5-1.1.explanation = הממיר הוא 10 ביט: 2¹⁰ = 1024 ערכים.
+ino-5-1.2.prompt = קראו את הפוטנציומטר שב-A2.
+ino-5-1.2.explanation = analogRead מחזירה 0–1023.
+ino-5-1.3.prompt = בערך מה מחזירה analogRead עבור 2.5V?
+ino-5-1.3.explanation = חצי מ-5V הוא בערך חצי מ-1023.
+
+ino-5-2 = המרה ליחידות אמיתיות
+ino-5-2.0.title = ממספרים לוולטים
+ino-5-2.0.body = ממירים קריאה לוולטים עם value × 5.0 / 1023. השתמשו ב-float כדי לא לאבד את הספרות העשרוניות.
+ino-5-2.1.prompt = למה 5.0 ולא 5 ב-raw * 5.0 / 1023?
+ino-5-2.1.opt0 = רק עניין של סגנון
+ino-5-2.1.opt1 = זה מאלץ חישוב עשרוני כך שהספרות אחרי הנקודה נשמרות
+ino-5-2.1.opt2 = ‏5 אסור
+ino-5-2.1.opt3 = כדי שזה יהיה איטי יותר
+ino-5-2.1.explanation = חישוב שלם היה חותך את התוצאה.
+ino-5-2.2.prompt = איזה מתח מייצגת קריאה של 1023 (בוולט)?
+ino-5-2.2.explanation = 1023 הוא ראש הטווח: 5V.
+
+ino-5-3 = PWM עם analogWrite
+ino-5-3.0.title = פלט אנלוגי "מזויף"
+ino-5-3.0.body = פינים דיגיטליים יכולים להיות רק HIGH או LOW, אבל PWM מחליף ביניהם מהר מאוד. החלק היחסי של הזמן ב-HIGH (מחזור עבודה) קובע את ההספק הממוצע: analogWrite(pin, 0–255). ב-Uno, רק פינים 3, 5, 6, 9, 10 ו-11 (מסומנים ~) תומכים ב-PWM.
+ino-5-3.1.prompt = איזה טווח מקבלת analogWrite?
+ino-5-3.1.opt3 = רק LOW/HIGH
+ino-5-3.1.explanation = PWM של 8 ביט: 0 תמיד כבוי, 255 תמיד דולק.
+ino-5-3.2.prompt = איזה פין ב-Uno תומך ב-PWM?
+ino-5-3.2.explanation = פיני PWM: ‏3, 5, 6, 9, 10, 11.
+ino-5-3.3.prompt = בערך איזה אחוז בהירות נותנת analogWrite(9, 64)?
+ino-5-3.3.explanation = 64 / 255 ≈ 25% מחזור עבודה.
+
+ino-5-4 = map() ו-constrain()
+ino-5-4.0.title = שינוי קנה מידה של ערכים
+ino-5-4.0.body = map(value, fromLow, fromHigh, toLow, toHigh) ממירה מספר מטווח אחד לאחר (בחישוב שלם). constrain(x, low, high) שומרת ערך בתוך גבולות.
+ino-5-4.1.prompt = הפכו קריאה של 0–1023 ל-0–255.
+ino-5-4.1.explanation = map(value, fromLow, fromHigh, toLow, toHigh).
+ino-5-4.2.prompt = מה זה map(512, 0, 1023, 0, 100)?
+ino-5-4.2.explanation = 512 הוא בערך באמצע, לכן בערך 50 (חישוב שלם מעגל כלפי מטה).
+ino-5-4.3.prompt = מה מחזירה constrain(300, 0, 255)?
+ino-5-4.3.explanation = ערכים מעל הגבול העליון נחתכים אליו.
+
+ino-5-5 = חיישנים אנלוגיים
+ino-5-5.0.title = אור וטמפרטורה
+ino-5-5.0.body = נגד תלוי אור (LDR) משנה את ההתנגדות שלו לפי האור; במחלק מתח עם נגד קבוע הוא נותן מתח משתנה שאפשר לקרוא. חיישן הטמפרטורה TMP36 מוציא 0.5V ב-0°C ועוד 10mV לכל מעלה.
+ino-5-5.1.prompt = TMP36 מוציא 0.75V. מה הטמפרטורה ב-°C?
+ino-5-5.1.explanation = (0.75 − 0.5) × 100 = 25°C.
+ino-5-5.2.prompt = למה LDR צריך נגד שני כדי שיהיה אפשר לקרוא אותו?
+ino-5-5.2.opt0 = כדי להגן על הנורה
+ino-5-5.2.opt1 = כדי ליצור מחלק מתח שהופך שינויי התנגדות לשינויי מתח
+ino-5-5.2.opt2 = Arduino דורש שני נגדים לכל פין
+ino-5-5.2.opt3 = כדי להגביר בהירות
+ino-5-5.2.explanation = analogRead מודדת מתח, לא התנגדות.
+
+section.ino-s6 = צליל ותנועה
+
+ino-6-1 = זמזמים ו-tone()
+ino-6-1.0.title = להפיק צליל
+ino-6-1.0.body = tone(pin, frequency) מנגנת גל ריבועי בזמזם פסיבי; הוסיפו משך באלפיות שנייה כדי לעצור אוטומטית, או קראו ל-noTone(pin). תדר גבוה יותר פירושו צליל גבוה יותר.
+ino-6-1.1.prompt = נגנו 1000Hz במשך 200ms.
+ino-6-1.1.explanation = tone(pin, frequency, duration).
+ino-6-1.2.prompt = מה מהם צליל גבוה יותר?
+ino-6-1.2.opt2 = הם שווים
+ino-6-1.2.opt3 = אף אחד לא משמיע צליל
+ino-6-1.2.explanation = תדר גבוה יותר = צליל גבוה יותר.
+ino-6-1.3.prompt = עצרו את הצליל.
+ino-6-1.3.explanation = noTone עוצרת את הצליל בפין הזה.
+
+ino-6-2 = מנועי סרוו
+ino-6-2.0.title = זוויות מדויקות
+ino-6-2.0.body = מנוע סרוו לחובבים מסתובב לזווית בין 0 ל-180°. כוללים את ספריית Servo, מחברים אותה לפין וכותבים זווית.
+ino-6-2.1.prompt = חברו את הסרוו לפין 9 ומרכזו אותו.
+ino-6-2.1.explanation = attach(pin) ואז write(angle).
+ino-6-2.2.prompt = איזה טווח זוויות מקבל סרוו סטנדרטי?
+ino-6-2.2.opt3 = רק −90–90
+ino-6-2.2.explanation = סרוו סטנדרטי מסתובב 0–180°.
+ino-6-2.3.prompt = סדרו את הסקיצה שמפעילה סרוו לפי פוטנציומטר.
+ino-6-2.3.explanation = include, הצהרה, attach ב-setup, עדכון ב-loop.
+
+ino-6-3 = מנועי DC וטרנזיסטורים
+ino-6-3.0.title = מיתוג עומסים גדולים
+ino-6-3.0.body = טרנזיסטור (למשל TIP120 או MOSFET ברמת לוגיקה) מאפשר לזרם זעיר מהפין למתג זרם מנוע גדול מספק נפרד. דיודת flyback על המנוע מגינה מפני קפיצות מתח. לשליטה בכיוון משתמשים בדרייבר H-bridge כמו L298N או TB6612.
+ino-6-3.1.prompt = מה עושה דיודת ה-flyback?
+ino-6-3.1.opt0 = מאיצה את המנוע
+ino-6-3.1.opt1 = מגינה על המעגל מקפיצת המתח כשהמנוע נכבה
+ino-6-3.1.opt2 = הופכת כיוון
+ino-6-3.1.opt3 = נדלקת
+ino-6-3.1.explanation = מנועים הם השראתיים ומחזירים קפיצת מתח.
+ino-6-3.2.prompt = איזה רכיב מאפשר למנוע להסתובב לשני הכיוונים?
+ino-6-3.2.opt0 = נגד
+ino-6-3.2.opt1 = דרייבר H-bridge
+ino-6-3.2.opt2 = פוטנציומטר
+ino-6-3.2.opt3 = קבל
+ino-6-3.2.explanation = H-bridge יכול להפוך את כיוון הזרם במנוע.
+ino-6-3.3.prompt = קבעו את מהירות המנוע עם PWM.
+ino-6-3.3.explanation = PWM שולט בהספק הממוצע, ולכן במהירות.
+
+ino-6-4 = נורות RGB
+ino-6-4.0.title = ערבוב צבעים
+ino-6-4.0.body = נורת RGB היא שלוש נורות (אדום, ירוק, כחול) באריזה אחת. PWM לכל צבע מאפשר לערבב כל צבע.
+ino-6-4.1.prompt = איזה צבע יוצרת setColor(255, 0, 255)?
+ino-6-4.1.opt0 = צהוב
+ino-6-4.1.opt1 = טורקיז
+ino-6-4.1.opt2 = מג'נטה (סגול)
+ino-6-4.1.opt3 = לבן
+ino-6-4.1.explanation = אדום + כחול = מג'נטה.
+ino-6-4.2.prompt = למה להשתמש בפיני PWM לנורת RGB?
+ino-6-4.2.opt0 = כדי לערבב צבעים ברמות בהירות שונות
+ino-6-4.2.opt1 = הם פיני הפלט היחידים
+ino-6-4.2.opt2 = כדי לקרוא את הצבע
+ino-6-4.2.opt3 = פיני PWM נותנים מתח גבוה יותר
+ino-6-4.2.explanation = הבהירות של כל ערוץ קובעת את חלקו בתערובת.
+
+section.ino-s7 = תקשורת
+
+ino-7-1 = קריאת קלט טורי
+ino-7-1.0.title = פקודות מהמחשב
+ino-7-1.0.body = Serial.available() מחזירה כמה בתים ממתינים. Serial.read() קוראת תו אחד; Serial.parseInt() קוראת מספר שלם.
+ino-7-1.1.prompt = קראו רק כשהגיעו נתונים.
+ino-7-1.1.explanation = בודקים available(), ואז read().
+ino-7-1.2.prompt = מה קורא מספר שלם כמו 120 שהוקלד ב-Serial Monitor?
+ino-7-1.2.explanation = parseInt אוספת ספרות למספר שלם.
+
+ino-7-2 = יסודות I²C
+ino-7-2.0.title = הרבה התקנים על שני חוטים
+ino-7-2.0.body = I²C מחבר התקנים רבים (מסכים, חיישנים) בעזרת SDA (נתונים) ו-SCL (שעון) בלבד; ב-Uno אלה A4 ו-A5. לכל התקן יש כתובת כמו 0x27. הספרייה Wire מטפלת בפרוטוקול.
+ino-7-2.1.prompt = באילו שני קווים משתמש I²C?
+ino-7-2.1.opt3 = רק 5V ו-GND
+ino-7-2.1.explanation = SDA נושא נתונים, SCL את השעון.
+ino-7-2.2.prompt = איך התקני I²C על אותם חוטים מבדילים ביניהם?
+ino-7-2.2.opt0 = לפי צבע
+ino-7-2.2.opt1 = לכל אחד יש כתובת משלו
+ino-7-2.2.opt2 = לפי מספר פין
+ino-7-2.2.opt3 = הם לא יכולים לחלוק
+ino-7-2.2.explanation = הבקר מדבר עם כתובת אחת בכל פעם.
+ino-7-2.3.prompt = כללו את ספריית I²C.
+ino-7-2.3.explanation = ספריית ה-I²C של Arduino נקראת Wire.
+
+ino-7-3 = תצוגות LCD
+ino-7-3.0.title = הצגת טקסט
+ino-7-3.0.body = מסך LCD בגודל 16×2 עם מתאם I²C צריך רק 4 חוטים (5V,‏ GND,‏ SDA,‏ SCL). ספריות נפוצות כמו LiquidCrystal_I2C משתמשות ב-setCursor(column, row) וב-print.
+ino-7-3.1.prompt = מה עושה lcd.setCursor(0, 1)?
+ino-7-3.1.opt0 = מנקה את המסך
+ino-7-3.1.opt1 = עוברת לעמודה 0 של השורה השנייה
+ino-7-3.1.opt2 = מדליקה את שורה 1
+ino-7-3.1.opt3 = מדפיסה 0 ו-1
+ino-7-3.1.explanation = עמודות ושורות מתחילות שתיהן ב-0.
+ino-7-3.2.prompt = כמה תווים נכנסים בשורה אחת של LCD בגודל 16×2?
+ino-7-3.2.explanation = ‏16 עמודות × 2 שורות.
+
+ino-7-4 = יסודות SPI
+ino-7-4.0.title = אפיק טורי מהיר
+ino-7-4.0.body = SPI מהיר מ-I²C ומשמש לכרטיסי SD, חלק מהמסכים ומשדרים. הוא משתמש ב-MOSI,‏ MISO,‏ SCK ועוד קו בחירת שבב (CS/SS) אחד לכל התקן. ב-Uno: ‏MOSI 11,‏ MISO 12,‏ SCK 13,‏ SS 10.
+ino-7-4.1.prompt = איך SPI בוחר עם איזה התקן לדבר?
+ino-7-4.1.opt0 = לפי כתובת
+ino-7-4.1.opt1 = עם קו בחירת שבב (CS) נפרד לכל התקן
+ino-7-4.1.opt2 = הוא מדבר עם כולם בבת אחת
+ino-7-4.1.opt3 = לפי מהירות baud
+ino-7-4.1.explanation = הבקר מוריד את קו ה-CS של התקן אחד ל-LOW.
+ino-7-4.2.prompt = מהו התקן SPI טיפוסי?
+ino-7-4.2.opt0 = לחצן
+ino-7-4.2.opt1 = מודול כרטיס SD
+ino-7-4.2.opt2 = פוטנציומטר
+ino-7-4.2.opt3 = נורת LED
+ino-7-4.2.explanation = כרטיסי SD משתמשים ב-SPI.
+
+section.ino-s8 = חיישנים וספריות
+
+ino-8-1 = שימוש בספריות
+ino-8-1.0.title = לא להמציא את הגלגל מחדש
+ino-8-1.0.body = ספריות מוסיפות תמיכה בחיישנים ובהתקנים. מתקינים אותן ממנהל הספריות של ה-IDE, ואז עושים #include לקובץ הכותרת. לספריות יש בדרך כלל סקיצות דוגמה.
+ino-8-1.1.prompt = איפה מתקינים בדרך כלל ספריית חיישן?
+ino-8-1.1.opt0 = רק בהעתק-הדבק מפורומים
+ino-8-1.1.opt1 = במנהל הספריות של Arduino IDE
+ino-8-1.1.opt2 = אי אפשר להוסיף ספריות
+ino-8-1.1.opt3 = ב-Serial Monitor
+ino-8-1.1.explanation = מנהל הספריות מחפש ומתקין ספריות.
+ino-8-1.2.prompt = השתמשו בספריית Servo.
+ino-8-1.2.explanation = #include מכניס קובץ כותרת.
+
+ino-8-2 = חיישן מרחק אולטרסוני
+ino-8-2.0.title = מדידה בעזרת קול
+ino-8-2.0.body = ה-HC-SR04 שולח פולס אולטרסוני כש-TRIG עולה ל-HIGH למשך 10µs, ומחזיק את ECHO ב-HIGH כל עוד ההד בדרך חזרה. הקול נע כ-0.0343 ס"מ למיקרו-שנייה, והפולס הולך וחוזר, לכן distance = duration × 0.0343 / 2.
+ino-8-2.1.prompt = למה מחלקים ב-2 בנוסחת המרחק?
+ino-8-2.1.opt0 = כדי להמיר לאינצ'ים
+ino-8-2.1.opt1 = הקול נע אל העצם וחזרה
+ino-8-2.1.opt2 = החיישן לא מדויק
+ino-8-2.1.opt3 = כדי לעגל
+ino-8-2.1.explanation = זמן ההד מכסה את הדרך הלוך ושוב.
+ino-8-2.2.prompt = pulseIn מחזירה 1000µs. מה המרחק בס"מ (×0.0343/2)?
+ino-8-2.2.explanation = 1000 × 0.0343 / 2 = 17.15 ס"מ.
+ino-8-2.3.prompt = מדדו כמה זמן ECHO נשאר HIGH.
+ino-8-2.3.explanation = pulseIn מודדת את אורך הפולס במיקרו-שניות.
+
+ino-8-3 = טמפרטורה ולחות
+ino-8-3.0.title = חיישני DHT
+ino-8-3.0.body = DHT11 ו-DHT22 מודדים טמפרטורה ולחות על פין דיגיטלי אחד. ספריית DHT (ממנהל הספריות) מטפלת בתזמון בשבילכם. הם איטיים: קוראים לכל היותר כל 1–2 שניות.
+ino-8-3.1.prompt = מה בודקת isnan(t)?
+ino-8-3.1.opt0 = אם t שלילי
+ino-8-3.1.opt1 = אם הקריאה נכשלה (Not a Number)
+ino-8-3.1.opt2 = אם זה מספר שלם
+ino-8-3.1.opt3 = אם t הוא אפס
+ino-8-3.1.explanation = הספרייה מחזירה NaN כשקריאה נכשלת.
+ino-8-3.2.prompt = כל כמה זמן כדאי לקרוא DHT22?
+ino-8-3.2.opt0 = כל אלפית שנייה
+ino-8-3.2.opt1 = בערך כל 2 שניות
+ino-8-3.2.opt2 = פעם ביום
+ino-8-3.2.opt3 = רק ב-setup
+ino-8-3.2.explanation = החיישנים האלה צריכים זמן בין קריאות.
+
+ino-8-4 = חיישני תנועה
+ino-8-4.0.title = חיישני PIR
+ino-8-4.0.body = חיישן PIR מזהה חום גוף שזז מולו ומעלה את פין הפלט שלו ל-HIGH לכמה שניות. זו פשוט כניסה דיגיטלית.
+ino-8-4.1.prompt = קראו את חיישן התנועה.
+ino-8-4.1.explanation = הפלט של PIR הוא אות דיגיטלי פשוט.
+ino-8-4.2.prompt = מה מזהה חיישן PIR?
+ino-8-4.2.opt0 = קול
+ino-8-4.2.opt1 = חום אינפרא-אדום שזז, כמו אדם
+ino-8-4.2.opt2 = מרחק בס"מ
+ino-8-4.2.opt3 = צבע אור
+ino-8-4.2.explanation = PIR = passive infrared (אינפרא-אדום פסיבי).
+
+section.ino-s9 = פסיקות, מכונות מצבים וזיכרון
+
+ino-9-1 = פסיקות
+ino-9-1.0.title = להגיב מיד
+ino-9-1.0.body = פסיקה (interrupt) מריצה פונקציה (ISR) ברגע שפין משתנה, אפילו באמצע loop(). ב-Uno, פינים 2 ו-3 תומכים בזה. שמרו על ISR קצר מאוד, וסמנו משתנים שמשותפים איתו כ-volatile.
+ino-9-1.1.prompt = סמנו משתנה שמשתנה בתוך ISR.
+ino-9-1.1.explanation = volatile אומר לקומפיילר שהערך יכול להשתנות בכל רגע.
+ino-9-1.2.prompt = אילו פינים ב-Uno תומכים בפסיקות חיצוניות עם attachInterrupt?
+ino-9-1.2.opt0 = ‏0 ו-1
+ino-9-1.2.opt1 = ‏2 ו-3
+ino-9-1.2.opt2 = A0 ו-A1
+ino-9-1.2.opt3 = כל פין
+ino-9-1.2.explanation = ב-Uno, פסיקה 0 היא פין 2 ופסיקה 1 היא פין 3.
+ino-9-1.3.prompt = למה לשמור ISR קצר?
+ino-9-1.3.opt0 = ISR ארוך אסור
+ino-9-1.3.opt1 = בזמן שהוא רץ, פסיקות אחרות ותזמון (כמו millis) מושהים
+ino-9-1.3.opt2 = כדי לחסוך זיכרון הבזק
+ino-9-1.3.opt3 = כי volatile איטי
+ino-9-1.3.explanation = עושים את המינימום (מדליקים דגל) ומטפלים בשאר ב-loop().
+
+ino-9-2 = מכונות מצבים
+ino-9-2.0.title = התנהגות ברורה עם מצבים
+ino-9-2.0.body = במקום ערימת if-ים סבוכה, תנו למכשיר מצבים מפורשים עם enum ובצעו switch על המצב הנוכחי ב-loop(). כל מצב מחליט מה לעשות ומתי לעבור מצב.
+ino-9-2.1.prompt = הצהירו על המצבים האפשריים.
+ino-9-2.1.explanation = enum מונה ערכים עם שמות.
+ino-9-2.2.prompt = בקוד שלמעלה, איך המכשיר עובר מ-IDLE ל-ALARM?
+ino-9-2.2.opt0 = ישירות כשמזוהה תנועה
+ino-9-2.2.opt1 = לחיצה על הכפתור דורכת אותו, ואז תנועה מפעילה את האזעקה
+ino-9-2.2.opt2 = אחרי פרק זמן
+ino-9-2.2.opt3 = הוא לא יכול
+ino-9-2.2.explanation = IDLE ← ARMED בלחיצה, ARMED ← ALARM בתנועה.
+ino-9-2.3.prompt = מה עושה break ב-case של switch?
+ino-9-2.3.opt0 = עוצר את הלוח
+ino-9-2.3.opt1 = מסיים את ה-case כדי שהביצוע לא ייפול לבא
+ino-9-2.3.opt2 = מתחיל מחדש את loop()
+ino-9-2.3.opt3 = יוצא מ-setup()
+ino-9-2.3.explanation = בלי break, גם ה-case הבא היה רץ.
+
+ino-9-4 = זיכרון חשוב
+ino-9-4.0.title = לחיות ב-2KB
+ino-9-4.0.body = ל-Uno יש רק 2KB של SRAM למשתנים. עטפו מחרוזות קבועות ב-F("…") כדי שיישארו בזיכרון ההבזק, העדיפו מערכי char על פני המחלקה String בסקיצות שרצות זמן רב (היא עלולה לפצל את הזיכרון), והשתמשו בטיפוסים קטנים.
+ino-9-4.1.prompt = מה עושה המאקרו F()?
+ino-9-4.1.opt0 = מעצב מספרים
+ino-9-4.1.opt1 = משאיר מחרוזת קבועה בזיכרון ההבזק במקום ב-SRAM
+ino-9-4.1.opt2 = מדגיש טקסט
+ino-9-4.1.opt3 = ממיר ל-float
+ino-9-4.1.explanation = הוא חוסך RAM יקר.
+ino-9-4.2.prompt = כמה SRAM יש ל-Uno?
+ino-9-4.2.opt3 = ‏512 בתים
+ino-9-4.2.explanation = ‏2KB לכל המשתנים ולמחסנית.
+
+ino-9-5 = EEPROM
+ino-9-5.0.title = לזכור אחרי כיבוי
+ino-9-5.0.body = EEPROM שומר נתונים כשהמתח מנותק (1KB ב-Uno). EEPROM.put ו-EEPROM.get שומרים כל טיפוס; update() כותבת רק אם הערך השתנה. כל תא שורד כ-100,000 כתיבות, לכן לא כותבים בכל מעבר של הלולאה.
+ino-9-5.1.prompt = טענו את הערך השמור מכתובת 0.
+ino-9-5.1.explanation = get קוראת כל טיפוס מכתובת.
+ino-9-5.2.prompt = למה לא לכתוב ל-EEPROM בכל מעבר של הלולאה?
+ino-9-5.2.opt0 = זה איטי מדי לקמפל
+ino-9-5.2.opt1 = כל תא נשחק אחרי כ-100,000 כתיבות
+ino-9-5.2.opt2 = זה מוחק את הסקיצה
+ino-9-5.2.opt3 = loop() לא יכולה לגשת ל-EEPROM
+ino-9-5.2.explanation = כותבים רק כשהערכים משתנים.
+
+section.ino-s10 = פרויקט: חיישן חניה
+
+ino-10-1 = תכנון וחיווט
+ino-10-1.0.title = מה אנחנו בונים
+ino-10-1.0.body = חיישן חניה: HC-SR04 מודד את המרחק למכשול, שלוש נורות מציגות אזורים ירוק/צהוב/אדום, וזמזם מצפצף מהר יותר ככל שמתקרבים.
+ino-10-1.1.prompt = למה כל נורה צריכה נגד משלה?
+ino-10-1.1.opt0 = לקישוט
+ino-10-1.1.opt1 = כדי להגביל את הזרם של כל נורה
+ino-10-1.1.opt2 = כדי שהזמזם יעבוד
+ino-10-1.1.opt3 = החיישן צריך אותם
+ino-10-1.1.explanation = כל נורת LED צריכה הגבלת זרם.
+ino-10-1.2.prompt = ב-30 ס"מ, איזו נורה צריכה לדלוק?
+ino-10-1.2.opt0 = ירוקה
+ino-10-1.2.opt1 = צהובה
+ino-10-1.2.opt2 = אדומה
+ino-10-1.2.opt3 = כל השלוש
+ino-10-1.2.explanation = ‏30 ס"מ נמצא באזור 20–50 ס"מ.
+
+ino-10-2 = קריאת המרחק
+ino-10-2.0.title = פונקציה לשימוש חוזר
+ino-10-2.0.body = עוטפים את המדידה בפונקציה, ומשתמשים בזמן הקצוב של pulseIn כדי שהד חסר לא יתקע את הלולאה.
+ino-10-2.1.prompt = סדרו את פולס ההפעלה.
+ino-10-2.1.explanation = LOW נקי, פולס HIGH של 10µs, וחזרה ל-LOW.
+ino-10-2.2.prompt = מה מחזירה pulseIn כשהזמן הקצוב נגמר?
+ino-10-2.2.opt3 = את ערך הזמן הקצוב
+ino-10-2.2.explanation = pulseIn מחזירה 0 אם שום פולס לא הגיע בזמן.
+
+ino-10-3 = אזורים וצפצופים שלא חוסמים
+ino-10-3.0.title = נורות ועוד millis()
+ino-10-3.0.body = בוחרים את הנורה לפי המרחק, ומצפצפים במרווח שמתקצר ככל שהמכשול מתקרב, בתזמון עם millis() כדי שהקריאות לעולם לא ייעצרו.
+ino-10-3.1.prompt = הדליקו את האדומה כשקרובים מ-20 ס"מ.
+ino-10-3.1.explanation = השוואה אמיתית כותבת HIGH ‏(1).
+ino-10-3.2.prompt = ב-d = 25 ס"מ, איזה מרווח צפצוף נותנת map(25, 0, 50, 50, 600) ‏(ms)?
+ino-10-3.2.explanation = באמצע בין 50 ל-600 זה 325.
+ino-10-3.3.prompt = למה להשתמש ב-millis() לצפצופים ולא ב-delay()?
+ino-10-3.3.opt0 = delay לא יכולה להשמיע צליל
+ino-10-3.3.opt1 = כדי שקריאות המרחק והנורות ימשיכו להתעדכן בין צפצופים
+ino-10-3.3.opt2 = millis שקטה יותר
+ino-10-3.3.opt3 = tone דורשת את זה
+ino-10-3.3.explanation = תזמון שלא חוסם שומר על החיישן רספונסיבי.
+
+ino-10-4 = ארגון מחדש במחלקה והרחבה
+ino-10-4.0.title = קוד נקי ולשימוש חוזר
+ino-10-4.0.body = עוטפים את החיישן במחלקה כדי שיהיה קל להשתמש בו שוב, ושומרים על loop() זעירה. רעיונות לנסות לבד: להציג את המרחק על LCD, להוסיף כפתור השתקה עם פסיקה, לשמור את מרחק האזהרה ב-EEPROM. עכשיו יש לכם את הכלים לבנות אותם.
+ino-10-4.1.prompt = אתחלו את הפינים בבנאי.
+ino-10-4.1.explanation = רשימת אתחול מתחילה בנקודתיים.
+ino-10-4.2.prompt = איזו תכונה הכי מתאימה לפסיקה?
+ino-10-4.2.opt0 = הצגת נורות האזורים
+ino-10-4.2.opt1 = כפתור השתקה שחייב להגיב מיד
+ino-10-4.2.opt2 = חישוב המרחק
+ino-10-4.2.opt3 = בחירת תדר הצפצוף
+ino-10-4.2.explanation = אפשר לתפוס לחיצות מיד עם attachInterrupt.
+ino-10-4.3.prompt = איפה לשמור מרחק אזהרה שהמשתמש בחר כדי שישרוד כיבוי?
+ino-10-4.3.opt0 = במשתנה גלובלי
+ino-10-4.3.opt1 = ב-EEPROM
+ino-10-4.3.opt2 = ב-Serial Monitor
+ino-10-4.3.opt3 = ב-#define
+ino-10-4.3.explanation = EEPROM שומר נתונים בלי מתח.

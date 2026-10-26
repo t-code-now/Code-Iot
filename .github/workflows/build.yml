@@ -1,0 +1,72 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: never
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - uses: Swatinem/rust-cache@v2
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: trunk
+
+      # Every step appends to build.log so the full output can be read back
+      # from the ci-log branch.
+      - name: Test core
+        run: cargo test -p codesprout-core 2>&1 | tee -a build.log; exit ${PIPESTATUS[0]}
+
+      - name: Build and test server
+        run: cargo test -p codesprout-server 2>&1 | tee -a build.log; exit ${PIPESTATUS[0]}
+
+      - name: Build web app (WebAssembly)
+        working-directory: web
+        run: trunk build --release 2>&1 | tee -a ../build.log; exit ${PIPESTATUS[0]}
+
+      - name: Build server (release)
+        run: cargo build -p codesprout-server --release 2>&1 | tee -a build.log; exit ${PIPESTATUS[0]}
+
+      - name: Package
+        run: |
+          mkdir -p codesprout/web
+          cp target/release/codesprout-server codesprout/
+          cp -r web/dist codesprout/web/dist
+          cp README.md codesprout/
+          tar czf codesprout-linux-x64.tar.gz codesprout
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codesprout-linux-x64
+          path: codesprout-linux-x64.tar.gz
+
+      - name: Publish build log
+        if: always()
+        run: |
+          touch build.log
+          echo "status: ${{ job.status }}  commit: ${{ github.sha }}" > summary.txt
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          mkdir -p /tmp/log && cp build.log summary.txt /tmp/log/
+          git checkout --orphan ci-log
+          git rm -rf --quiet . || true
+          cp /tmp/log/* .
+          git add build.log summary.txt
+          git commit -m "build log for ${{ github.sha }}"
+          git push -f origin ci-log

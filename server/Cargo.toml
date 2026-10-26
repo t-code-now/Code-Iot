@@ -1,0 +1,19 @@
+[package]
+name = "codesprout-server"
+description = "HTTP API (axum + SQLite) for CodeSprout; also serves the built web app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+codesprout-core = { path = "../core", features = ["serde"] }
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+tower-http = { version = "0.5", features = ["fs", "cors", "trace"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.31", features = ["bundled"] }
+argon2 = "0.5"
+rand = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

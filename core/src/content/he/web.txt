@@ -1,0 +1,492 @@
+// HTML & CSS — Hebrew translation. Keys match the English content; code stays in English.
+course.web.title = HTML ו-CSS
+course.web.description = מסלול עיצוב אתרים מלא: מבנה HTML, טפסים, סלקטורים ב-CSS, מודל הקופסה, flexbox,‏ grid, עיצוב רספונסיבי, אנימציות ודף נחיתה מסכם.
+
+section.web-s1 = יסודות HTML
+
+web-1-1 = תגיות ואלמנטים
+web-1-1.0.title = אבני הבניין
+web-1-1.0.body = HTML מתאר את מבנה הדף בעזרת תגיות בסוגריים משולשים. רובן מגיעות בזוגות, תגית פותחת ותגית סוגרת (עם לוכסן), ויחד עם התוכן שלהן הן יוצרות אלמנט.
+web-1-1.1.prompt = מהי תגית סגירה נכונה ל-<p>?
+web-1-1.1.explanation = תגיות סגירה חוזרות על השם עם לוכסן.
+web-1-1.2.prompt = סגרו את הפסקה.
+web-1-1.2.explanation = כל <p> שנפתח צריך ‎</p>‎.
+web-1-1.3.prompt = כתבו אלמנט פסקה שמכיל את הטקסט Hi
+web-1-1.3.explanation = תגית פותחת, תוכן, תגית סוגרת.
+
+web-1-2 = מבנה הדף
+web-1-2.0.title = השלד של כל דף
+web-1-2.0.body = <!DOCTYPE html> מצהיר על HTML5.‏ <html> עוטף הכול; <head> מחזיק מידע על הדף (כותרת, קידוד תווים, עיצוב); <body> מחזיק את מה שנראה.
+web-1-2.1.prompt = לאן הולך התוכן הנראה?
+web-1-2.1.explanation = ה-body מכיל את כל מה שמוצג בדף.
+web-1-2.2.prompt = על מה שולט <title>?
+web-1-2.2.opt0 = הכותרת הגדולה ביותר
+web-1-2.2.opt1 = הטקסט בלשונית הדפדפן
+web-1-2.2.opt2 = כתובת הדף
+web-1-2.2.opt3 = הגופן
+web-1-2.2.explanation = הכותרת מופיעה בלשונית ובתוצאות החיפוש.
+web-1-2.3.prompt = סדרו את שלד הדף.
+web-1-2.3.explanation = Doctype,‏ html,‏ head,‏ body, ואז סגירת html.
+
+web-1-3 = כותרות וטקסט
+web-1-3.0.title = אלמנטים של טקסט
+web-1-3.0.body = כותרות הן מ-<h1> (החשובה ביותר) עד <h6>.‏ <p> היא פסקה. <strong> מסמן טקסט חשוב (מודגש), <em> מסמן הדגשה (נטוי) ו-<br> הוא שבירת שורה ללא תגית סוגרת.
+web-1-3.1.prompt = איזו תגית יוצרת את הכותרת הגדולה ביותר?
+web-1-3.1.explanation = הכותרות הן מ-h1 (הגדולה) עד h6 (הקטנה).
+web-1-3.2.prompt = סמנו את המילה כחשובה.
+web-1-3.2.explanation = ל-<strong> יש משמעות (חשיבות), לא רק עיצוב מודגש.
+web-1-3.3.prompt = לאיזה אלמנט אין תגית סוגרת?
+web-1-3.3.explanation = <br> הוא אלמנט ריק: אין לו תוכן.
+
+web-1-4 = קישורים
+web-1-4.0.title = לחבר דפים
+web-1-4.0.body = <a> יוצר קישור; href מחזיק את היעד. השתמשו בכתובת מלאה לאתרים אחרים או בנתיב יחסי לדפים שלכם. target="_blank" פותח לשונית חדשה.
+web-1-4.1.prompt = גרמו לקישור להפנות ל-about.html.
+web-1-4.1.explanation = href מחזיק את היעד של הקישור.
+web-1-4.2.prompt = מה עושה href="#faq"?
+web-1-4.2.opt0 = פותח את faq.html
+web-1-4.2.opt1 = קופץ לאלמנט עם id="faq" בדף
+web-1-4.2.opt2 = מחפש את faq
+web-1-4.2.opt3 = כלום
+web-1-4.2.explanation = קישורי # מפנים ל-id באותו דף.
+web-1-4.3.prompt = כתבו קישור ל-https://example.com עם הטקסט Go
+web-1-4.3.explanation = <a href="URL">text</a>
+
+web-1-5 = תמונות ומדיה
+web-1-5.0.title = תמונות ווידאו
+web-1-5.0.body = <img> מציג תמונה: src הוא הקובץ, alt מתאר אותה לקוראי מסך וכשהיא לא נטענת. אין לו תגית סוגרת. <video> ו-<audio> משלבים מדיה; controls מוסיף כפתורי ניגון.
+web-1-5.1.prompt = הציגו את logo.png.
+web-1-5.1.explanation = src הוא קובץ התמונה ו-alt הוא התיאור שלה.
+web-1-5.2.prompt = בשביל מה המאפיין alt?
+web-1-5.2.opt0 = גודל התמונה
+web-1-5.2.opt1 = טקסט שמתאר את התמונה
+web-1-5.2.opt2 = צבע של חלונית עזרה
+web-1-5.2.opt3 = שם הקובץ
+web-1-5.2.explanation = alt מתאר את התמונה לקוראי מסך וכשהיא לא נטענת.
+web-1-5.3.prompt = איזה מאפיין מציג כפתורי ניגון/השהיה בווידאו?
+web-1-5.3.explanation = controls מציג את פקדי המדיה של הדפדפן.
+
+section.web-s2 = ארגון תוכן
+
+web-2-1 = רשימות
+web-2-1.0.title = תבליטים ומספרים
+web-2-1.0.body = <ul> היא רשימה לא ממוספרת (תבליטים), <ol> היא רשימה ממוספרת. כל פריט הוא <li>. אפשר לקנן רשימות.
+web-2-1.1.prompt = סדרו את השורות לרשימה ממוספרת.
+web-2-1.1.explanation = פותחים את הרשימה, מוסיפים פריטים, סוגרים את הרשימה.
+web-2-1.2.prompt = איזו תגית היא פריט ברשימה?
+web-2-1.2.explanation = <li> הוא קיצור של list item.
+web-2-1.3.prompt = צרו רשימת תבליטים.
+web-2-1.3.explanation = ul = unordered list (רשימה לא ממוספרת).
+
+web-2-2 = טבלאות
+web-2-2.0.title = שורות ועמודות
+web-2-2.0.body = <table> מחזיקה שורות (<tr>). בכל שורה יש תאי כותרת (<th>) או תאי נתונים (<td>). <thead> ו-<tbody> מקבצים את השורות.
+web-2-2.1.prompt = איזו תגית יוצרת שורה בטבלה?
+web-2-2.1.explanation = tr = table row (שורת טבלה).
+web-2-2.2.prompt = בשביל מה משמש <th>?
+web-2-2.2.opt0 = תא כותרת בטבלה
+web-2-2.2.opt1 = אזור הראש של הטבלה
+web-2-2.2.opt2 = גבול עבה
+web-2-2.2.opt3 = קישור
+web-2-2.2.explanation = תאי th נותנים כותרת לעמודות או לשורות.
+web-2-2.3.prompt = הוסיפו תא נתונים.
+web-2-2.3.explanation = td = table data (נתוני טבלה).
+
+web-2-3 = div,‏ span,‏ id ו-class
+web-2-3.0.title = מכלים כלליים
+web-2-3.0.body = <div> הוא מכל בלוק ו-<span> מכל בתוך שורה; אין להם משמעות משלהם, אבל הם מקבצים תוכן לעיצוב. id נותן שם לאלמנט ייחודי אחד; class מתייג כל מספר של אלמנטים.
+web-2-3.1.prompt = כמה אלמנטים בדף צריכים לחלוק id אחד?
+web-2-3.1.opt0 = כל מספר
+web-2-3.1.opt1 = בדיוק אחד
+web-2-3.1.opt2 = שניים
+web-2-3.1.opt3 = אף אחד
+web-2-3.1.explanation = id חייב להיות ייחודי. לקבוצות משתמשים ב-class.
+web-2-3.2.prompt = מה מהבאים הוא בתוך שורה (לא מתחיל שורה חדשה)?
+web-2-3.2.explanation = span הוא inline; ‏div,‏ p וכותרות הם אלמנטי בלוק.
+web-2-3.3.prompt = תנו לשני הכרטיסים את אותה מחלקה.
+web-2-3.3.explanation = אפשר להשתמש ב-class שוב ושוב; ב-id לא.
+
+web-2-4 = HTML סמנטי
+web-2-4.0.title = תגיות עם משמעות
+web-2-4.0.body = תגיות סמנטיות מתארות מהו התוכן: <header>,‏ <nav>,‏ <main>,‏ <section>,‏ <article>,‏ <aside>,‏ <footer>. הן עוזרות לקוראי מסך, למנועי חיפוש ולמפתחים אחרים.
+web-2-4.1.prompt = איזו תגית מחזיקה את קישורי הניווט הראשיים של האתר?
+web-2-4.1.explanation = nav מסמנת ניווט.
+web-2-4.2.prompt = למה להשתמש ב-<main> במקום ב-<div id="main">?
+web-2-4.2.opt0 = זה מהיר יותר
+web-2-4.2.opt1 = זה אומר לדפדפנים ולטכנולוגיות מסייעות מה התוכן
+web-2-4.2.opt2 = div הוצא משימוש
+web-2-4.2.opt3 = זה מוסיף עיצוב
+web-2-4.2.explanation = לאלמנטים סמנטיים יש משמעות.
+web-2-4.3.prompt = סדרו פריסה טיפוסית של דף.
+web-2-4.3.explanation = Header למעלה, התוכן הראשי, footer למטה.
+
+section.web-s3 = טפסים
+
+web-3-1 = טפסים ושדות קלט
+web-3-1.0.title = איסוף נתונים
+web-3-1.0.body = <form> עוטף שדות קלט. ל-<input> יש סוגים רבים: text,‏ email,‏ password,‏ number,‏ checkbox,‏ radio,‏ date… ‏name מזהה את הערך כשהטופס נשלח.
+web-3-1.1.prompt = צרו שדה סיסמה.
+web-3-1.1.explanation = type="password" מסתיר את מה שמוקלד.
+web-3-1.2.prompt = איזה סוג קלט מאפשר לבחור כמה אפשרויות מתוך קבוצה?
+web-3-1.2.explanation = תיבות סימון מאפשרות כמה בחירות; כפתורי radio מאפשרים רק אחת בכל קבוצה.
+web-3-1.3.prompt = מה עושה המאפיין name?
+web-3-1.3.opt0 = מציג תווית
+web-3-1.3.opt1 = מזהה את הערך כשהטופס נשלח
+web-3-1.3.opt2 = קובע את הגופן
+web-3-1.3.opt3 = הופך אותו לחובה
+web-3-1.3.explanation = הנתונים שנשלחים נשלחים כזוגות name=value.
+
+web-3-2 = תוויות ונגישות
+web-3-2.0.title = תיאור שדות
+web-3-2.0.body = <label> מתאר שדה קלט. מקשרים ביניהם עם for בתווית שתואם ל-id של השדה; אז לחיצה על התווית ממקדת את השדה, וקוראי מסך מקריאים אותה.
+web-3-2.1.prompt = חברו את התווית לשדה.
+web-3-2.1.explanation = ה-for של התווית תואם ל-id של השדה.
+web-3-2.2.prompt = למה תוויות חשובות?
+web-3-2.2.opt0 = הן מדגישות טקסט
+web-3-2.2.opt1 = קוראי מסך מקריאים אותן ולחיצה ממקדת את השדה
+web-3-2.2.opt2 = הן שולחות את הטופס
+web-3-2.2.opt3 = CSS דורש אותן
+web-3-2.2.explanation = תוויות הופכות טפסים לנגישים ונוחים יותר.
+
+web-3-3 = עוד פקדים ואימות
+web-3-3.0.title = בחירות, אזורי טקסט וכללים
+web-3-3.0.body = <select> עם <option> יוצר רשימה נפתחת, <textarea> שדה רב-שורתי. מאפיינים כמו required,‏ minlength,‏ min/max ו-placeholder מוסיפים אימות מובנה ורמזים.
+web-3-3.1.prompt = הפכו את השדה לחובה.
+web-3-3.1.explanation = required חוסם שליחה כל עוד השדה ריק.
+web-3-3.2.prompt = איזה אלמנט יוצר רשימה נפתחת?
+web-3-3.2.explanation = select עם ילדי option.
+web-3-3.3.prompt = מה עושה placeholder?
+web-3-3.3.opt0 = קובע ערך ברירת מחדל שנשלח
+web-3-3.3.opt1 = מציג טקסט רמז עד שהמשתמש מקליד
+web-3-3.3.opt2 = הופך את השדה לחובה
+web-3-3.3.opt3 = קובע את הרוחב
+web-3-3.3.explanation = טקסט ה-placeholder נעלם כשמקלידים ואינו נשלח.
+
+section.web-s4 = יסודות CSS
+
+web-4-1 = הוספת CSS
+web-4-1.0.title = עיצוב
+web-4-1.0.body = CSS מעצב HTML. לכלל יש סלקטור והצהרות בתוך סוגריים מסולסלים: property: value;. שמים CSS בקובץ נפרד שמקושר מה-<head> עם <link rel="stylesheet">.
+web-4-1.1.prompt = צבעו פסקאות בכחול.
+web-4-1.1.explanation = color קובע את צבע הטקסט.
+web-4-1.2.prompt = מהו התחביר הנכון?
+web-4-1.2.explanation = property: value; בתוך סוגריים מסולסלים.
+web-4-1.3.prompt = קשרו את גיליון הסגנונות.
+web-4-1.3.explanation = rel="stylesheet" אומר לדפדפן מהו הקישור.
+
+web-4-2 = סלקטורים
+web-4-2.0.title = בחירת אלמנטים
+web-4-2.0.body = סלקטורי סוג (p) תואמים תגיות, ‏.class תואם מחלקה, ‏#id תואם id. ‏"nav a" תואם קישורים בתוך nav. פסיקים מקבצים סלקטורים שחולקים עיצוב.
+web-4-2.1.prompt = איזה סלקטור פוגע ב-class="card"?
+web-4-2.1.explanation = סלקטורי מחלקה מתחילים בנקודה; id ב-#.
+web-4-2.2.prompt = מה בוחר "ul li"?
+web-4-2.2.opt0 = רק את ה-ul
+web-4-2.2.opt1 = אלמנטי li בתוך ul
+web-4-2.2.opt2 = ul ליד li
+web-4-2.2.opt3 = את שניהם בנפרד
+web-4-2.2.explanation = רווח פירושו "צאצא של".
+web-4-2.3.prompt = עצבו את האלמנט עם id ‏"logo".
+web-4-2.3.explanation = # בוחר לפי id.
+
+web-4-3 = צבעים ויחידות
+web-4-3.0.title = ערכים
+web-4-3.0.body = צבעים יכולים להיות שמות (red), הקס (#ff6600), ‏rgb(255, 102, 0) או עם שקיפות rgba/hsla. גדלים משתמשים ב-px (קבוע), % (מההורה), em (מגודל הגופן של האלמנט), rem (מגודל הגופן של השורש) ו-vw/vh (מאזור התצוגה).
+web-4-3.1.prompt = מה פירוש 2rem?
+web-4-3.1.opt0 = 2 פיקסלים
+web-4-3.1.opt1 = פי 2 מגודל הגופן של השורש (html)
+web-4-3.1.opt2 = ‏2% מההורה
+web-4-3.1.opt3 = פי 2 מאזור התצוגה
+web-4-3.1.explanation = rem יחסי לגודל הגופן של השורש (לרוב 16px, כלומר 32px).
+web-4-3.2.prompt = מהו הערך הרביעי ב-rgba(0, 0, 0, 0.5)?
+web-4-3.2.opt0 = בהירות
+web-4-3.2.opt1 = אטימות
+web-4-3.2.opt2 = טשטוש
+web-4-3.2.opt3 = גודל
+web-4-3.2.explanation = ערוץ האלפא: 0 שקוף, 1 אטום.
+web-4-3.3.prompt = איזו יחידה הופכת גובה לשווה לכל גובה אזור התצוגה? (מספר + יחידה)
+web-4-3.3.explanation = vh = ‏1% מגובה אזור התצוגה.
+
+web-4-4 = המפל והספציפיות
+web-4-4.0.title = איזה כלל מנצח?
+web-4-4.0.body = כשכללים מתנגשים, הסלקטור הספציפי יותר מנצח: id > class > סוג. בספציפיות שווה, הכלל שמופיע מאוחר יותר מנצח. מאפיינים מסוימים (כמו color ו-font) עוברים בירושה לילדים.
+web-4-4.1.prompt = <p class="note" id="tip"> — איזה צבע חל (לפי הכללים למעלה)?
+web-4-4.1.explanation = סלקטור ה-id הוא הספציפי ביותר.
+web-4-4.2.prompt = שני כללים עם אותו סלקטור קובעים צבעים שונים. מי מנצח?
+web-4-4.2.opt0 = הראשון
+web-4-4.2.opt1 = האחרון
+web-4-4.2.opt2 = אף אחד
+web-4-4.2.opt3 = הצבע הכהה יותר
+web-4-4.2.explanation = בספציפיות שווה, כללים מאוחרים דורסים מוקדמים.
+
+section.web-s5 = טקסט ומודל הקופסה
+
+web-5-1 = גופנים וטקסט
+web-5-1.0.title = טיפוגרפיה
+web-5-1.0.body = font-family בוחר גופן (עם חלופות), font-size את הגודל, font-weight את העובי, line-height את המרווח בין שורות, text-align את היישור.
+web-5-1.1.prompt = הפכו את הכותרת למודגשת וממורכזת.
+web-5-1.1.explanation = font-weight להדגשה, text-align ליישור.
+web-5-1.2.prompt = למה לרשום כמה גופנים ב-font-family?
+web-5-1.2.opt0 = כדי לערבב אותם
+web-5-1.2.opt1 = חלופות אם הראשון לא זמין
+web-5-1.2.opt2 = כדי להגדיל את הטקסט
+web-5-1.2.opt3 = זו חובה
+web-5-1.2.explanation = הדפדפן משתמש בראשון שיש לו.
+web-5-1.3.prompt = איזה מאפיין מסיר את הקו התחתון של קישור?
+web-5-1.3.explanation = text-decoration שולט בקווים תחתונים.
+
+web-5-2 = מודל הקופסה
+web-5-2.0.title = כל אלמנט הוא קופסה
+web-5-2.0.body = מבפנים החוצה: content, ‏padding (ריווח בתוך הגבול), ‏border, ‏margin (ריווח בחוץ). קיצור: padding: 10px 20px פירושו למעלה/למטה 10px, שמאל/ימין 20px.
+web-5-2.1.prompt = איזה מאפיין מוסיף ריווח מחוץ לגבול?
+web-5-2.1.explanation = margin נמצא מחוץ לגבול; padding בתוכו.
+web-5-2.2.prompt = סדרו את שכבות הקופסה מבפנים החוצה.
+web-5-2.2.explanation = התוכן עטוף ב-padding, אחר כך border, ואז margin.
+web-5-2.3.prompt = מה עושה margin: 0 auto לבלוק עם רוחב מוגדר?
+web-5-2.3.opt0 = מסיר אותו
+web-5-2.3.opt1 = ממרכז אותו אופקית
+web-5-2.3.opt2 = הופך אותו לרוחב מלא
+web-5-2.3.opt3 = מסתיר אותו
+web-5-2.3.explanation = שוליים אוטומטיים משמאל ומימין מחלקים את המקום הפנוי שווה בשווה.
+
+web-5-3 = גבולות, פינות מעוגלות וצללים
+web-5-3.0.title = עיצוב קופסאות
+web-5-3.0.body = box-sizing: border-box גורם לרוחב לכלול padding וגבול, וכך הגדלים צפויים. border-radius מעגל פינות; box-shadow מוסיף עומק.
+web-5-3.1.prompt = עגלו את הפינות ב-8px.
+web-5-3.1.explanation = border-radius מעגל פינות.
+web-5-3.2.prompt = עם box-sizing: border-box,‏ width: 200px ו-padding: 20px, מה רוחב הקופסה?
+web-5-3.2.explanation = border-box כולל את ה-padding ברוחב.
+web-5-3.3.prompt = איך הופכים אלמנט מרובע לעיגול מושלם?
+web-5-3.3.explanation = רדיוס של 50% על ריבוע יוצר עיגול.
+
+web-5-4 = רקעים
+web-5-4.0.title = צבעים, תמונות, מעברי צבע
+web-5-4.0.body = background-color ממלא את הקופסה. background-image יכול להיות תמונה או מעבר צבע; background-size: cover ממלא את השטח תוך שמירה על פרופורציות.
+web-5-4.1.prompt = מה עושה background-size: cover?
+web-5-4.1.opt0 = חוזר על התמונה
+web-5-4.1.opt1 = מגדיל את התמונה כדי למלא את הקופסה, וחותך אם צריך
+web-5-4.1.opt2 = מציג את התמונה בגודל האמיתי
+web-5-4.1.opt3 = מסתיר את התמונה
+web-5-4.1.explanation = cover ממלא את השטח ושומר על יחס הרוחב-גובה.
+web-5-4.2.prompt = צרו מעבר צבע משמאל לימין.
+web-5-4.2.explanation = linear-gradient הולך בכיוון ישר.
+
+section.web-s6 = פריסה ו-Flexbox
+
+web-6-1 = display
+web-6-1.0.title = Block,‏ inline ו-none
+web-6-1.0.body = אלמנטי בלוק מתחילים בשורה חדשה ותופסים את כל הרוחב. אלמנטי inline זורמים בתוך הטקסט ומתעלמים מרוחב/גובה. inline-block זורם בשורה אבל מכבד גודל. display: none מסיר את האלמנט.
+web-6-1.1.prompt = איזה ערך של display מסתיר אלמנט לגמרי?
+web-6-1.1.explanation = display: none מסיר אותו מהפריסה.
+web-6-1.2.prompt = איזה display מכבד רוחב אבל נשאר בזרימת הטקסט?
+web-6-1.2.explanation = inline-block משלב את שתי ההתנהגויות.
+
+web-6-2 = מיקום
+web-6-2.0.title = להוציא אלמנטים מהזרימה
+web-6-2.0.body = position: relative מאפשר להזיז אלמנט מעט והופך אותו לנקודת ייחוס. absolute ממקם ביחס לאב הממוקם הקרוב ביותר. fixed נצמד למסך. sticky נצמד ברגע שגוללים אליו.
+web-6-2.1.prompt = אלמנט absolute ממוקם ביחס ל…
+web-6-2.1.opt0 = תמיד לדף
+web-6-2.1.opt1 = לאב הממוקם הקרוב ביותר
+web-6-2.1.opt2 = לאח הבא שלו
+web-6-2.1.opt3 = לאלמנט הקודם
+web-6-2.1.explanation = קבעו position: relative על ההורה כדי שהוא יהיה נקודת הייחוס.
+web-6-2.2.prompt = השאירו את כפתור הצ'אט בפינת המסך בזמן גלילה.
+web-6-2.2.explanation = fixed יחסי לאזור התצוגה.
+web-6-2.3.prompt = איזה ערך גורם לכותרת להיצמד למעלה רק אחרי שגוללים אליה?
+web-6-2.3.explanation = sticky עובר בין זרימה רגילה למצב fixed.
+
+web-6-3 = יסודות Flexbox
+web-6-3.0.title = פריסה חד-ממדית
+web-6-3.0.body = display: flex מסדר את הילדים בשורה (הציר הראשי). flex-direction: column מערם אותם. flex: 1 גורם לפריט לגדול ולמלא מקום פנוי.
+web-6-3.1.prompt = הפכו את המכל למכל flex.
+web-6-3.1.explanation = display: flex מפעיל flexbox.
+web-6-3.2.prompt = איזה מאפיין מערם פריטי flex אנכית?
+web-6-3.2.explanation = flex-direction: column הופך את הציר הראשי לאנכי.
+web-6-3.3.prompt = מה עושה gap: 12px במכל flex?
+web-6-3.3.opt0 = מוסיף 12px של padding למכל
+web-6-3.3.opt1 = מוסיף 12px של ריווח בין הפריטים
+web-6-3.3.opt2 = מוסיף 12px של שוליים סביב הפריטים
+web-6-3.3.opt3 = כלום
+web-6-3.3.explanation = gap קובע את הריווח בין פריטים.
+
+web-6-4 = יישור ב-Flexbox
+web-6-4.0.title = יישור וגלישה
+web-6-4.0.body = justify-content מיישר פריטים לאורך הציר הראשי (flex-start,‏ center,‏ space-between…). align-items מיישר אותם על הציר הניצב. flex-wrap: wrap מאפשר לפריטים לעבור לשורה חדשה.
+web-6-4.1.prompt = מרכזו את התוכן בשני הכיוונים.
+web-6-4.1.explanation = justify-content לציר הראשי, align-items לציר הניצב.
+web-6-4.2.prompt = איזה ערך שם את הפריט הראשון בהתחלה, את האחרון בסוף, ומפזר את השאר?
+web-6-4.2.explanation = space-between מחלק את המקום הפנוי בין הפריטים.
+web-6-4.3.prompt = מה מאפשר flex-wrap: wrap?
+web-6-4.3.opt0 = גלישת טקסט
+web-6-4.3.opt1 = מעבר של פריטים לשורות חדשות
+web-6-4.3.opt2 = חפיפה בין פריטים
+web-6-4.3.opt3 = גלילה
+web-6-4.3.explanation = בלעדיו, הפריטים נדחסים לשורה אחת.
+
+section.web-s7 = CSS Grid
+
+web-7-1 = יסודות Grid
+web-7-1.0.title = פריסה דו-ממדית
+web-7-1.0.body = display: grid יוצר שורות ועמודות. grid-template-columns מגדיר את העמודות; היחידה fr מחלקת מקום פנוי.
+web-7-1.1.prompt = ב-grid-template-columns: 1fr 2fr 1fr, מה רוחב העמודה האמצעית?
+web-7-1.1.opt0 = כמו האחרות
+web-7-1.1.opt1 = פי שניים מכל עמודת צד
+web-7-1.1.opt2 = 2px
+web-7-1.1.opt3 = חצי מהמכל
+web-7-1.1.explanation = יחידות fr מחלקות את המקום הפנוי באופן יחסי: 1 + 2 + 1 = 4 חלקים.
+web-7-1.2.prompt = צרו שלוש עמודות שוות.
+web-7-1.2.explanation = שלוש עמודות של 1fr כל אחת.
+
+web-7-2 = מיקום פריטים
+web-7-2.0.title = פריסה על פני תאים ואזורים
+web-7-2.0.body = grid-column: 1 / 3 משתרע מקו 1 עד קו 3 (שתי עמודות). span 2 הוא קיצור. grid-template-areas מאפשר לתת שמות לאזורים.
+web-7-2.1.prompt = על פני כמה עמודות משתרע grid-column: 1 / 4?
+web-7-2.1.explanation = מקו 1 עד קו 4 מכסה שלוש עמודות.
+web-7-2.2.prompt = גרמו לפריט להשתרע על שתי עמודות.
+web-7-2.2.explanation = span N מכסה N מסלולים.
+
+web-7-3 = Grid רספונסיבי
+web-7-3.0.title = repeat,‏ minmax ו-auto-fit
+web-7-3.0.body = repeat(auto-fit, minmax(200px, 1fr)) יוצר כמה עמודות שנכנסות, כל אחת לפחות 200px, בלי צורך ב-media queries.
+web-7-3.1.prompt = מה פירוש minmax(200px, 1fr)?
+web-7-3.1.opt0 = בדיוק 200px
+web-7-3.1.opt1 = לפחות 200px, לכל היותר 1fr
+web-7-3.1.opt2 = בין 1px ל-200px
+web-7-3.1.opt3 = ‏200 עמודות
+web-7-3.1.explanation = העמודה לא מתכווצת מתחת ל-200px אבל יכולה לגדול.
+web-7-3.2.prompt = חזרו על ארבע עמודות שוות.
+web-7-3.2.explanation = repeat(count, size).
+
+section.web-s8 = עיצוב רספונסיבי
+
+web-8-1 = אזור התצוגה (Viewport)
+web-8-1.0.title = טלפונים צריכים את התגית הזו
+web-8-1.0.body = בלי תגית meta של viewport, טלפונים מציגים דפים ברוחב של מחשב ומקטינים. הוסיפו אותה ל-<head> של כל דף. השתמשו ביחידות יחסיות וב-max-width: 100% לתמונות כדי שיתכווצו.
+web-8-1.1.prompt = מה עושה תגית ה-meta של viewport?
+web-8-1.1.opt0 = מוסיפה תפריט
+web-8-1.1.opt1 = מתאימה את רוחב הדף לרוחב המכשיר
+web-8-1.1.opt2 = טוענת מהר יותר
+web-8-1.1.opt3 = מסתירה פסי גלילה
+web-8-1.1.explanation = היא מונעת מדפדפני מובייל לזייף רוחב של מחשב.
+web-8-1.2.prompt = השאירו תמונות בתוך המכל שלהן.
+web-8-1.2.explanation = max-width: 100% מונע גלישה.
+
+web-8-2 = Media queries
+web-8-2.0.title = כללים לפי גודל מסך
+web-8-2.0.body = @media (min-width: 768px) { ... } מחיל עיצוב רק על מסכים ברוחב 768px לפחות. משלבים עם flex או grid כדי לשנות פריסות.
+web-8-2.1.prompt = החילו עיצוב על מסכים ברוחב 600px ומעלה.
+web-8-2.1.explanation = media queries מתחילות ב-@media.
+web-8-2.2.prompt = בטלפון ברוחב 500px, כמה עמודות יש ל-.cards (בקוד למעלה)?
+web-8-2.2.explanation = אף media query לא מתאימה, לכן חל הכלל הבסיסי.
+
+web-8-3 = מובייל תחילה
+web-8-3.0.title = להתחיל מהקטן
+web-8-3.0.body = "מובייל תחילה" פירושו לכתוב עיצוב בסיסי למסכים קטנים ולהוסיף media queries של min-width לגדולים. כך ה-CSS למובייל פשוט ומהיר.
+web-8-3.1.prompt = ב-CSS של מובייל תחילה, באיזו תכונת media משתמשים בדרך כלל?
+web-8-3.1.explanation = מוסיפים עיצוב ככל שהמסכים מתרחבים.
+web-8-3.2.prompt = למה גישת מובייל תחילה פופולרית?
+web-8-3.2.opt0 = מחשבים שולחניים נדירים
+web-8-3.2.opt1 = מסכים קטנים מקבלים את ה-CSS הפשוט ביותר, וגדולים מוסיפים עליו
+web-8-3.2.opt2 = media queries דורשות את זה
+web-8-3.2.opt3 = זה מבטל זום
+web-8-3.2.explanation = בונים מהפריסה המוגבלת ביותר כלפי מעלה.
+
+section.web-s9 = אינטראקטיביות ואפקטים
+
+web-9-1 = פסאודו-מחלקות
+web-9-1.0.title = עיצוב מצבים
+web-9-1.0.body = ‏:hover חל כשהעכבר מעל אלמנט, :focus כשהוא נבחר (חשוב למשתמשי מקלדת), ‏:nth-child בוחר פריטים לפי מיקום.
+web-9-1.1.prompt = שנו את צבע הכפתור כשמרחפים מעליו.
+web-9-1.1.explanation = פסאודו-מחלקות משתמשות בנקודתיים אחת.
+web-9-1.2.prompt = מה בוחר כל שורה שנייה, החל מהשנייה?
+web-9-1.2.explanation = even תואם 2, 4, 6…
+
+web-9-2 = מעברים (Transitions)
+web-9-2.0.title = שינויים חלקים
+web-9-2.0.body = transition מנפיש שינוי במאפיין, למשל בריחוף. מציינים את המאפיין, משך הזמן, ואופציונלית את עקומת התנועה.
+web-9-2.1.prompt = הנפישו את שינוי הצבע במשך חצי שנייה.
+web-9-2.1.explanation = transition: property duration.
+web-9-2.2.prompt = איפה בדרך כלל מצהירים על transition?
+web-9-2.2.opt0 = רק ב-:hover
+web-9-2.2.opt1 = על המצב הרגיל של האלמנט
+web-9-2.2.opt2 = ב-@media
+web-9-2.2.opt3 = ב-HTML
+web-9-2.2.explanation = הצהרה על מצב הבסיס מנפישה גם כניסה וגם יציאה מריחוף.
+
+web-9-3 = טרנספורמציות ואנימציות
+web-9-3.0.title = להזיז דברים
+web-9-3.0.body = transform מזיז, משנה גודל או מסובב אלמנט בלי להשפיע על הפריסה. @keyframes מגדיר אנימציה והמאפיין animation מריץ אותה.
+web-9-3.1.prompt = איזו טרנספורמציה מסובבת אלמנט ב-45 מעלות?
+web-9-3.1.explanation = rotate() מקבלת זווית כמו 45deg.
+web-9-3.2.prompt = הגדירו אנימציה בשם fade.
+web-9-3.2.explanation = @keyframes name { ... }
+web-9-3.3.prompt = מה פירוש infinite ב-animation: spin 2s infinite?
+web-9-3.3.opt0 = רץ פעם אחת
+web-9-3.3.opt1 = חוזר לנצח
+web-9-3.3.opt2 = נמשך 2 שניות ונעצר
+web-9-3.3.opt3 = מתנגן אחורה
+web-9-3.3.explanation = מספר החזרות לא מוגבל.
+
+web-9-4 = משתני CSS
+web-9-4.0.title = ערכים לשימוש חוזר
+web-9-4.0.body = מאפיינים מותאמים (משתנים) מתחילים ב-‏-- ונקראים עם var(). מגדירים אותם על :root כדי להשתמש בהם בכל מקום, ודורסים אותם כדי ליצור ערכות נושא.
+web-9-4.1.prompt = השתמשו במשתנה ‎--accent.
+web-9-4.1.explanation = var(--name) קורא מאפיין מותאם.
+web-9-4.2.prompt = למה להגדיר משתנים על :root?
+web-9-4.2.opt0 = ‏:root מהיר יותר
+web-9-4.2.opt1 = הם הופכים לזמינים לכל אלמנט
+web-9-4.2.opt2 = זה תחביר חובה
+web-9-4.2.opt3 = כדי להסתיר אותם
+web-9-4.2.explanation = ‏:root הוא ראש המסמך, לכן כל האלמנטים יורשים ממנו.
+
+section.web-s10 = פרויקט: דף נחיתה
+
+web-10-1 = מבנה הדף
+web-10-1.0.title = לתכנן עם HTML סמנטי
+web-10-1.0.body = לדף הנחיתה שלנו יש header עם ניווט, אזור hero עם קריאה לפעולה, רשת של יתרונות ו-footer. בנו אותו ב-Playground תוך כדי.
+web-10-1.1.prompt = סדרו את החלקים העיקריים של הדף.
+web-10-1.1.explanation = Header,‏ main עם האזורים שלו, footer.
+web-10-1.2.prompt = איזה אלמנט צריך לעטוף את קישורי הניווט?
+web-10-1.2.opt2 = רק <ul>
+web-10-1.2.explanation = nav מסמן את הניווט באתר.
+
+web-10-2 = Header ו-Hero
+web-10-2.0.title = Header עם Flexbox ו-Hero ממורכז
+web-10-2.0.body = השתמשו ב-flex עם space-between ל-header. מרכזו את תוכן ה-hero עם flex ותנו לכפתור עיצוב ברור עם תגובה לריחוף.
+web-10-2.1.prompt = שימו את הלוגו בצד אחד ואת הניווט בצד השני.
+web-10-2.1.explanation = space-between דוחף את שני הילדים לקצוות מנוגדים.
+web-10-2.2.prompt = מה עושה border-radius: 999px לכפתור?
+web-10-2.2.opt0 = מגדיל אותו מאוד
+web-10-2.2.opt1 = נותן לו קצוות מעוגלים לגמרי (צורת גלולה)
+web-10-2.2.opt2 = מסיר את הגבול
+web-10-2.2.opt3 = כלום
+web-10-2.2.explanation = רדיוס גדול מחצי הגובה יוצר צורת גלולה.
+
+web-10-3 = רשת היתרונות
+web-10-3.0.title = כרטיסים שמתאימים את עצמם
+web-10-3.0.body = רשת auto-fit של כרטיסים ממלאת את הרוחב בכמה עמודות שנכנסות. הכרטיסים מקבלים padding, פינות מעוגלות וצל רך.
+web-10-3.1.prompt = צרו כמה עמודות של 220px ומעלה שנכנסות.
+web-10-3.1.explanation = auto-fit יוצר כמה מסלולים שנכנסים.
+web-10-3.2.prompt = למה הרשת הזו לא צריכה media query?
+web-10-3.2.opt0 = רשתות מתעלמות מגודל המסך
+web-10-3.2.opt1 = auto-fit יחד עם minmax מתאימים את מספר העמודות אוטומטית
+web-10-3.2.opt2 = היא תמיד מציגה עמודה אחת
+web-10-3.2.opt3 = media queries לא עובדות עם grid
+web-10-3.2.explanation = עמודות יורדות לשורות חדשות כשהן היו נהיות צרות מ-220px.
+
+web-10-4 = ליטוש ורספונסיביות
+web-10-4.0.title = נגיעות אחרונות
+web-10-4.0.body = השתמשו במשתנים לצבעי המותג, הסתירו את קישורי הניווט במסכים קטנים בעזרת media query, ובדקו את הדף ברוחבים שונים. רעיונות להמשך: טבלת מחירים, טופס יצירת קשר, מצב כהה. עכשיו אתם יכולים לבנות אותם בעצמכם.
+web-10-4.1.prompt = בקוד מובייל-תחילה הזה, מתי הניווט נראה?
+web-10-4.1.opt0 = תמיד
+web-10-4.1.opt1 = רק במסכים ברוחב 700px ומעלה
+web-10-4.1.opt2 = רק בטלפונים
+web-10-4.1.opt3 = אף פעם
+web-10-4.1.explanation = הכלל הבסיסי מסתיר אותו; ה-media query מציגה אותו במסכים רחבים.
+web-10-4.2.prompt = השתמשו במשתנה של צבע המותג.
+web-10-4.2.explanation = var() קורא מאפיין מותאם.
+web-10-4.3.prompt = איזו תוספת תדרוש <form>?
+web-10-4.3.opt0 = טבלת מחירים
+web-10-4.3.opt1 = הרשמה לניוזלטר
+web-10-4.3.opt2 = ערכת נושא כהה
+web-10-4.3.opt3 = לוגו גדול יותר
+web-10-4.3.explanation = איסוף אימייל דורש טופס עם שדה קלט.

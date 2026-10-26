@@ -1,0 +1,431 @@
+// SQL — Hebrew translation. Keys match the English content; code stays in English.
+course.sql.description = מסלול SQL מלא: שאילתות, סינון, מיון, צבירות, צירופים, תתי-שאילתות, שינוי נתונים, תכנון טבלאות, אינדקסים, טרנזקציות ומסד נתונים מסכם של חנות.
+
+section.sql-s1 = שאילתות ראשונות
+
+sql-1-1 = מסדי נתונים וטבלאות
+sql-1-1.0.title = נתונים בטבלאות
+sql-1-1.0.body = מסד נתונים רלציוני שומר נתונים בטבלאות. לכל טבלה יש עמודות (שדות כמו name או price) ושורות (רשומה אחת בכל שורה). SQL (שפת שאילתות מובנית) היא הדרך לשאול אותו שאלות.
+sql-1-1.1.prompt = בטבלה, מה זו שורה אחת?
+sql-1-1.1.opt0 = סוג נתונים
+sql-1-1.1.opt1 = רשומה אחת (למשל מוצר אחד)
+sql-1-1.1.opt2 = שם של עמודה
+sql-1-1.1.opt3 = מסד נתונים שלם
+sql-1-1.1.explanation = שורות הן רשומות; עמודות הן השדות שלהן.
+sql-1-1.2.prompt = כמה עמודות יש בטבלת products שלמעלה?
+sql-1-1.2.explanation = id,‏ name,‏ price ו-category.
+sql-1-1.3.prompt = מה מתחיל -- ב-SQL?
+sql-1-1.3.opt0 = חיסור
+sql-1-1.3.opt1 = הערה
+sql-1-1.3.opt2 = מחרוזת
+sql-1-1.3.opt3 = טבלה חדשה
+sql-1-1.3.explanation = ‏-- מתחיל הערה שנמשכת עד סוף השורה.
+
+sql-1-2 = SELECT
+sql-1-2.0.title = לקרוא טבלה
+sql-1-2.0.body = SELECT בוחר עמודות ו-FROM נותן את שם הטבלה. * פירושו כל העמודות. מסיימים פקודות בנקודה-פסיק. מילות המפתח לא רגישות לאותיות גדולות/קטנות, אבל נהוג לכתוב אותן באותיות גדולות.
+sql-1-2.1.prompt = הביאו את כל העמודות מ-products.
+sql-1-2.1.explanation = SELECT columns FROM table.
+sql-1-2.2.prompt = כתבו שאילתה שבוחרת את העמודה title מ-books.
+sql-1-2.2.explanation = SELECT title FROM books;
+sql-1-2.3.prompt = סדרו את השאילתה כך שתציג שמות ומחירים.
+sql-1-2.3.explanation = SELECT בא לפני FROM.
+
+sql-1-3 = כינויים ו-DISTINCT
+sql-1-3.0.title = תוצאות נקיות יותר
+sql-1-3.0.body = AS נותן לעמודה (או לטבלה) שם חדש בתוצאה. DISTINCT מסיר שורות כפולות.
+sql-1-3.1.prompt = מה מחזירה SELECT DISTINCT category FROM products עבור הטבלה שלמעלה?
+sql-1-3.1.opt2 = ‏3 שורות
+sql-1-3.1.explanation = הכפילויות מוסרות.
+sql-1-3.2.prompt = שנו את שם העמודה בפלט.
+sql-1-3.2.explanation = AS יוצר כינוי.
+
+section.sql-s2 = סינון שורות
+
+sql-2-1 = WHERE
+sql-2-1.0.title = רק חלק מהשורות
+sql-2-1.0.body = WHERE משאיר שורות שעומדות בתנאי. משתמשים ב-= (לא ==), ‏<>, <, >, <=, >=. ערכי טקסט נכתבים בגרש בודד.
+sql-2-1.1.prompt = איזו שאילתה מוצאת מוצרים מתחת ל-20?
+sql-2-1.1.explanation = WHERE בא אחרי FROM.
+sql-2-1.2.prompt = סדרו את השאילתה כך שתביא שמות של מבוגרים.
+sql-2-1.2.explanation = SELECT, אחר כך FROM, ואז WHERE.
+sql-2-1.3.prompt = מצאו משתמשים מצרפת.
+sql-2-1.3.explanation = SQL משווה עם = אחד, וטקסט נכתב בגרש בודד.
+
+sql-2-2 = AND,‏ OR,‏ NOT
+sql-2-2.0.title = שילוב תנאים
+sql-2-2.0.body = AND דורש את שני התנאים, OR אחד מהם, NOT שולל. השתמשו בסוגריים כדי להבהיר את הסדר.
+sql-2-2.1.prompt = אילו שורות מתאימות ל-price > 5 AND price < 10?
+sql-2-2.1.opt0 = מחירים 5 ו-10
+sql-2-2.1.opt1 = מחירים בין 5 ל-10, לא כולל שניהם
+sql-2-2.1.opt2 = כל מחיר
+sql-2-2.1.opt3 = אף אחת
+sql-2-2.1.explanation = שני התנאים חייבים להתקיים.
+sql-2-2.2.prompt = הביאו פריטי משרד או כל דבר מתחת ל-2.
+sql-2-2.2.explanation = מספיק אחד התנאים.
+
+sql-2-3 = IN ו-BETWEEN
+sql-2-3.0.title = תנאים קצרים יותר
+sql-2-3.0.body = IN (...) מתאים לכל ערך ברשימה. BETWEEN a AND b מתאים לטווח וכולל את שני הקצוות.
+sql-2-3.1.prompt = האם price BETWEEN 5 AND 10 כולל מחיר של 10?
+sql-2-3.1.opt0 = כן
+sql-2-3.1.opt1 = לא
+sql-2-3.1.opt2 = רק למספרים שלמים
+sql-2-3.1.opt3 = זו שגיאה
+sql-2-3.1.explanation = BETWEEN כולל את שני הגבולות.
+sql-2-3.2.prompt = התאימו לכל אחת משלוש קטגוריות.
+sql-2-3.2.explanation = IN בודק שייכות לרשימה.
+
+sql-2-4 = תבניות LIKE
+sql-2-4.0.title = חיפוש בטקסט
+sql-2-4.0.body = LIKE מתאים תבניות: % פירושו כל מספר של תווים, _ פירושו תו אחד בדיוק.
+sql-2-4.1.prompt = איזו תבנית מתאימה לשמות שמתחילים ב-Jo?
+sql-2-4.1.explanation = % אחרי Jo מאפשר כל המשך.
+sql-2-4.2.prompt = למה מתאים _ בתבנית LIKE?
+sql-2-4.2.opt0 = לכל מספר של תווים
+sql-2-4.2.opt1 = לתו אחד בדיוק
+sql-2-4.2.opt2 = רק לקו תחתון
+sql-2-4.2.opt3 = לרווח
+sql-2-4.2.explanation = _ הוא תו כללי של תו בודד.
+sql-2-4.3.prompt = כתבו את תבנית ה-LIKE (עם גרשיים) לטקסט שמכיל cat במקום כלשהו.
+sql-2-4.3.explanation = % משני הצדדים מאפשר כל דבר לפני ואחרי.
+
+sql-2-5 = NULL
+sql-2-5.0.title = ערכים חסרים
+sql-2-5.0.body = NULL פירושו "אין ערך". הוא לא שווה לשום דבר, אפילו לא ל-NULL, לכן = NULL לעולם לא מתאים. משתמשים ב-IS NULL וב-IS NOT NULL.
+sql-2-5.1.prompt = מה מוצא משתמשים בלי אימייל?
+sql-2-5.1.explanation = השוואות עם NULL משתמשות ב-IS NULL.
+sql-2-5.2.prompt = מצאו הזמנות שיש להן תאריך משלוח.
+sql-2-5.2.explanation = IS NOT NULL משאיר שורות עם ערך.
+
+section.sql-s3 = מיון וחישובים
+
+sql-3-1 = ORDER BY
+sql-3-1.0.title = מיון תוצאות
+sql-3-1.0.body = ORDER BY ממיין תוצאות: ASC (ברירת מחדל) מהקטן לגדול, DESC מהגדול לקטן. אפשר למיין לפי כמה עמודות מופרדות בפסיקים.
+sql-3-1.1.prompt = הציגו קודם את המוצרים היקרים ביותר.
+sql-3-1.1.explanation = DESC ממיין מהגבוה לנמוך.
+sql-3-1.2.prompt = מהו כיוון המיון ברירת המחדל?
+sql-3-1.2.opt2 = אקראי
+sql-3-1.2.opt3 = סדר ההכנסה
+sql-3-1.2.explanation = בלי מילת מפתח, ORDER BY עולה.
+sql-3-1.3.prompt = סדרו את הסעיפים.
+sql-3-1.3.explanation = SELECT,‏ FROM,‏ WHERE,‏ ORDER BY.
+
+sql-3-2 = LIMIT ו-OFFSET
+sql-3-2.0.title = N הראשונים ודפדוף
+sql-3-2.0.body = LIMIT מגביל כמה שורות חוזרות. OFFSET מדלג על שורות, וזה שימושי לעמודים של תוצאות.
+sql-3-2.1.prompt = הציגו את 5 המוצרים היקרים ביותר.
+sql-3-2.1.explanation = DESC ממיין מהגבוה לנמוך ו-LIMIT משאיר את 5 הראשונים.
+sql-3-2.2.prompt = עם 10 פוסטים בעמוד, איזה OFFSET מציג את עמוד 2?
+sql-3-2.2.explanation = מדלגים על 10 השורות הראשונות.
+
+sql-3-3 = ביטויים ו-CASE
+sql-3-3.0.title = עמודות מחושבות
+sql-3-3.0.body = אפשר לחשב בתוך SELECT ולהשתמש בפונקציות כמו UPPER,‏ LENGTH ו-ROUND. ‏CASE WHEN … THEN … ELSE … END יוצר ערכים לפי תנאים.
+sql-3-3.1.prompt = מה מחזירה ROUND(7.456, 1)?
+sql-3-3.1.explanation = מעוגל לספרה אחת אחרי הנקודה.
+sql-3-3.2.prompt = תייגו רמות מלאי.
+sql-3-3.2.explanation = CASE … END עוטף את התנאים.
+sql-3-3.3.prompt = מה מחזירה LENGTH('hello')?
+sql-3-3.3.explanation = חמישה תווים.
+
+section.sql-s4 = צבירות וקיבוץ
+
+sql-4-1 = COUNT,‏ SUM,‏ AVG,‏ MIN,‏ MAX
+sql-4-1.0.title = סיכום
+sql-4-1.0.body = פונקציות צבירה הופכות שורות רבות לערך אחד: COUNT סופרת, SUM מחברת, AVG מחשבת ממוצע, MIN ו-MAX מוצאות קצוות.
+sql-4-1.1.prompt = מה מחזירה COUNT(*)?
+sql-4-1.1.opt0 = את מספר השורות
+sql-4-1.1.opt1 = את הסכום של עמודה
+sql-4-1.1.opt2 = את השורה הראשונה
+sql-4-1.1.opt3 = את מספר העמודות
+sql-4-1.1.explanation = COUNT(*) סופרת שורות.
+sql-4-1.2.prompt = איזו פונקציית צבירה מחשבת ממוצע?
+sql-4-1.2.explanation = AVG() מחזירה את הממוצע.
+sql-4-1.3.prompt = מצאו את המחיר הזול ביותר.
+sql-4-1.3.explanation = MIN מחזירה את הערך הקטן ביותר.
+
+sql-4-2 = GROUP BY
+sql-4-2.0.title = תוצאה אחת לכל קבוצה
+sql-4-2.0.body = GROUP BY מחלק שורות לקבוצות עם אותו ערך ומחשב צבירות לכל קבוצה. כל עמודה שנבחרת חייבת להיות מקובצת או מצטברת.
+sql-4-2.1.prompt = עבור טבלת products ‏(office, home, office), כמה שורות מחזיר GROUP BY category?
+sql-4-2.1.explanation = שורה אחת לכל קטגוריה שונה.
+sql-4-2.2.prompt = ספרו משתמשים לכל מדינה.
+sql-4-2.2.explanation = צוברים עם COUNT, מקובץ לפי country.
+sql-4-2.3.prompt = סדרו את הסעיפים.
+sql-4-2.3.explanation = GROUP BY בא אחרי FROM (ואחרי WHERE).
+
+sql-4-3 = HAVING
+sql-4-3.0.title = סינון קבוצות
+sql-4-3.0.body = WHERE מסנן שורות לפני הקיבוץ; HAVING מסנן קבוצות אחרי הצבירה.
+sql-4-3.1.prompt = איזה סעיף מסנן לפי צבירה כמו COUNT(*) > 3?
+sql-4-3.1.explanation = צבירות מסוננות עם HAVING.
+sql-4-3.2.prompt = סדרו את השאילתה המלאה.
+sql-4-3.2.explanation = SELECT,‏ FROM,‏ WHERE,‏ GROUP BY,‏ HAVING.
+
+section.sql-s5 = צירוף טבלאות
+
+sql-5-1 = מפתחות וקשרים
+sql-5-1.0.title = למה כמה טבלאות?
+sql-5-1.0.body = במקום לחזור על פרטי הלקוח בכל הזמנה, שומרים לקוחות פעם אחת ומפנים אליהם. מפתח ראשי (id) מזהה שורה באופן ייחודי; מפתח זר (customer_id) מצביע על שורה בטבלה אחרת.
+sql-5-1.1.prompt = בטבלת orders, מה זה customer_id?
+sql-5-1.1.opt0 = מפתח ראשי
+sql-5-1.1.opt1 = מפתח זר
+sql-5-1.1.opt2 = אינדקס
+sql-5-1.1.opt3 = View
+sql-5-1.1.explanation = הוא מפנה ל-id של שורה ב-customers.
+sql-5-1.2.prompt = כמה הזמנות יש ל-Ana בנתונים שלמעלה?
+sql-5-1.2.explanation = להזמנות 10 ו-11 יש customer_id 1.
+
+sql-5-2 = INNER JOIN
+sql-5-2.0.title = שורות תואמות
+sql-5-2.0.body = INNER JOIN משלב שורות משתי טבלאות כשתנאי ה-ON מתקיים. שורות בלי התאמה נשארות בחוץ. כשיש שמות זהים, מוסיפים לעמודות קידומת של שם הטבלה (או כינוי).
+sql-5-2.1.prompt = צרפו את orders ל-customers.
+sql-5-2.1.explanation = JOIN table ON condition.
+sql-5-2.2.prompt = ללקוח אין הזמנות. האם הוא יופיע ב-INNER JOIN של customers ו-orders?
+sql-5-2.2.opt0 = כן, עם NULLs
+sql-5-2.2.opt1 = לא
+sql-5-2.2.opt2 = פעמיים
+sql-5-2.2.opt3 = רק עם DISTINCT
+sql-5-2.2.explanation = INNER JOIN משאיר רק שורות תואמות.
+sql-5-2.3.prompt = סדרו את שאילתת הצירוף.
+sql-5-2.3.explanation = SELECT,‏ FROM,‏ JOIN,‏ ON.
+
+sql-5-3 = LEFT JOIN
+sql-5-3.0.title = לשמור את כל מה שמשמאל
+sql-5-3.0.body = LEFT JOIN שומר כל שורה מהטבלה השמאלית וממלא NULL כשאין התאמה. מצוין למציאת דברים שאין להם שום דבר קשור.
+sql-5-3.1.prompt = מה LEFT JOIN עושה עם שורות שמאליות בלי התאמה?
+sql-5-3.1.opt0 = משמיט אותן
+sql-5-3.1.opt1 = שומר אותן עם NULLs בעמודות הימניות
+sql-5-3.1.opt2 = משכפל אותן
+sql-5-3.1.opt3 = זורק שגיאה
+sql-5-3.1.explanation = כל השורות השמאליות נשמרות.
+sql-5-3.2.prompt = מצאו מוצרים שאף פעם לא הוזמנו.
+sql-5-3.2.explanation = LEFT JOIN, ואז משאירים שורות שבהן הצד הימני הוא NULL.
+
+sql-5-4 = צירופים מרובים וצירוף עצמי
+sql-5-4.0.title = שרשור צירופים
+sql-5-4.0.body = אפשר לצרף טבלאות רבות בשאילתה אחת. צירוף עצמי מצרף טבלה לעצמה עם שני כינויים, למשל עובדים והמנהלים שלהם.
+sql-5-4.1.prompt = למה צירוף עצמי צריך שני כינויים?
+sql-5-4.1.opt0 = זה מהיר יותר
+sql-5-4.1.opt1 = כדי להבדיל בין שני העותקים של הטבלה
+sql-5-4.1.opt2 = SQL תמיד דורש כינויים
+sql-5-4.1.opt3 = כדי להימנע מ-NULLs
+sql-5-4.1.explanation = e ו-m מייצגים תפקידים שונים של אותה טבלה.
+sql-5-4.2.prompt = כמה סעיפי JOIN מחברים 4 טבלאות בשרשרת?
+sql-5-4.2.explanation = כל צירוף מוסיף טבלה אחת לראשונה.
+
+section.sql-s6 = תתי-שאילתות ופעולות על קבוצות
+
+sql-6-1 = תתי-שאילתות ב-WHERE
+sql-6-1.0.title = שאילתה בתוך שאילתה
+sql-6-1.0.body = תת-שאילתה בסוגריים מחשבת ערך או רשימה שהשאילתה החיצונית משתמשת בהם.
+sql-6-1.1.prompt = מה מחזירה השאילתה הראשונה?
+sql-6-1.1.opt0 = את כל המוצרים
+sql-6-1.1.opt1 = מוצרים שמחירם מעל הממוצע
+sql-6-1.1.opt2 = את המחיר הממוצע
+sql-6-1.1.opt3 = את המוצר הזול ביותר
+sql-6-1.1.explanation = תת-השאילתה מחשבת את הממוצע; השאילתה החיצונית מסננת לפיו.
+sql-6-1.2.prompt = מצאו לקוחות שביצעו הזמנה כלשהי.
+sql-6-1.2.explanation = תת-השאילתה מחזירה רשימה, לכן משתמשים ב-IN.
+
+sql-6-2 = טבלאות נגזרות ו-CTE
+sql-6-2.0.title = לתת שמות לתוצאות ביניים
+sql-6-2.0.body = תת-שאילתה ב-FROM פועלת כטבלה זמנית. CTE ‏(WITH name AS (...)) עושה את אותו הדבר עם שם קריא שמוצהר מראש.
+sql-6-2.1.prompt = התחילו common table expression.
+sql-6-2.1.explanation = WITH name AS (query).
+sql-6-2.2.prompt = למה להשתמש ב-CTE?
+sql-6-2.2.opt0 = זו הדרך היחידה לצרף
+sql-6-2.2.opt1 = הוא הופך שאילתות מורכבות לקריאות בעזרת שמות לשלבים
+sql-6-2.2.opt2 = הוא שומר נתונים לצמיתות
+sql-6-2.2.opt3 = הוא מאיץ כל שאילתה
+sql-6-2.2.explanation = CTE מפרק שאילתה לחלקים קריאים עם שמות.
+
+sql-6-3 = UNION
+sql-6-3.0.title = לערום תוצאות
+sql-6-3.0.body = UNION משלב את השורות של שתי שאילתות עם אותו מספר עמודות ומסיר כפילויות. UNION ALL שומר כפילויות (ומהיר יותר).
+sql-6-3.1.prompt = מה ההבדל בין UNION ל-UNION ALL?
+sql-6-3.1.opt0 = UNION ALL מסיר כפילויות
+sql-6-3.1.opt1 = UNION מסיר כפילויות; UNION ALL שומר אותן
+sql-6-3.1.opt2 = אין הבדל
+sql-6-3.1.opt3 = UNION ALL מצרף טבלאות
+sql-6-3.1.explanation = UNION מסיר כפילויות.
+sql-6-3.2.prompt = מה חייב להיות לשתי השאילתות ב-UNION?
+sql-6-3.2.opt0 = אותה טבלה
+sql-6-3.2.opt1 = אותו מספר עמודות (עם סוגים תואמים)
+sql-6-3.2.opt2 = סעיף WHERE
+sql-6-3.2.opt3 = ORDER BY לכל אחת
+sql-6-3.2.explanation = השורות נערמות זו על זו, לכן הצורה שלהן חייבת להתאים.
+
+section.sql-s7 = שינוי נתונים
+
+sql-7-1 = INSERT
+sql-7-1.0.title = הוספת שורות
+sql-7-1.0.body = INSERT INTO table (columns) VALUES (...) מוסיף שורה. אפשר להוסיף כמה שורות בבת אחת.
+sql-7-1.1.prompt = הוסיפו משתמש.
+sql-7-1.1.explanation = INSERT INTO table.
+sql-7-1.2.prompt = סדרו את הפקודה.
+sql-7-1.2.explanation = קודם העמודות, ואז הערכים התואמים.
+
+sql-7-2 = UPDATE
+sql-7-2.0.title = שינוי שורות
+sql-7-2.0.body = UPDATE table SET column = value WHERE condition משנה שורות קיימות. בלי WHERE, כל שורה מתעדכנת!
+sql-7-2.1.prompt = סמנו את הזמנה 5 כנשלחה.
+sql-7-2.1.explanation = UPDATE … SET … WHERE …
+sql-7-2.2.prompt = מה קורה עם UPDATE products SET price = 0; ‏(בלי WHERE)?
+sql-7-2.2.opt0 = כלום
+sql-7-2.2.opt1 = המחיר של כל מוצר הופך ל-0
+sql-7-2.2.opt2 = רק השורה הראשונה משתנה
+sql-7-2.2.opt3 = שגיאת תחביר
+sql-7-2.2.explanation = בלי WHERE העדכון חל על כל השורות.
+
+sql-7-3 = DELETE
+sql-7-3.0.title = מחיקת שורות
+sql-7-3.0.body = DELETE FROM table WHERE condition מוחק שורות תואמות. כמו ב-UPDATE, שכחת WHERE משפיעה על כל השורות.
+sql-7-3.1.prompt = מחקו את משתמש 9.
+sql-7-3.1.explanation = DELETE FROM table WHERE …
+sql-7-3.2.prompt = מה ההבדל בין DELETE FROM t ל-DROP TABLE t?
+sql-7-3.2.opt0 = אין הבדל
+sql-7-3.2.opt1 = DELETE מוחק שורות; DROP מוחק את כל הטבלה
+sql-7-3.2.opt2 = DROP מוחק רק שורות
+sql-7-3.2.opt3 = DELETE מהיר יותר
+sql-7-3.2.explanation = DROP TABLE מוחק את הטבלה ואת המבנה שלה.
+
+section.sql-s8 = תכנון טבלאות
+
+sql-8-1 = CREATE TABLE
+sql-8-1.0.title = הגדרת מבנה
+sql-8-1.0.body = CREATE TABLE מגדיר עמודות וסוגיהן: INTEGER,‏ REAL/DECIMAL למספרים, TEXT/VARCHAR לטקסט, DATE/TIMESTAMP לזמן, BOOLEAN לאמת/שקר.
+sql-8-1.1.prompt = צרו את הטבלה.
+sql-8-1.1.explanation = CREATE TABLE name (columns).
+sql-8-1.2.prompt = איזה סוג מתאים הכי טוב למחיר כמו 19.99?
+sql-8-1.2.explanation = DECIMAL שומר מספרים מדויקים עם מספר קבוע של ספרות אחרי הנקודה, אידיאלי לכסף.
+
+sql-8-2 = אילוצים
+sql-8-2.0.title = כללים שמגנים על הנתונים
+sql-8-2.0.body = PRIMARY KEY מזהה שורות באופן ייחודי. NOT NULL אוסר ערכים חסרים. UNIQUE אוסר כפילויות. DEFAULT מספק ערך. CHECK אוכף תנאי.
+sql-8-2.1.prompt = איזה אילוץ מונע משני משתמשים להחזיק באותו אימייל?
+sql-8-2.1.explanation = UNIQUE דוחה ערכים כפולים.
+sql-8-2.2.prompt = חייבו שם ואסרו מלאי שלילי.
+sql-8-2.2.explanation = NOT NULL הופך עמודה לחובה.
+
+sql-8-3 = מפתחות זרים
+sql-8-3.0.title = לקשר טבלאות בבטחה
+sql-8-3.0.body = FOREIGN KEY גורם למסד הנתונים לבדוק שהשורות שמפנים אליהן קיימות. ON DELETE CASCADE מוחק שורות ילד כשההורה נמחק.
+sql-8-3.1.prompt = קשרו את העמודה ל-customers.
+sql-8-3.1.explanation = FOREIGN KEY (col) REFERENCES table(col).
+sql-8-3.2.prompt = מה קורה אם מכניסים הזמנה עם customer_id שלא קיים?
+sql-8-3.2.opt0 = היא נכנסת בכל זאת
+sql-8-3.2.opt1 = מסד הנתונים דוחה אותה
+sql-8-3.2.opt2 = נוצר לקוח
+sql-8-3.2.opt3 = היא הופכת ל-NULL
+sql-8-3.2.explanation = אילוץ המפתח הזר נכשל.
+
+sql-8-4 = שינוי מבנה ונרמול
+sql-8-4.0.title = להתפתח ולהתארגן
+sql-8-4.0.body = ALTER TABLE מוסיף או משנה עמודות; DROP TABLE מוחק טבלה. נרמול פירושו שכל עובדה נשמרת פעם אחת: מפצלים נתונים חוזרים לטבלה משלהם ומקשרים עם מפתחות.
+sql-8-4.1.prompt = הוסיפו עמודה.
+sql-8-4.1.explanation = ALTER TABLE משנה מבנה.
+sql-8-4.2.prompt = למה להוציא את פרטי הלקוח מטבלת ההזמנות?
+sql-8-4.2.opt0 = כדי שהשאילתות יהיו ארוכות יותר
+sql-8-4.2.opt1 = כדי שהנתונים של כל לקוח יישמרו פעם אחת ולא ייצאו מסנכרון
+sql-8-4.2.opt2 = טבלאות לא יכולות להכיל טקסט
+sql-8-4.2.opt3 = רק מטעמי אבטחה
+sql-8-4.2.explanation = זו מטרת הנרמול.
+
+section.sql-s9 = אינדקסים, טרנזקציות ו-Views
+
+sql-9-1 = אינדקסים
+sql-9-1.0.title = חיפוש מהיר יותר
+sql-9-1.0.body = אינדקס הוא כמו מפתח בסוף ספר: הוא מאפשר למסד הנתונים למצוא שורות בלי לסרוק את כל הטבלה. שימו אינדקס על עמודות שמסננים, מצרפים או ממיינים לפיהן לעיתים קרובות. אינדקסים מאיצים קריאה אבל מאטים מעט כתיבה.
+sql-9-1.1.prompt = איזו עמודה מתאימה לאינדקס?
+sql-9-1.1.opt0 = עמודה שאף פעם לא שואלים עליה
+sql-9-1.1.opt1 = customer_id, שמשמשת בהרבה צירופים
+sql-9-1.1.opt2 = עמודת הערות עם טקסט ארוך
+sql-9-1.1.opt3 = כל עמודה
+sql-9-1.1.explanation = שימו אינדקס על מה שמחפשים ומצרפים לפיו.
+sql-9-1.2.prompt = צרו אינדקס על products.category.
+sql-9-1.2.explanation = CREATE INDEX name ON table(column).
+
+sql-9-2 = טרנזקציות
+sql-9-2.0.title = הכול או כלום
+sql-9-2.0.body = טרנזקציה מקבצת פקודות כך שכולן מצליחות או שאף אחת לא. BEGIN מתחיל אותה, COMMIT שומר, ROLLBACK מבטל. דוגמה קלאסית: העברת כסף בין חשבונות.
+sql-9-2.1.prompt = סדרו העברה בטוחה.
+sql-9-2.1.explanation = מתחילים, מבצעים את שני השינויים, ומאשרים.
+sql-9-2.2.prompt = מה עושה ROLLBACK?
+sql-9-2.2.opt0 = שומר שינויים
+sql-9-2.2.opt1 = מבטל את השינויים שנעשו בטרנזקציה הנוכחית
+sql-9-2.2.opt2 = מוחק את הטבלה
+sql-9-2.2.opt3 = מפעיל מחדש את השרת
+sql-9-2.2.explanation = ROLLBACK מבטל את הטרנזקציה.
+
+sql-9-3 = Views
+sql-9-3.0.title = שאילתות שמורות
+sql-9-3.0.body = View היא שאילתה עם שם שאפשר לבצע עליה SELECT כמו על טבלה. היא מפשטת שאילתות מורכבות שחוזרות על עצמן.
+sql-9-3.1.prompt = צרו view.
+sql-9-3.1.explanation = CREATE VIEW name AS query.
+sql-9-3.2.prompt = האם view רגילה שומרת עותק משלה של הנתונים?
+sql-9-3.2.opt0 = כן
+sql-9-3.2.opt1 = לא, היא מריצה את השאילתה שלה בכל שימוש
+sql-9-3.2.opt2 = רק בצירופים
+sql-9-3.2.opt3 = רק בפעם הראשונה
+sql-9-3.2.explanation = view היא שאילתה שמורה, לא שורות שמורות.
+
+sql-9-4 = פונקציות חלון
+sql-9-4.0.title = דירוג בלי לכווץ שורות
+sql-9-4.0.body = פונקציות חלון מחשבות ערכים על פני שורות קשורות תוך שמירה על כל שורה. ROW_NUMBER() OVER (ORDER BY …) ממספרת שורות; PARTITION BY מתחיל מחדש בכל קבוצה.
+sql-9-4.1.prompt = במה שונה פונקציית חלון מ-GROUP BY?
+sql-9-4.1.opt0 = היא איטית יותר
+sql-9-4.1.opt1 = היא שומרת כל שורה ומוסיפה עמודה מחושבת
+sql-9-4.1.opt2 = היא מוחקת שורות
+sql-9-4.1.opt3 = אין הבדל
+sql-9-4.1.explanation = GROUP BY מכווץ שורות; פונקציות חלון לא.
+sql-9-4.2.prompt = מספרו שורות מהציון הגבוה ביותר.
+sql-9-4.2.explanation = פונקציות חלון משתמשות ב-OVER (...).
+
+section.sql-s10 = פרויקט: מסד נתונים לחנות
+
+sql-10-1 = תכנון הסכמה
+sql-10-1.0.title = טבלאות לחנות
+sql-10-1.0.body = אנחנו צריכים customers,‏ products,‏ orders ו-order_items (אילו מוצרים, ובאיזו כמות, נמצאים בכל הזמנה).
+sql-10-1.1.prompt = למה קיימת order_items?
+sql-10-1.1.opt0 = כדי לשמור אימיילים של לקוחות
+sql-10-1.1.opt1 = הזמנה יכולה להכיל מוצרים רבים ומוצר יכול להופיע בהזמנות רבות
+sql-10-1.1.opt2 = כדי להאיץ הכנסות
+sql-10-1.1.opt3 = זה קישוט אופציונלי
+sql-10-1.1.explanation = היא מחברת הזמנות ומוצרים (קשר רבים-לרבים).
+sql-10-1.2.prompt = מה מונע PRIMARY KEY (order_id, product_id)?
+sql-10-1.2.opt0 = הזמנות בלי מוצרים
+sql-10-1.2.opt1 = אותו מוצר שמופיע פעמיים באותה הזמנה
+sql-10-1.2.opt2 = מחירים שליליים
+sql-10-1.2.opt3 = מחיקת הזמנות
+sql-10-1.2.explanation = מפתח ראשי מורכב חייב להיות ייחודי כזוג.
+
+sql-10-2 = הוספת נתונים
+sql-10-2.0.title = לאכלס את מסד הנתונים
+sql-10-2.0.body = מכניסים כמה שורות לכל טבלה, הורים לפני ילדים, כדי שהמפתחות הזרים יתקיימו.
+sql-10-2.1.prompt = למה להכניס לקוחות לפני הזמנות?
+sql-10-2.1.opt0 = סדר אלפביתי
+sql-10-2.1.opt1 = הזמנות מפנות ללקוחות, לכן הלקוחות חייבים להתקיים קודם
+sql-10-2.1.opt2 = זה מהיר יותר
+sql-10-2.1.opt3 = אין סיבה
+sql-10-2.1.explanation = המפתח הזר צריך את שורת הלקוח.
+sql-10-2.2.prompt = מה הסכום של הזמנה 100 (2 ספלים ב-9.50 + 3 תה ב-4.00)?
+sql-10-2.2.explanation = 2 × 9.50 + 3 × 4.00 = 19 + 12 = 31.
+
+sql-10-3 = דוח סכומי הזמנות
+sql-10-3.0.title = צירופים ועוד צבירה
+sql-10-3.0.body = מצרפים את order_items ל-products כדי לקבל מחירים, מכפילים בכמות ומסכמים לכל הזמנה.
+sql-10-3.1.prompt = חשבו את העלות של כל שורה וסכמו.
+sql-10-3.1.explanation = כמות כפול מחיר, מסוכם.
+sql-10-3.2.prompt = סדרו את שאילתת הדוח.
+sql-10-3.2.explanation = SELECT,‏ FROM, הצירופים, GROUP BY.
+
+sql-10-4 = הלקוחות הטובים והמוצרים הנמכרים
+sql-10-4.0.title = שאלות עסקיות
+sql-10-4.0.body = משלבים הכול: CTE, צירופים, קיבוץ ומיון. נסו שאלות משלכם: הכנסה חודשית, מוצרים שלא נמכרו, לקוחות חוזרים. עכשיו אתם יכולים לכתוב אותן בעצמכם.
+sql-10-4.1.prompt = איזו שאילתה מוצאת מוצרים שלא נמכרו אף פעם?
+sql-10-4.1.explanation = LEFT JOIN שומר מוצרים שלא נמכרו עם NULLs בצד ימין.
+sql-10-4.2.prompt = הציגו רק את 3 הלקוחות המובילים.
+sql-10-4.2.explanation = ממיינים מהגבוה לנמוך ומשאירים שלוש שורות.
