@@ -604,3 +604,34 @@ div.pg-console { display: flex; align-items: center; gap: 12px; }
 [dir="rtl"] .node-num { right: auto; left: -8px; }
 [dir="rtl"] .prompt, [dir="rtl"] .learn-body, [dir="rtl"] .feedback-text { line-height: 1.55; }
 .level-row .muted { direction: ltr; unicode-bidi: isolate; }
+
+/* ---------- profile picture ---------- */
+img.avatar, img.top-logo { display: block; object-fit: cover; }
+.top-avatar-link { display: block; border-radius: 50%; }
+.top-logo.has-photo, .top-avatar-link .top-logo { border-radius: 50%; }
+.top-avatar-link div.top-logo { display: grid; place-items: center; font-weight: 900; font-size: 20px; }
+.avatar-edit { position: relative; display: block; width: 96px; margin: 0 auto 12px; }
+.avatar-edit .avatar.big { margin: 0; }
+.avatar-edit-badge {
+  position: absolute; right: -2px; bottom: 2px; width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 15px; font-weight: 900;
+  background: var(--primary); color: var(--on-primary); border: 3px solid var(--bg);
+}
+.avatar-page { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+.avatar-sub { text-align: center; color: var(--muted); font-weight: 700; margin: -8px 0 18px; }
+.avatar-stage { display: grid; place-items: center; margin-bottom: 18px; }
+.avatar-preview {
+  width: 132px; height: 132px; border-radius: 50%; object-fit: cover;
+  border: 4px solid var(--primary); box-shadow: 0 6px 0 var(--primary-dark); background: var(--surface);
+}
+div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-weight: 900; }
+.avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
+.avatar-choice {
+  aspect-ratio: 1; border-radius: 50%; padding: 0; overflow: hidden;
+  border: 3px solid var(--line); background: var(--surface); transition: transform .1s ease;
+}
+.avatar-choice img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar-choice.selected { border-color: var(--primary); transform: scale(1.06); box-shadow: 0 0 0 3px rgba(255, 199, 44, .3); }
+.avatar-upload { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.hidden-input { display: none; }
+.avatar-skip { display: block; margin: 8px auto 0; }

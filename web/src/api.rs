@@ -70,6 +70,17 @@ async fn post<B: Serialize, T: DeserializeOwned>(path: &str, token: &Option<Stri
     handle(resp).await
 }
 
+async fn put<B: Serialize, T: DeserializeOwned>(path: &str, token: &Option<String>, body: &B) -> ApiResult<T> {
+    let req = authorize(Request::put(&url(path)), token).json(body).map_err(network)?;
+    let resp = req.send().await.map_err(network)?;
+    handle(resp).await
+}
+
+/// Set (or with None, remove) the signed-in user's profile picture.
+pub async fn set_avatar(token: Option<String>, avatar: Option<String>) -> ApiResult<Profile> {
+    put("/api/me/avatar", &token, &AvatarRequest { avatar }).await
+}
+
 pub async fn signup(username: String, password: String) -> ApiResult<AuthResponse> {
     post("/api/auth/signup", &None, &AuthRequest { username, password }).await
 }

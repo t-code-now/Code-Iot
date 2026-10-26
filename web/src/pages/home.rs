@@ -7,6 +7,7 @@ use leptos::*;
 
 use crate::api;
 use crate::components::icons::{IconBolt, IconCheck, IconPlay, IconPuzzle};
+use crate::components::avatar::UserAvatar;
 use crate::components::shell::StatPills;
 use crate::i18n::tf;
 use crate::pages::{ErrorState, Loading};
@@ -142,7 +143,7 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
     view! {
         <div class="learn">
             <header class="topbar">
-                <img class="top-logo" src="/assets/mascot.png" alt="Code-Iot"/>
+                <a href="/profile" class="top-avatar-link"><UserAvatar class="top-logo"/></a>
                 <StatPills/>
             </header>
             <a href="/courses" class="course-banner">

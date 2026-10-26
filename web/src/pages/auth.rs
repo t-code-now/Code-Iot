@@ -77,7 +77,9 @@ pub fn AuthPage(mode: AuthMode) -> impl IntoView {
             match result {
                 Ok(r) => {
                     session.sign_in(r.token, r.profile);
-                    navigate("/", Default::default());
+                    // New accounts pick a profile picture first (they can skip).
+                    let next = if mode == AuthMode::Signup { "/avatar?first=1" } else { "/" };
+                    navigate(next, Default::default());
                 }
                 Err(e) => error.set(Some(i18n::error(lang, &e.message))),
             }

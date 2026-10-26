@@ -38,6 +38,26 @@ run cpp /tmp/a.cpp "Code-Iot"
 run rust /tmp/a.rs "Code-Iot"
 run arduino /tmp/a.ino ""
 run cpp /tmp/bad.cpp ""
+echo "--- avatar"
+python3 - <<'PY'
+import json, urllib.request
+B = "http://127.0.0.1:3999"
+def call(method, path, body=None, token=None):
+    h = {"Content-Type": "application/json"}
+    if token: h["Authorization"] = "Bearer " + token
+    req = urllib.request.Request(B + path, json.dumps(body).encode() if body is not None else None, h, method=method)
+    try:
+        return json.load(urllib.request.urlopen(req, timeout=20))
+    except urllib.error.HTTPError as e:
+        return {"http_error": e.code, "body": e.read().decode()[:200]}
+r = call("POST", "/api/auth/signup", {"username": "avatar_smoke", "password": "secret123"})
+tok = r["token"]; print("signup avatar:", r["profile"].get("avatar"))
+print("preset:", call("PUT", "/api/me/avatar", {"avatar": "preset:a2"}, tok).get("avatar"))
+print("me:", call("GET", "/api/me", token=tok).get("avatar"))
+print("upload:", call("PUT", "/api/me/avatar", {"avatar": "data:image/jpeg;base64,/9j/4AAQ"}, tok).get("avatar"))
+print("bad:", call("PUT", "/api/me/avatar", {"avatar": "data:text/html;base64,PGg+"}, tok))
+print("clear:", call("PUT", "/api/me/avatar", {"avatar": None}, tok).get("avatar"))
+PY
 kill $pid
 for u in https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js \
          https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js \

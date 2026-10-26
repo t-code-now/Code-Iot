@@ -5,6 +5,7 @@ use leptos::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
+use crate::components::avatar::UserAvatar;
 use crate::components::icons::{IconBolt, IconFlame, IconShare, IconShield};
 
 use crate::components::lang_switch::LangSwitch;
@@ -57,13 +58,15 @@ pub fn ProfilePage() -> impl IntoView {
                 let t = move |key| i18n::t(lang, key);
                 match session.profile.get() {
                     Some(p) => {
-                        let initial = p.username.chars().next().unwrap_or('?').to_ascii_uppercase().to_string();
                         let level_pct = if p.level_xp_needed == 0 { 0 } else { p.level_xp * 100 / p.level_xp_needed };
                         let earned: Vec<String> = p.badges.iter().map(|b| b.id.clone()).collect();
                         view! {
                             <>
                             <div class="profile-card">
-                                <div class="avatar big">{initial}</div>
+                                <a href="/avatar" class="avatar-edit" title=t("avatar.title")>
+                                    <UserAvatar class="avatar big"/>
+                                    <span class="avatar-edit-badge">"✎"</span>
+                                </a>
                                 <h2><bdi>{p.username.clone()}</bdi></h2>
                                 <p class="muted">{tf(lang, "profile.joined", &[&format_date(p.joined_at, lang)])}</p>
                             </div>

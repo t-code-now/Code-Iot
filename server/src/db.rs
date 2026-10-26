@@ -43,6 +43,11 @@ CREATE TABLE IF NOT EXISTS xp_events (
 );
 
 CREATE INDEX IF NOT EXISTS xp_events_by_time ON xp_events(created_at);
+
+CREATE TABLE IF NOT EXISTS avatars (
+    user_id  INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    data     TEXT    NOT NULL
+);
 ";
 
 pub fn open(path: &str) -> rusqlite::Result<Connection> {
@@ -271,4 +276,21 @@ mod tests {
         delete_session(&c, "tok").unwrap();
         assert_eq!(user_for_token(&c, "tok").unwrap(), None);
     }
+}
+
+pub fn get_avatar(conn: &Connection, user_id: i64) -> rusqlite::Result<Option<String>> {
+    conn.query_row("SELECT data FROM avatars WHERE user_id = ?1", params![user_id], |r| r.get(0))
+        .optional()
+}
+
+pub fn set_avatar(conn: &Connection, user_id: i64, avatar: Option<&str>) -> rusqlite::Result<()> {
+    match avatar {
+        Some(data) => conn.execute(
+            "INSERT INTO avatars (user_id, data) VALUES (?1, ?2)
+             ON CONFLICT(user_id) DO UPDATE SET data = excluded.data",
+            params![user_id, data],
+        )?,
+        None => conn.execute("DELETE FROM avatars WHERE user_id = ?1", params![user_id])?,
+    };
+    Ok(())
 }

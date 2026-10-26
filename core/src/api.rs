@@ -47,6 +47,44 @@ pub struct Profile {
     pub badges: Vec<Badge>,
     /// Unix seconds.
     pub joined_at: i64,
+    /// Profile picture: a built-in avatar ("preset:<name>") or an uploaded
+    /// image as a data URL. None until the user picks one.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub avatar: Option<String>,
+}
+
+/// Body of `PUT /api/me/avatar`. None removes the picture.
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AvatarRequest {
+    pub avatar: Option<String>,
+}
+
+/// The built-in avatars a user can pick.
+pub const AVATAR_PRESETS: &[&str] = &["mascot", "a1", "a2", "a3", "a4"];
+
+/// Largest accepted uploaded picture (the app sends a 256 px JPEG, ~20-40 KB).
+pub const AVATAR_MAX_BYTES: usize = 300_000;
+
+/// Checks an avatar value; returns an error message when it isn't acceptable.
+pub fn validate_avatar(avatar: &str) -> Result<(), &'static str> {
+    if let Some(name) = avatar.strip_prefix("preset:") {
+        return if AVATAR_PRESETS.contains(&name) { Ok(()) } else { Err("Unknown avatar") };
+    }
+    let ok_type = ["data:image/jpeg;base64,", "data:image/png;base64,", "data:image/webp;base64,"]
+        .iter()
+        .any(|p| avatar.starts_with(p));
+    if !ok_type {
+        return Err("The picture must be a JPEG, PNG or WebP image");
+    }
+    if avatar.len() > AVATAR_MAX_BYTES {
+        return Err("The picture is too large");
+    }
+    let data = &avatar[avatar.find(',').map_or(0, |i| i + 1)..];
+    if !data.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'+' || b == b'/' || b == b'=') {
+        return Err("The picture data is not valid");
+    }
+    Ok(())
 }
 
 // ---------- catalog ----------
@@ -211,4 +249,21 @@ pub struct Leaderboard {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ApiErrorBody {
     pub error: String,
+}
+
+#[cfg(test)]
+mod avatar_tests {
+    use super::*;
+
+    #[test]
+    fn avatar_values() {
+        assert!(validate_avatar("preset:a1").is_ok());
+        assert!(validate_avatar("preset:mascot").is_ok());
+        assert!(validate_avatar("preset:../etc").is_err());
+        assert!(validate_avatar("data:image/jpeg;base64,/9j/4AAQSkZJRg==").is_ok());
+        assert!(validate_avatar("data:text/html;base64,PGgxPg==").is_err());
+        assert!(validate_avatar("data:image/png;base64,abc\"<script>").is_err());
+        let big = format!("data:image/jpeg;base64,{}", "A".repeat(AVATAR_MAX_BYTES));
+        assert!(validate_avatar(&big).is_err());
+    }
 }

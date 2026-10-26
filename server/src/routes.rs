@@ -9,7 +9,7 @@ use argon2::password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, Salt
 use argon2::Argon2;
 use axum::extract::{Path, Query, State};
 use axum::http::HeaderMap;
-use axum::routing::{get, post};
+use axum::routing::{get, post, put};
 use axum::{Json, Router};
 use rand::RngCore;
 use rusqlite::Connection;
@@ -42,6 +42,7 @@ pub fn api_router(state: AppState) -> Router {
         .route("/api/auth/login", post(login))
         .route("/api/auth/logout", post(logout))
         .route("/api/me", get(me))
+        .route("/api/me/avatar", put(set_avatar))
         .route("/api/courses", get(list_courses))
         .route("/api/courses/:id", get(get_course))
         .route("/api/lessons/:id", get(get_lesson))
@@ -150,6 +151,7 @@ fn build_profile(conn: &Connection, user_id: i64) -> ApiResult<(Profile, Stats)>
         courses_completed: stats.courses_completed,
         badges: progress::badges(&stats),
         joined_at: user.created_at,
+        avatar: db::get_avatar(conn, user_id)?,
     };
     Ok((profile, stats))
 }
@@ -215,6 +217,21 @@ async fn logout(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<
 async fn me(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Json<Profile>> {
     let user_id = require_user(&state, &headers)?;
     let (profile, _) = build_profile(&*state.conn()?, user_id)?;
+    Ok(Json(profile))
+}
+
+async fn set_avatar(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(req): Json<AvatarRequest>,
+) -> ApiResult<Json<Profile>> {
+    let user_id = require_user(&state, &headers)?;
+    if let Some(a) = &req.avatar {
+        validate_avatar(a).map_err(|m| ApiError::BadRequest(m.into()))?;
+    }
+    let conn = state.conn()?;
+    db::set_avatar(&conn, user_id, req.avatar.as_deref())?;
+    let (profile, _) = build_profile(&conn, user_id)?;
     Ok(Json(profile))
 }
 

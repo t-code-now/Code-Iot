@@ -13,6 +13,7 @@ use leptos_router::*;
 use crate::components::code_bg::CodeBackground;
 use crate::components::shell::Shell;
 use crate::pages::auth::{AuthMode, AuthPage, Welcome};
+use crate::pages::avatar::AvatarPage;
 use crate::pages::courses::Courses;
 use crate::pages::home::Home;
 use crate::pages::leaderboard::LeaderboardPage;
@@ -49,6 +50,7 @@ fn App() -> impl IntoView {
                 <Route path="/welcome" view=Welcome/>
                 <Route path="/login" view=|| view! { <AuthPage mode=AuthMode::Login/> }/>
                 <Route path="/signup" view=|| view! { <AuthPage mode=AuthMode::Signup/> }/>
+                <Route path="/avatar" view=AvatarPage/>
                 <Route path="/lesson/:id" view=LessonPage/>
                 <Route path="/" view=Shell>
                     <Route path="" view=Home/>

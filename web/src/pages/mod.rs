@@ -1,4 +1,5 @@
 pub mod auth;
+pub mod avatar;
 pub mod courses;
 pub mod home;
 pub mod leaderboard;
