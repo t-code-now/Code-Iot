@@ -128,6 +128,7 @@ fn tidy(text: String) -> String {
     out.replace("<source>", "main")
         .replace("/app/example.cpp", "main")
         .replace("/app/example.py", "main.py")
+        .replace("/app/output.s", "main.py")
         .replace("example.py", "main.py")
 }
 
