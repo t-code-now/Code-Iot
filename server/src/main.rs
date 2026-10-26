@@ -8,6 +8,8 @@
 mod db;
 mod error;
 mod routes;
+mod run;
+mod sketch;
 
 use std::net::SocketAddr;
 use std::path::PathBuf;

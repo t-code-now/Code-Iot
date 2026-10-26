@@ -116,3 +116,23 @@ pub async fn complete(lesson_id: String, token: Option<String>, correct: u32) ->
 pub async fn leaderboard(scope: &str, token: Option<String>) -> ApiResult<Leaderboard> {
     get(&format!("/api/leaderboard?scope={scope}"), &token).await
 }
+
+/// Result of running playground code on the server (C++, Rust, Arduino).
+#[derive(Debug, Clone, PartialEq, serde::Deserialize)]
+pub struct RunResult {
+    pub status: String,
+    pub stdout: String,
+    pub stderr: String,
+    pub exit_code: Option<i64>,
+}
+
+#[derive(serde::Serialize)]
+struct RunBody<'a> {
+    language: &'a str,
+    code: &'a str,
+    stdin: &'a str,
+}
+
+pub async fn run(language: String, code: String, stdin: String) -> ApiResult<RunResult> {
+    post("/api/run", &None, &RunBody { language: &language, code: &code, stdin: &stdin }).await
+}

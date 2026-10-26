@@ -48,6 +48,7 @@ pub fn api_router(state: AppState) -> Router {
         .route("/api/lessons/:id/check", post(check_answer))
         .route("/api/lessons/:id/complete", post(complete_lesson))
         .route("/api/leaderboard", get(leaderboard))
+        .route("/api/run", post(crate::run::run))
         .with_state(state)
 }
 

@@ -45,6 +45,10 @@ jobs:
         if: always()
         run: cargo build -p codesprout-server --release 2>&1 | tee -a build.log; exit ${PIPESTATUS[0]}
 
+      - name: Playground smoke test
+        if: always()
+        run: scripts/playground-smoke.sh 2>&1 | tee -a build.log
+
       - name: Package
         run: |
           mkdir -p codesprout/web
