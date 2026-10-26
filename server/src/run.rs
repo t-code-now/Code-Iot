@@ -1,5 +1,5 @@
 //! `POST /api/run`: compiles and runs playground code for languages a
-//! browser can't run by itself (C++, Rust, and Arduino sketches through the
+//! browser can't run reliably by itself (Python, C++, Rust, and Arduino sketches through the
 //! simulator). The code is executed by Compiler Explorer (godbolt.org) in its
 //! own sandbox; nothing runs on this server.
 
@@ -61,7 +61,11 @@ async fn compiler_id(lang: &str) -> String {
     {
         return id.clone();
     }
-    let fallback = if lang == "rust" { "r1820" } else { "g132" };
+    let fallback = match lang {
+        "rust" => "r1820",
+        "python" => "python312",
+        _ => "g132",
+    };
     let url = format!("{GODBOLT}/compilers/{lang}?fields=id,name,semver,instructionSet,supportsExecute");
     let list: Vec<Value> = match client().get(&url).header("Accept", "application/json").send().await {
         Ok(r) => r.json().await.unwrap_or_default(),
@@ -71,15 +75,15 @@ async fn compiler_id(lang: &str) -> String {
         let name = c["name"].as_str().unwrap_or("").to_lowercase();
         let semver = c["semver"].as_str().unwrap_or("");
         let executes = c["supportsExecute"].as_bool().unwrap_or(true);
-        let x86 = c["instructionSet"].as_str().map_or(true, |s| s == "amd64");
+        let x86 = lang != "c++" || c["instructionSet"].as_str().map_or(true, |s| s == "amd64");
         let stable = semver.chars().next().is_some_and(|ch| ch.is_ascii_digit())
             && !semver.contains("trunk")
             && !semver.contains("nightly")
             && !semver.contains("beta");
-        let family = if lang == "rust" {
-            name.starts_with("rustc ") && !name.contains("gcc") && !name.contains("mrustc")
-        } else {
-            name.starts_with("x86-64 gcc ") && !name.contains("assert") && !name.contains("(")
+        let family = match lang {
+            "rust" => name.starts_with("rustc ") && !name.contains("gcc") && !name.contains("mrustc"),
+            "python" => name.starts_with("python 3") && !name.contains("pypy"),
+            _ => name.starts_with("x86-64 gcc ") && !name.contains("assert") && !name.contains("("),
         };
         executes && x86 && stable && family
     };
@@ -121,7 +125,10 @@ fn tidy(text: String) -> String {
             out.push(c);
         }
     }
-    out.replace("<source>", "main").replace("/app/example.cpp", "main")
+    out.replace("<source>", "main")
+        .replace("/app/example.cpp", "main")
+        .replace("/app/example.py", "main.py")
+        .replace("example.py", "main.py")
 }
 
 pub async fn run(Json(req): Json<RunRequest>) -> Result<Json<RunResponse>, (StatusCode, Json<Value>)> {
@@ -132,6 +139,7 @@ pub async fn run(Json(req): Json<RunRequest>) -> Result<Json<RunResponse>, (Stat
         "cpp" => ("c++", req.code.clone(), "-std=c++20 -O1"),
         "arduino" => ("c++", arduino_program(&req.code), "-std=gnu++17 -O1 -w"),
         "rust" => ("rust", req.code.clone(), "--edition 2021 -C opt-level=1"),
+        "python" => ("python", req.code.clone(), ""),
         _ => return Err((StatusCode::BAD_REQUEST, Json(json!({ "error": "Unknown language" })))),
     };
     let id = compiler_id(lang).await;

@@ -124,7 +124,7 @@ const STRINGS: &[(&str, &str, &str)] = &[
     ("pg.compile_error", "Compile error", "שגיאת קומפילציה"),
     ("pg.runtime_error", "The program exited with code {}", "התוכנית הסתיימה עם קוד {}"),
     ("pg.press_run", "Press Run to see the output here.", "לחצו על הרצה כדי לראות כאן את הפלט."),
-    ("pg.tip_python", "Python runs right in your browser (Pyodide). The first run downloads it, so it takes a few seconds.", "Python רץ ישירות בדפדפן (Pyodide). בהרצה הראשונה הוא נטען, ולכן זה לוקח כמה שניות."),
+    ("pg.tip_python", "Python 3 runs on a remote sandbox. Anything your program reads with input() comes from the Input tab, one line per call.", "Python 3 רץ בסביבה מבודדת מרוחקת. מה שהתוכנית קוראת עם input() מגיע מלשונית הקלט, שורה אחת לכל קריאה."),
     ("pg.tip_js", "JavaScript runs in a sandbox in your browser; console.log prints here.", "JavaScript רץ בסביבה מבודדת בדפדפן; console.log מדפיס לכאן."),
     ("pg.tip_sql", "SQL runs on a fresh SQLite database in your browser. Every run starts empty.", "SQL רץ על מסד SQLite חדש בדפדפן. כל הרצה מתחילה ממסד ריק."),
     ("pg.tip_server", "Compiled and run on Compiler Explorer (godbolt.org), so it needs an internet connection.", "מקומפל ורץ ב-Compiler Explorer ‏(godbolt.org), ולכן צריך חיבור לאינטרנט."),

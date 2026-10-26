@@ -31,6 +31,15 @@ cat > /tmp/a.ino <<'I'
 void setup() { pinMode(13, OUTPUT); Serial.begin(9600); Serial.println("hi from the sim"); }
 void loop() { digitalWrite(13, HIGH); delay(1000); digitalWrite(13, LOW); delay(1000); }
 I
+cat > /tmp/a.py <<'P'
+name = input("What's your name? ")
+print(f"Hello, {name}!")
+for i in range(1, 4):
+    print(i, "squared is", i * i)
+P
+cat > /tmp/bad.py <<'P'
+print(1 / 0)
+P
 cat > /tmp/bad.cpp <<'B'
 int main() { return x; }
 B
@@ -38,6 +47,8 @@ run cpp /tmp/a.cpp "Code-Iot"
 run rust /tmp/a.rs "Code-Iot"
 run arduino /tmp/a.ino ""
 run cpp /tmp/bad.cpp ""
+run python /tmp/a.py "Code-Iot"
+run python /tmp/bad.py ""
 echo "--- avatar"
 python3 - <<'PY'
 import json, urllib.request

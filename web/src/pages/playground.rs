@@ -36,7 +36,7 @@ struct Lang {
 
 const LANGS: &[Lang] = &[
     Lang {
-        id: "python", name: "Python", icon: "🐍", server: false, tip: "pg.tip_python", stdin: "Code-Iot",
+        id: "python", name: "Python", icon: "🐍", server: true, tip: "pg.tip_python", stdin: "Code-Iot",
         starter: "name = input(\"What's your name? \")\nprint(f\"Hello, {name}!\")\n\nfor i in range(1, 4):\n    print(i, \"squared is\", i * i)\n",
     },
     Lang {
@@ -103,26 +103,6 @@ fn js_doc(code: &str) -> String {
          w(Array.prototype.map.call(arguments,fmt).join(' '),k==='error'||k==='warn'?'err':'');}};}});</script>\
          <script type=\"module\">{}</script></body></html>",
         code.replace("</script", "<\\/script")
-    )
-}
-
-fn python_doc(code: &str, stdin: &str) -> String {
-    format!(
-        "<!DOCTYPE html><html><head><meta charset=\"utf-8\">{OUT_STYLE}</head><body><pre id=\"out\"></pre>{OUT_HELPERS}\
-         <script src=\"https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js\"></script>\
-         <script>(async function(){{\
-           var note=document.createElement('span');note.className='info';note.textContent='Loading Python…\\n';out.appendChild(note);\
-           var lines={stdin}.split('\\n');var i=0;\
-           try{{\
-             var py=await loadPyodide({{stdout:function(t){{w(t)}},stderr:function(t){{w(t,'err')}}}});\
-             py.setStdin({{stdin:function(){{return i<lines.length?lines[i++]:undefined}}}});\
-             note.remove();\
-             await py.runPythonAsync({code});\
-           }}catch(e){{note.remove();w(String(e.message||e),'err');}}\
-           if(!out.textContent)w('(no output)','info');\
-         }})();</script></body></html>",
-        stdin = js_string(stdin),
-        code = js_string(code),
     )
 }
 
@@ -214,7 +194,6 @@ pub fn Playground() -> impl IntoView {
         let _ = LocalStorage::set(code_key(l.id), &src);
         tab.set(Tab::Output);
         match l.id {
-            "python" => output.set(Output::Frame(python_doc(&src, &stdin.get_untracked()))),
             "javascript" => output.set(Output::Frame(js_doc(&src))),
             "sql" => output.set(Output::Frame(sql_doc(&src))),
             _ => {
