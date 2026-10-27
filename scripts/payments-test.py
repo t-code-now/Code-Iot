@@ -248,7 +248,9 @@ def run():
     check("admin sees phone and country", u.get("phone") == "+972501234567" and u.get("country") == "IL", str(u))
     check("admin sees payment method", "Visa •••• 4242" in u.get("payment_methods", []), str(u))
     _, ov = call("GET", "/api/admin/overview", token=atok)
-    check("overview counts test payments out of revenue", ov.get("revenue") == [] and ov.get("refunded") == [], str(ov))
+    # The $25 order was a test-mode purchase (left out); the $5 invoice was live, $2 of it refunded.
+    check("overview revenue: live money only, refunds separate",
+          ov.get("revenue") == [["USD", 500]] and ov.get("refunded") == [["USD", 200]], str(ov))
     _, log = call("GET", "/api/admin/log", token=atok)
     actions = [e["action"] for e in log]
     check("every money action logged", actions.count("refund") == 3 and "cancel subscription" in actions
