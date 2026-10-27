@@ -93,6 +93,53 @@ fn PhoneForm(#[prop(into)] on_saved: Callback<()>) -> impl IntoView {
     }
 }
 
+/// While purchases are closed: "opening soon" and a one-tap waiting list.
+#[component]
+fn Waitlist(course_id: String) -> impl IntoView {
+    let session = use_session();
+    let id = store_value(course_id);
+    let mine = create_local_resource(move || session.token.get(), api::my_waitlist);
+    let busy = create_rw_signal(false);
+    let error = create_rw_signal(None::<String>);
+    let waiting = move || mine.get().and_then(|r| r.ok()).is_some_and(|l| l.contains(&id.get_value()));
+    let toggle = move |_| {
+        if busy.get_untracked() {
+            return;
+        }
+        busy.set(true);
+        error.set(None);
+        let join = !waiting();
+        let lang = session.lang.get_untracked();
+        spawn_local(async move {
+            let r = api::set_waitlist(session.token.get_untracked(), id.get_value(), join).await;
+            busy.set(false);
+            match r {
+                Ok(list) => mine.set(Ok(list)),
+                Err(e) => error.set(Some(i18n::error(lang, &e.message))),
+            }
+        });
+    };
+    view! {
+        <div class="soon-box">
+            <strong>{session.t("unlock.soon_title")}</strong>
+            <p>{session.t("unlock.soon")}</p>
+            {move || if waiting() {
+                view! {
+                    <p class="soon-joined">"✓ " {session.t("unlock.wait_joined")}</p>
+                    <button class="link-btn small" disabled=move || busy.get() on:click=toggle>{session.t("unlock.wait_leave")}</button>
+                }.into_view()
+            } else {
+                view! {
+                    <button class="btn btn-primary btn-block" disabled=move || busy.get() on:click=toggle>
+                        {session.t("unlock.wait_join")}
+                    </button>
+                }.into_view()
+            }}
+            {move || error.get().map(|e| view! { <div class="form-error">{e}</div> })}
+        </div>
+    }
+}
+
 #[component]
 pub fn UnlockPage() -> impl IntoView {
     let session = use_session();
@@ -234,7 +281,7 @@ pub fn UnlockPage() -> impl IntoView {
                                         {move || config.get().map(|cfg| {
                                             let cfg = cfg.unwrap_or_default();
                                             if !cfg["enabled"].as_bool().unwrap_or(false) {
-                                                return view! { <div class="guest-note">{session.t("unlock.soon")}</div> }.into_view();
+                                                return view! { <Waitlist course_id=course_id()/> }.into_view();
                                             }
                                             let monthly = cfg["monthly"].as_str().unwrap_or("$5").to_string();
                                             let lifetime = cfg["lifetime"].as_str().unwrap_or("$25").to_string();

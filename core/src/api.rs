@@ -91,6 +91,27 @@ pub struct PlanDto {
     pub manage_url: Option<String>,
 }
 
+/// `POST /api/me/waitlist`
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct WaitlistRequest {
+    pub course_id: String,
+    pub join: bool,
+}
+
+/// `GET /api/admin/waitlist`: one person waiting for one course.
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminWaitEntry {
+    pub user_id: i64,
+    pub username: String,
+    pub email: String,
+    pub phone: String,
+    pub country: String,
+    pub course_id: String,
+    pub created_at: i64,
+}
+
 /// `GET /api/me/purchases`: the signed-in user's own purchases (one-time
 /// orders and subscriptions; monthly invoices are folded into their subscription).
 #[derive(Debug, Clone, PartialEq)]

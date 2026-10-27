@@ -127,6 +127,21 @@ def run():
     con.close()
 
     check("admin flag", call("GET", "/api/me", token=atok)[1].get("is_admin") is True)
+    code, body = call("POST", "/api/me/waitlist", {"course_id": "python", "join": True}, tok)
+    check("join a waiting list", code == 200 and body == ["python"], str((code, body)))
+    code, body = call("POST", "/api/me/waitlist", {"course_id": "python", "join": True}, tok)
+    check("joining twice keeps one entry", code == 200 and body == ["python"], str(body))
+    code, _ = call("POST", "/api/me/waitlist", {"course_id": "nope", "join": True}, tok)
+    check("unknown course refused", code == 404, str(code))
+    code, _ = call("POST", "/api/me/waitlist", {"course_id": "python", "join": True})
+    check("guest can't join", code == 401, str(code))
+    code, _ = call("GET", "/api/admin/waitlist", token=tok)
+    check("waiting list is admins only", code == 403, str(code))
+    code, body = call("GET", "/api/admin/waitlist", token=atok)
+    check("admin sees who waits", code == 200 and len(body) == 1 and body[0]["course_id"] == "python"
+          and body[0]["user_id"] == buyer_id, str(body))
+    code, body = call("POST", "/api/me/waitlist", {"course_id": "python", "join": False}, tok)
+    check("leave the waiting list", code == 200 and body == [] and call("GET", "/api/admin/waitlist", token=atok)[1] == [], str(body))
     check("buyer is not admin", call("GET", "/api/me", token=tok)[1].get("is_admin") is False)
 
     # --- phone before paying
@@ -260,7 +275,10 @@ def run():
     check("pause purchases", call("POST", "/api/admin/settings", {"sales_paused": True}, atok)[0] == 200)
     code, body = call("POST", "/api/payments/checkout", {"course_id": "sql", "plan": "monthly"}, tok)
     check("no checkout while paused", code == 400, str((code, body)))
+    _, cfg = call("GET", "/api/payments/config")
+    check("page shows 'opening soon' while paused", cfg.get("enabled") is False and cfg.get("paused") is True, str(cfg))
     check("resume purchases", call("POST", "/api/admin/settings", {"sales_paused": False}, atok)[0] == 200)
+    check("price buttons back after resuming", call("GET", "/api/payments/config")[1].get("enabled") is True)
     code, body = call("POST", "/api/payments/checkout", {"course_id": "sql", "plan": "monthly"}, tok)
     check("checkout after resuming", code == 200 and calls[-1]["body"]["data"]["relationships"]["variant"]["data"]["id"] == VAR_MONTHLY)
 

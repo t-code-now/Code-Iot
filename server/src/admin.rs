@@ -269,6 +269,28 @@ pub async fn payments(State(state): State<AppState>, headers: HeaderMap) -> ApiR
     Ok(Json(list))
 }
 
+/// `GET /api/admin/waitlist`
+pub async fn waitlist(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Json<Vec<codesprout_core::api::AdminWaitEntry>>> {
+    require_admin(&state, &headers).await?;
+    let names: HashMap<i64, (String, String)> = store::user_rows(&state.db, "", 100_000)
+        .await?
+        .into_iter()
+        .map(|u| (u.id, (u.username, u.email)))
+        .collect();
+    let contacts = store::all_contacts(&state.db).await?;
+    Ok(Json(
+        store::all_waitlist(&state.db)
+            .await?
+            .into_iter()
+            .map(|(user_id, course_id, created_at)| {
+                let (username, email) = names.get(&user_id).cloned().unwrap_or_default();
+                let (phone, country) = contacts.get(&user_id).cloned().unwrap_or_default();
+                codesprout_core::api::AdminWaitEntry { user_id, username, email, phone, country, course_id, created_at }
+            })
+            .collect(),
+    ))
+}
+
 /// `GET /api/admin/log`
 pub async fn log(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Json<Vec<AdminLogEntry>>> {
     require_admin(&state, &headers).await?;

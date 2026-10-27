@@ -990,3 +990,12 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .prorata > div { display: flex; flex-direction: column; gap: 2px; }
 .prorata strong { color: var(--primary); }
 .prorata .muted { font-size: .85rem; }
+
+/* ---------- opening soon / waiting list ---------- */
+.soon-box { display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: var(--radius); background: var(--surface-2); border: 2px solid var(--line); }
+.soon-box strong { font-family: var(--display); font-size: 20px; color: var(--primary); }
+.soon-box p { margin: 0; color: var(--text); line-height: 1.5; }
+.soon-box .soon-joined { padding: 10px 12px; border-radius: 12px; background: #17633f; border: 2px solid #3fbf7f; color: #fff; font-weight: 800; }
+.waitlist { display: flex; flex-direction: column; gap: 12px; }
+.waitlist-course { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: var(--radius); background: var(--surface); border: 2px solid var(--line); }
+.waitlist-row { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; padding-top: 6px; border-top: 1px solid var(--line); font-weight: 700; }

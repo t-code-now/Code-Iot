@@ -58,8 +58,38 @@ pub fn config() -> Option<Config> {
 }
 
 /// `GET /api/payments/config`
-pub async fn config_info() -> Json<Value> {
-    Json(json!({ "enabled": config().is_some(), "monthly": PRICE_MONTHLY, "lifetime": PRICE_LIFETIME }))
+/// `enabled` is false while purchases are stopped, so the page shows "opening
+/// soon" and the waiting list instead of the price buttons.
+pub async fn config_info(State(state): State<AppState>) -> ApiResult<Json<Value>> {
+    let paused = store::sales_paused(&state.db).await?;
+    Ok(Json(json!({
+        "enabled": config().is_some() && !paused,
+        "paused": paused,
+        "monthly": PRICE_MONTHLY,
+        "lifetime": PRICE_LIFETIME,
+    })))
+}
+
+/// `GET /api/me/waitlist`: the courses the user asked to hear about.
+pub async fn my_waitlist(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Json<Vec<String>>> {
+    let user_id = crate::routes::require_user(&state, &headers).await?;
+    Ok(Json(store::my_waitlist(&state.db, user_id).await?))
+}
+
+/// `POST /api/me/waitlist` `{course_id, join}`.
+pub async fn set_waitlist(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(req): Json<codesprout_core::api::WaitlistRequest>,
+) -> ApiResult<Json<Vec<String>>> {
+    let user_id = crate::routes::require_user(&state, &headers).await?;
+    find_course(&req.course_id).ok_or(ApiError::NotFound)?;
+    if req.join {
+        store::join_waitlist(&state.db, user_id, &req.course_id, now()).await?;
+    } else {
+        store::leave_waitlist(&state.db, user_id, &req.course_id).await?;
+    }
+    Ok(Json(store::my_waitlist(&state.db, user_id).await?))
 }
 
 /// Lemon Squeezy's API address (tests point this at a local fake).

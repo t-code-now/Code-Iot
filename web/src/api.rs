@@ -235,3 +235,17 @@ pub async fn my_purchases(token: Option<String>) -> ApiResult<Vec<MyPurchase>> {
 pub async fn cancel_my_subscription(token: Option<String>, payment_id: i64) -> ApiResult<serde_json::Value> {
     post("/api/me/cancel", &token, &AdminCancelRequest { payment_id }).await
 }
+
+/// The courses the user asked to hear about.
+pub async fn my_waitlist(token: Option<String>) -> ApiResult<Vec<String>> {
+    get("/api/me/waitlist", &token).await
+}
+
+/// Join (or leave) a course's waiting list; returns the user's list.
+pub async fn set_waitlist(token: Option<String>, course_id: String, join: bool) -> ApiResult<Vec<String>> {
+    post("/api/me/waitlist", &token, &WaitlistRequest { course_id, join }).await
+}
+
+pub async fn admin_waitlist(token: Option<String>) -> ApiResult<Vec<AdminWaitEntry>> {
+    get("/api/admin/waitlist", &token).await
+}

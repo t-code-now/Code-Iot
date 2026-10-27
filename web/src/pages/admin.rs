@@ -14,6 +14,7 @@ use crate::session::use_session;
 
 #[wasm_bindgen(inline_js = r#"
 export function ask(message) { return window.confirm(message); }
+export function copy_text(text) { try { navigator.clipboard.writeText(text); } catch (e) {} }
 export function download_text(name, text) {
   var blob = new Blob(['﻿' + text], { type: 'text/csv;charset=utf-8' });
   var a = document.createElement('a');
@@ -24,6 +25,7 @@ export function download_text(name, text) {
 "#)]
 extern "C" {
     fn ask(message: &str) -> bool;
+    fn copy_text(text: &str);
     fn download_text(name: &str, text: &str);
 }
 
@@ -247,6 +249,66 @@ fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
                             </table>
                         </div>
                     }.into_view()
+                }
+            })}
+        </Suspense>
+        <WaitlistPanel courses=courses.get_value()/>
+    }
+}
+
+/// Who asked to hear when a course's paid part opens, grouped by course.
+#[component]
+fn WaitlistPanel(courses: Vec<CourseSummary>) -> impl IntoView {
+    let session = use_session();
+    let courses = store_value(courses);
+    let data = create_local_resource(move || session.token.get(), api::admin_waitlist);
+    let copied = create_rw_signal(false);
+    view! {
+        <h3 class="section-title">{session.t("admin.waitlist")}</h3>
+        <Suspense fallback=|| view! { <Loading/> }>
+            {move || data.get().map(|r| {
+                let lang = session.lang.get();
+                let t = move |k| i18n::t(lang, k);
+                match r {
+                    Err(e) => view! { <div class="form-error">{e.message}</div> }.into_view(),
+                    Ok(list) if list.is_empty() => view! { <p class="admin-hint">{t("admin.waitlist_none")}</p> }.into_view(),
+                    Ok(list) => {
+                        let mut ids: Vec<String> = list.iter().map(|w| w.course_id.clone()).collect();
+                        ids.sort();
+                        ids.dedup();
+                        let mut emails: Vec<String> = list.iter().map(|w| w.email.clone()).filter(|e| !e.is_empty()).collect();
+                        emails.sort();
+                        emails.dedup();
+                        let all = emails.join(", ");
+                        view! {
+                            <div class="waitlist">
+                                {ids.into_iter().map(|cid| {
+                                    let people: Vec<_> = list.iter().filter(|w| w.course_id == cid).cloned().collect();
+                                    view! {
+                                        <div class="waitlist-course">
+                                            <strong class="course-label"><LangIcon id=cid.clone()/> {courses.with_value(|cs| course_label(cs, &cid))} " · " {people.len()}</strong>
+                                            {people.into_iter().map(|w| view! {
+                                                <div class="waitlist-row">
+                                                    <bdi>{if w.username.is_empty() { "—".to_string() } else { w.username.clone() }}</bdi>
+                                                    <span class="muted" dir="ltr">{w.email.clone()}</span>
+                                                    {(!w.phone.is_empty()).then(|| phone_links(&w.phone, &w.country))}
+                                                    <span class="muted">{date(w.created_at, lang)}</span>
+                                                </div>
+                                            }).collect_view()}
+                                        </div>
+                                    }
+                                }).collect_view()}
+                                {(!all.is_empty()).then(|| {
+                                    let all = all.clone();
+                                    view! {
+                                        <button class="btn btn-small btn-ghost" on:click=move |_| { copy_text(&all); copied.set(true); }>
+                                            {move || if copied.get() { t("admin.waitlist_copied") } else { t("admin.waitlist_copy") }}
+                                        </button>
+                                    }
+                                })}
+                            </div>
+                        }.into_view()
+                    }
                 }
             })}
         </Suspense>

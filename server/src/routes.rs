@@ -65,6 +65,8 @@ pub fn api_router(state: AppState) -> Router {
         .route("/api/admin/settings", post(crate::admin::settings))
         .route("/api/me/contact", put(set_contact))
         .route("/api/me/purchases", get(crate::payments::my_purchases))
+        .route("/api/me/waitlist", get(crate::payments::my_waitlist).post(crate::payments::set_waitlist))
+        .route("/api/admin/waitlist", get(crate::admin::waitlist))
         .route("/api/me/cancel", post(crate::payments::user_cancel))
         // Unknown API paths answer with a JSON 404 instead of the web page.
         .route("/api/*rest", any(|| async { ApiError::NotFound }))

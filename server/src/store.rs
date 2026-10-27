@@ -48,6 +48,12 @@ pub const SCHEMA: &[&str] = &[
         key    TEXT PRIMARY KEY,
         value  TEXT NOT NULL
     )",
+    "CREATE TABLE IF NOT EXISTS waitlist (
+        user_id     INTEGER NOT NULL,
+        course_id   TEXT    NOT NULL,
+        created_at  INTEGER NOT NULL,
+        PRIMARY KEY (user_id, course_id)
+    )",
     "CREATE TABLE IF NOT EXISTS admin_log (
         id          INTEGER PRIMARY KEY,
         admin       TEXT    NOT NULL,
@@ -289,6 +295,42 @@ pub async fn all_contacts(db: &Db) -> DbResult<std::collections::HashMap<i64, (S
         .collect())
 }
 
+/// "Tell me when the full course opens": idempotent per user and course.
+pub async fn join_waitlist(db: &Db, user_id: i64, course_id: &str, now: i64) -> DbResult<()> {
+    db.execute(
+        "INSERT INTO waitlist (user_id, course_id, created_at) VALUES (?1, ?2, ?3)
+         ON CONFLICT(user_id, course_id) DO NOTHING",
+        args![user_id, course_id, now],
+    )
+    .await?;
+    Ok(())
+}
+
+pub async fn leave_waitlist(db: &Db, user_id: i64, course_id: &str) -> DbResult<()> {
+    db.execute("DELETE FROM waitlist WHERE user_id = ?1 AND course_id = ?2", args![user_id, course_id]).await?;
+    Ok(())
+}
+
+/// The courses this user waits for.
+pub async fn my_waitlist(db: &Db, user_id: i64) -> DbResult<Vec<String>> {
+    Ok(db
+        .query("SELECT course_id FROM waitlist WHERE user_id = ?1 ORDER BY created_at", args![user_id])
+        .await?
+        .into_iter()
+        .map(|r| r[0].text())
+        .collect())
+}
+
+/// Everyone waiting: (user id, course id, joined at), newest first.
+pub async fn all_waitlist(db: &Db) -> DbResult<Vec<(i64, String, i64)>> {
+    Ok(db
+        .query("SELECT user_id, course_id, created_at FROM waitlist ORDER BY created_at DESC", args![])
+        .await?
+        .into_iter()
+        .map(|r| (r[0].int(), r[1].text(), r[2].int()))
+        .collect())
+}
+
 pub async fn set_contact(db: &Db, user_id: i64, phone: &str, country: &str, now: i64) -> DbResult<()> {
     db.execute(
         "INSERT INTO contacts (user_id, phone, country, updated_at) VALUES (?1, ?2, ?3, ?4)
@@ -413,7 +455,7 @@ pub async fn recent_log(db: &Db, limit: u32) -> DbResult<Vec<(i64, String, Strin
 /// (for accounting) but detached from the account.
 pub async fn delete_user(db: &Db, user_id: i64) -> DbResult<()> {
     let tables =
-        ["sessions", "completions", "xp_events", "google_accounts", "avatars", "access_overrides", "bans", "contacts"];
+        ["sessions", "completions", "xp_events", "google_accounts", "avatars", "access_overrides", "bans", "contacts", "waitlist"];
     let mut stmts: Vec<Stmt> = tables
         .iter()
         .map(|t| Stmt::new(format!("DELETE FROM {t} WHERE user_id = ?1"), args![user_id]))
