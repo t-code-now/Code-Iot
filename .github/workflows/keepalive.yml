@@ -2,23 +2,29 @@ name: Keep the site awake
 
 # Render's free plan puts the server to sleep after 15 minutes without
 # visitors, and the next visitor waits about a minute on Render's loading
-# page. A light request every 10 minutes keeps it awake.
+# page. GitHub often delays or skips frequent scheduled runs, so instead
+# each run stays up for almost 6 hours and pings every 4 minutes. Runs are
+# started every 30 minutes; the concurrency group keeps one running and one
+# waiting, so the next one takes over as soon as the current one ends.
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "7,37 * * * *"
   workflow_dispatch:
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
 
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 355
     steps:
-      - name: Ping /api/health
+      - name: Ping /api/health every 4 minutes
         run: |
-          for i in 1 2 3; do
+          end=$(( $(date +%s) + 350*60 ))
+          while [ "$(date +%s)" -lt "$end" ]; do
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 https://code-iot.onrender.com/api/health || true)
-            echo "attempt $i: HTTP $code"
-            [ "$code" = "200" ] && exit 0
-            sleep 20
+            echo "$(date -u +%H:%M) HTTP $code"
+            sleep 240
           done
-          exit 0
