@@ -29,7 +29,7 @@ fn icon(id: &str) -> Icon {
 pub fn LangIcon(#[prop(into)] id: String) -> impl IntoView {
     match icon(&id) {
         Icon::Files(names) => view! {
-            <span class=format!("lang-icon lang-{id}") class:lang-pair=names.len() > 1 aria-hidden="true">
+            <span class=format!("lang-icon lang-{id}") class:lang-pair={names.len() > 1} aria-hidden="true">
                 {names.iter().map(|n| view! { <img src=format!("/assets/lang/{n}.svg") alt="" draggable="false"/> }).collect_view()}
             </span>
         }
