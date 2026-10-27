@@ -157,6 +157,7 @@ async fn build_profile(conn: &Db, user_id: i64) -> ApiResult<(Profile, Stats)> {
     let (level, level_xp, level_xp_needed) = progress::level_for_xp(stats.xp);
 
     let profile = Profile {
+        id: user.id,
         username: user.username.clone(),
         xp: stats.xp,
         weekly_xp: weekly_xp.max(0) as u64,

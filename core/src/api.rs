@@ -32,6 +32,8 @@ pub struct Badge {
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Profile {
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub id: i64,
     pub username: String,
     pub xp: u64,
     pub weekly_xp: u64,

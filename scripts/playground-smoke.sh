@@ -52,7 +52,7 @@ run python /tmp/a.py "Code-Iot"
 run python /tmp/bad.py ""
 echo "--- avatar"
 python3 - <<'PY'
-import json, urllib.request
+import json, os, urllib.request
 B = "http://127.0.0.1:3999"
 def call(method, path, body=None, token=None):
     h = {"Content-Type": "application/json"}
@@ -77,6 +77,39 @@ login = call("POST", "/api/auth/login", {"username": name, "password": "secret12
 print("login again:", "token" in login, "| completions saved:", call("POST", "/api/lessons/py-1-1/complete", {"correct": 3, "tz_offset_minutes": 120}, tok).get("xp_gained"))
 print("profile after lesson: xp", call("GET", "/api/me", token=tok).get("xp"))
 
+print("--- access")
+import hashlib, hmac
+lessons = call("GET", "/api/courses/python")["sections"]
+locked_guest = lessons[2]["lessons"][0]["id"]
+print("guest, topic 3:", call("GET", f"/api/lessons/{locked_guest}"))
+print("guest, topic 1:", "steps" in call("GET", "/api/lessons/" + lessons[0]["lessons"][0]["id"]))
+print("user, topic 2:", "steps" in call("GET", "/api/lessons/" + lessons[1]["lessons"][0]["id"], token=tok))
+print("user, topic 3:", call("GET", f"/api/lessons/{locked_guest}", token=tok))
+print("user sees locks:", [l["locked"] for l in call("GET", "/api/courses/python", token=tok)["sections"][1:3] for l in l["lessons"][:1]])
+print("admin api as a user:", call("GET", "/api/admin/overview", token=tok))
+print("payments config:", call("GET", "/api/payments/config"))
+me = call("GET", "/api/me", token=tok)
+secret = os.environ.get("LEMONSQUEEZY_WEBHOOK_SECRET", "")
+if secret:
+    def post_hook(raw, sig):
+        req = urllib.request.Request(B + "/api/payments/webhook", raw.encode(),
+                                     {"Content-Type": "application/json", "X-Signature": sig})
+        try:
+            return urllib.request.urlopen(req, timeout=20).status
+        except urllib.error.HTTPError as e:
+            return e.code
+    body = json.dumps({"meta": {"event_name": "order_created", "test_mode": True,
+                                "custom_data": {"user_id": str(me["id"]), "course_id": "python"}},
+                       "data": {"type": "orders", "id": "smoke-" + name, "attributes": {"status": "paid", "total": 2500,
+                                "currency": "USD", "user_email": "smoke@example.com",
+                                "first_order_item": {"variant_id": os.environ.get("LEMONSQUEEZY_VARIANT_LIFETIME", "")}}}})
+    good = hmac.new(secret.encode(), body.encode(), hashlib.sha256).hexdigest()
+    print("webhook, bad signature:", post_hook(body, "00" * 32))
+    print("webhook, signed:", post_hook(body, good))
+    print("python unlocked after paying:", call("GET", "/api/courses/python", token=tok).get("unlocked"))
+    print("user, topic 3 after paying:", "steps" in call("GET", f"/api/lessons/{locked_guest}", token=tok))
+    print("plans:", call("GET", "/api/me", token=tok).get("plans"))
+    print("rust still locked:", call("GET", "/api/courses/rust", token=tok).get("unlocked") is False)
 print("--- google")
 print("providers:", call("GET", "/api/auth/providers"))
 class NoRedirect(urllib.request.HTTPRedirectHandler):
