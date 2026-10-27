@@ -73,6 +73,7 @@ pub fn ProfilePage() -> impl IntoView {
                     Some(p) => {
                         let level_pct = if p.level_xp_needed == 0 { 0 } else { p.level_xp * 100 / p.level_xp_needed };
                         let earned: Vec<String> = p.badges.iter().map(|b| b.id.clone()).collect();
+                        let plans = p.plans.clone();
                         view! {
                             <div class="profile-columns">
                             <div class="profile-col">
@@ -134,10 +135,10 @@ pub fn ProfilePage() -> impl IntoView {
                             {p.is_admin.then(|| view! {
                                 <a href="/admin" class="btn btn-primary btn-block admin-link">"🛠 " {t("admin.title")}</a>
                             })}
-                            {(!p.plans.is_empty()).then(|| view! {
+                            {(!plans.is_empty()).then(move || view! {
                                 <h3 class="section-title">{t("profile.plans")}</h3>
                                 <div class="plans-list">
-                                    {p.plans.iter().map(|pl| {
+                                    {plans.into_iter().map(|pl| {
                                         let kind = match pl.kind.as_str() {
                                             "lifetime" => t("admin.state_lifetime").to_string(),
                                             "monthly" => match pl.until {

@@ -134,6 +134,7 @@ fn course_label(courses: &[CourseSummary], id: &str) -> String {
 #[component]
 fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
     let session = use_session();
+    let courses = store_value(courses);
     let data = create_local_resource(move || session.token.get(), api::admin_overview);
     view! {
         <Suspense fallback=|| view! { <Loading/> }>
@@ -179,7 +180,7 @@ fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
                                 </tr></thead>
                                 <tbody>
                                     {o.courses.iter().map(|(id, learners, full)| view! {
-                                        <tr><td>{course_label(&courses, id)}</td><td>{*learners}</td><td>{*full}</td></tr>
+                                        <tr><td>{courses.with_value(|cs| course_label(cs, id))}</td><td>{*learners}</td><td>{*full}</td></tr>
                                     }).collect_view()}
                                 </tbody>
                             </table>
@@ -229,7 +230,7 @@ fn UsersTab(courses: Vec<CourseSummary>) -> impl IntoView {
 
     let export = move |_| {
         let lang = session.lang.get_untracked();
-        let Some(Ok(list)) = users.get_untracked() else { return };
+        let Some(Ok(list)) = users.get() else { return };
         let ids: Vec<String> = courses.with_value(|c| c.iter().map(|c| c.id.clone()).collect());
         let mut out = String::from("id,username,email,sign_in,joined,last_active,xp,lessons,paid,payment_methods,banned");
         for id in &ids {
@@ -383,6 +384,7 @@ fn user_card(
 #[component]
 fn PaymentsTab(courses: Vec<CourseSummary>) -> impl IntoView {
     let session = use_session();
+    let courses = store_value(courses);
     let data = create_local_resource(move || session.token.get(), api::admin_payments);
     view! {
         <Suspense fallback=|| view! { <Loading/> }>
@@ -409,7 +411,7 @@ fn PaymentsTab(courses: Vec<CourseSummary>) -> impl IntoView {
                                             <tr>
                                                 <td>{date(p.created_at, lang)}</td>
                                                 <td><bdi>{p.username.clone()}</bdi><br/><small dir="ltr">{p.email.clone()}</small></td>
-                                                <td>{course_label(&courses, &p.course_id)}</td>
+                                                <td>{courses.with_value(|cs| course_label(cs, &p.course_id))}</td>
                                                 <td>{plan}{p.until.map(|u| format!(" → {}", date(u, lang)))}</td>
                                                 <td>{p.status.clone()}{p.test_mode.then(|| view! { <span class="tag">"TEST"</span> })}</td>
                                                 <td dir="ltr">{if p.amount_cents > 0 { money(p.amount_cents, &p.currency) } else { "—".into() }}</td>
