@@ -250,7 +250,7 @@ const STRINGS: &[(&str, &str, &str)] = &[
     ("admin.state_yearly", "One year", "שנה"),
     ("profile.year_until", "One year · until {}", "שנה · עד {}"),
     ("cancel.s_yearly", "One year of access · until {}", "גישה לשנה · עד {}"),
-    ("unlock.yearly", "One year", "לשנה"),
+    ("unlock.yearly", "Yearly", "שנתי"),
     ("unlock.per_year", " / year", " לשנה"),
     ("unlock.yearly_note", "Pay once, the course is open for a whole year. No automatic renewal.", "משלמים פעם אחת, והמסלול פתוח לשנה שלמה. בלי חידוש אוטומטי."),
     ("admin.state_monthly", "Monthly", "מינוי חודשי"),
