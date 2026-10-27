@@ -224,6 +224,7 @@ def run():
     code, body = call("POST", "/api/admin/refund", {"payment_id": i["id"], "amount_cents": 200}, atok)
     check("invoice partial refund", code == 200 and calls[-1]["path"] == "/v1/subscription-invoices/9001/refund"
           and calls[-1]["body"]["data"]["type"] == "subscription-invoices", str((code, body, calls[-1])))
+    check("no unused-part refund before cancelling", i.get("prorata_cents") == 0, str(i.get("prorata_cents")))
     _, mine = call("GET", "/api/me/purchases", token=tok)
     ms = next((m for m in mine if m["id"] == s["id"]), None)
     check("buyer sees own subscription with its charges", ms is not None and ms["amount_cents"] == 500
@@ -242,6 +243,12 @@ def run():
     code, _ = call("POST", "/api/admin/cancel", {"payment_id": s["id"]}, atok)
     check("can't cancel twice", code == 400)
     _, mine = call("GET", "/api/me/purchases", token=tok)
+    _, pays = call("GET", "/api/admin/payments", token=atok)
+    i2 = next(p for p in pays if p["provider_ref"] == "inv_9001")
+    s2 = next(p for p in pays if p["provider_ref"] == "sub_7001")
+    # Cancelled right after paying, period until 2031: nearly all unused, capped at what's left (500 - 200 refunded).
+    check("unused-part refund suggested after cancelling", i2["prorata_cents"] == 300 and i2["prorata_total_days"] > 300
+          and i2["cancelled_at"] and s2["cancelled_at"], str((i2.get("prorata_cents"), i2.get("prorata_total_days"), i2.get("cancelled_at"))))
     check("after cancelling, no cancel button", next(m for m in mine if m["id"] == s["id"])["can_cancel"] is False)
     expired = json.loads(json.dumps(sub))
     expired["meta"]["event_name"] = "subscription_expired"

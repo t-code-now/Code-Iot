@@ -64,6 +64,7 @@ pub const UPGRADES: &[&str] = &[
     "ALTER TABLE payments ADD COLUMN refunded_cents INTEGER NOT NULL DEFAULT 0",
     "ALTER TABLE payments ADD COLUMN customer_name TEXT NOT NULL DEFAULT ''",
     "ALTER TABLE payments ADD COLUMN raw TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE payments ADD COLUMN cancelled_at INTEGER",
 ];
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -89,6 +90,22 @@ pub struct Payment {
     pub customer_name: String,
     /// The last event received for this payment (JSON).
     pub raw: String,
+    /// Subscriptions: when it was cancelled (cleared if it is resumed).
+    pub cancelled_at: Option<i64>,
+}
+
+/// The refund for the unused part of a cancelled subscription's last paid
+/// period: `amount × unused ÷ period`, rounded down to the cent and never more
+/// than what is still refundable. Returns (cents, unused days, period days).
+pub fn prorata(amount_cents: i64, refundable_cents: i64, period_start: i64, period_end: i64, cancelled_at: i64) -> Option<(i64, i64, i64)> {
+    let total = period_end - period_start;
+    let unused = period_end - cancelled_at.max(period_start);
+    if total <= 0 || unused <= 0 || amount_cents <= 0 || refundable_cents <= 0 {
+        return None;
+    }
+    let cents = ((amount_cents as i128 * unused as i128) / total as i128) as i64;
+    let day = 86_400;
+    Some((cents.min(refundable_cents), (unused + day / 2) / day, (total + day / 2) / day))
 }
 
 impl Payment {
@@ -123,7 +140,7 @@ impl Payment {
 }
 
 const PAYMENT_COLUMNS: &str = "id, provider, provider_ref, user_id, course_id, plan, status, amount_cents, currency, \
-     method, email, until, manage_url, test_mode, created_at, updated_at, refunded_cents, customer_name, raw";
+     method, email, until, manage_url, test_mode, created_at, updated_at, refunded_cents, customer_name, raw, cancelled_at";
 
 fn payment_from_row(r: &[Value]) -> Payment {
     Payment {
@@ -146,6 +163,7 @@ fn payment_from_row(r: &[Value]) -> Payment {
         refunded_cents: r[16].int(),
         customer_name: r[17].text(),
         raw: r[18].text(),
+        cancelled_at: r[19].opt_int(),
     }
 }
 
@@ -154,8 +172,9 @@ pub async fn upsert_payment(db: &Db, p: &Payment) -> DbResult<()> {
     db.execute(
         "INSERT INTO payments (provider, provider_ref, user_id, course_id, plan, status, amount_cents, currency,
                                method, email, until, manage_url, test_mode, created_at, updated_at,
-                               refunded_cents, customer_name, raw)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18)
+                               refunded_cents, customer_name, raw, cancelled_at)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18,
+                 CASE WHEN ?6 IN ('cancelled', 'expired') THEN ?15 ELSE NULL END)
          ON CONFLICT(provider, provider_ref) DO UPDATE SET
             user_id = COALESCE(excluded.user_id, payments.user_id),
             course_id = CASE WHEN excluded.course_id = '' THEN payments.course_id ELSE excluded.course_id END,
@@ -173,7 +192,11 @@ pub async fn upsert_payment(db: &Db, p: &Payment) -> DbResult<()> {
             updated_at = excluded.updated_at,
             refunded_cents = MAX(payments.refunded_cents, excluded.refunded_cents),
             customer_name = CASE WHEN excluded.customer_name = '' THEN payments.customer_name ELSE excluded.customer_name END,
-            raw = CASE WHEN excluded.raw = '' THEN payments.raw ELSE excluded.raw END",
+            raw = CASE WHEN excluded.raw = '' THEN payments.raw ELSE excluded.raw END,
+            -- remember when a subscription was first cancelled; resuming clears it
+            cancelled_at = CASE WHEN excluded.status IN ('cancelled', 'expired') THEN COALESCE(payments.cancelled_at, excluded.updated_at)
+                                WHEN excluded.status IN ('active', 'on_trial') THEN NULL
+                                ELSE payments.cancelled_at END",
         args![
             p.provider.as_str(),
             p.provider_ref.as_str(),
@@ -238,7 +261,11 @@ pub async fn update_payment_state(
 ) -> DbResult<()> {
     db.execute(
         "UPDATE payments SET status = ?2, refunded_cents = MAX(refunded_cents, ?3),
-                until = COALESCE(?4, until), updated_at = ?5 WHERE id = ?1",
+                until = COALESCE(?4, until), updated_at = ?5,
+                cancelled_at = CASE WHEN ?2 IN ('cancelled', 'expired') THEN COALESCE(cancelled_at, ?5)
+                                    WHEN ?2 IN ('active', 'on_trial') THEN NULL
+                                    ELSE cancelled_at END
+         WHERE id = ?1",
         args![id, status, refunded_cents, until, now],
     )
     .await?;
@@ -477,6 +504,20 @@ pub async fn learners_per_lesson_prefix(db: &Db) -> DbResult<Vec<(String, i64)>>
 mod tests {
     use super::*;
     use crate::db;
+
+    #[test]
+    fn prorata_refund() {
+        let day = 86_400;
+        // $5 for 30 days, cancelled after 10: 20 days unused -> $3.33 (rounded down).
+        assert_eq!(prorata(500, 500, 0, 30 * day, 10 * day), Some((333, 20, 30)));
+        // Never more than what is still refundable.
+        assert_eq!(prorata(500, 100, 0, 30 * day, 10 * day), Some((100, 20, 30)));
+        // Cancelled after the period ended, or nothing left to refund: no suggestion.
+        assert_eq!(prorata(500, 500, 0, 30 * day, 31 * day), None);
+        assert_eq!(prorata(500, 0, 0, 30 * day, 10 * day), None);
+        // Cancelled the same moment it was paid: the whole amount.
+        assert_eq!(prorata(500, 500, 0, 30 * day, 0), Some((500, 30, 30)));
+    }
 
     #[tokio::test]
     async fn payments_overrides_bans() {

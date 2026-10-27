@@ -205,10 +205,32 @@ pub async fn payments(State(state): State<AppState>, headers: HeaderMap) -> ApiR
         .map(|u| (u.id, (u.username, u.email)))
         .collect();
     let contacts = store::all_contacts(&state.db).await?;
-    let list = store::all_payments(&state.db, 1000)
-        .await?
-        .into_iter()
+    let all = store::all_payments(&state.db, 1000).await?;
+    // Subscriptions by reference, to work out the refund for the unused part
+    // of a cancelled subscription's last paid month.
+    let subs: HashMap<String, store::Payment> =
+        all.iter().filter(|p| p.provider_ref.starts_with("sub_")).map(|p| (p.provider_ref.clone(), p.clone())).collect();
+    let prorata = |p: &store::Payment| -> (Option<i64>, Option<(i64, i64, i64)>) {
+        if !p.provider_ref.starts_with("inv_") {
+            return (p.cancelled_at, None);
+        }
+        let Some(sub) = subs.get(&p.manage_url) else { return (None, None) };
+        let (Some(cancelled), Some(end)) = (sub.cancelled_at, sub.until) else { return (sub.cancelled_at, None) };
+        // Only the last invoice charged before the cancellation.
+        let last = all
+            .iter()
+            .filter(|i| i.manage_url == p.manage_url && i.provider_ref.starts_with("inv_") && i.created_at <= cancelled)
+            .max_by_key(|i| i.created_at);
+        if last.map(|i| i.id) != Some(p.id) {
+            return (Some(cancelled), None);
+        }
+        (Some(cancelled), store::prorata(p.amount_cents, p.refundable_cents(), p.created_at, end, cancelled))
+    };
+    let list = all
+        .iter()
         .map(|p| {
+            let (cancelled_at, pr) = prorata(p);
+            let (prorata_cents, prorata_unused_days, prorata_total_days) = pr.unwrap_or((0, 0, 0));
             let (username, email) = p.user_id.and_then(|id| names.get(&id).cloned()).unwrap_or_default();
             let link_ref = if p.provider_ref.starts_with("inv_") { p.manage_url.clone() } else { p.provider_ref.clone() };
             let (phone, country) = p.user_id.and_then(|id| contacts.get(&id).cloned()).unwrap_or_default();
@@ -237,6 +259,10 @@ pub async fn payments(State(state): State<AppState>, headers: HeaderMap) -> ApiR
                 country,
                 raw: p.raw.clone(),
                 updated_at: p.updated_at,
+                cancelled_at,
+                prorata_cents,
+                prorata_unused_days,
+                prorata_total_days,
             }
         })
         .collect();

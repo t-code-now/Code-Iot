@@ -228,6 +228,17 @@ pub struct AdminPayment {
     pub raw: String,
     #[cfg_attr(feature = "serde", serde(default))]
     pub updated_at: i64,
+    /// Subscriptions (and their invoices): when the subscription was cancelled.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub cancelled_at: Option<i64>,
+    /// Suggested refund for the unused part of the month (cents), on the last
+    /// invoice of a cancelled subscription; 0 when there is none.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub prorata_cents: i64,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub prorata_unused_days: i64,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub prorata_total_days: i64,
 }
 
 /// `POST /api/admin/refund` – amount in cents (partial or full).

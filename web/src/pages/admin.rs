@@ -702,6 +702,7 @@ fn PaymentCard(
         ("admin.d_refunded", money(p.refunded_cents, &p.currency)),
         ("admin.d_refundable", money(p.refundable_cents, &p.currency)),
         ("admin.d_until", p.until.map(|u| date(u, lang)).unwrap_or_default()),
+        ("admin.d_cancelled", p.cancelled_at.map(|u| date(u, lang)).unwrap_or_default()),
         ("admin.d_created", date(p.created_at, lang)),
         ("admin.d_updated", date(p.updated_at, lang)),
         ("admin.d_test", if p.test_mode { "TEST".into() } else { "LIVE".into() }),
@@ -745,6 +746,21 @@ fn PaymentCard(
                 })}
                 <a class="btn btn-small btn-ghost" href=p.dashboard_url.clone() target="_blank" rel="noopener">{t("admin.open_in_ls")}</a>
             </div>
+            {(p.prorata_cents > 0 && refundable > 0).then(|| {
+                let cents = p.prorata_cents;
+                let when = p.cancelled_at.map(|c| date(c, lang)).unwrap_or_default();
+                view! {
+                    <div class="prorata">
+                        <div>
+                            <strong>{t("admin.prorata")} ": " <bdi dir="ltr">{money(cents, &currency)}</bdi></strong>
+                            <span class="muted">{tf(lang, "admin.prorata_why", &[&when, &p.prorata_unused_days, &p.prorata_total_days])}</span>
+                        </div>
+                        <button class="btn btn-small btn-ghost" on:click=move |_| amount.set(format!("{:.2}", cents as f64 / 100.0))>
+                            {t("admin.prorata_fill")}
+                        </button>
+                    </div>
+                }
+            })}
             {(refundable > 0).then(|| view! {
                 <div class="refund-box">
                     <label>

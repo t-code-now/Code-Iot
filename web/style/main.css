@@ -986,3 +986,7 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .cancel-contact { margin: 14px 0 8px; padding: 10px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); }
 .cancel-contact a { color: var(--primary); font-weight: 800; }
 .cancel-link { margin-top: 8px; }
+.prorata { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: rgba(255, 199, 44, .12); border: 1px solid rgba(255, 199, 44, .45); }
+.prorata > div { display: flex; flex-direction: column; gap: 2px; }
+.prorata strong { color: var(--primary); }
+.prorata .muted { font-size: .85rem; }
