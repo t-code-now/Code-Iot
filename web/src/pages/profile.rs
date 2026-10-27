@@ -157,6 +157,9 @@ pub fn ProfilePage() -> impl IntoView {
                                             <div class="plan-row">
                                                 <strong class="course-label"><LangIcon id=pl.course_id.clone()/> {course_name(&pl.course_id)}</strong>
                                                 <span class="muted">{kind}</span>
+                                                {session.plan_ending(&pl.course_id).map(|_| view! {
+                                                    <a href=format!("/unlock/{}", pl.course_id)>{t("renew.button")}</a>
+                                                })}
                                                 {pl.manage_url.clone().filter(|_| pl.kind == "monthly").map(|u| view! {
                                                     <a href=u target="_blank" rel="noopener">{t("profile.manage")}</a>
                                                 })}

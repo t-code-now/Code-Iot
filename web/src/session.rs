@@ -27,7 +27,24 @@ pub fn use_session() -> Session {
     expect_context::<Session>()
 }
 
+/// A one-time yearly purchase shows a renewal reminder this many days before it ends.
+pub const RENEW_NOTICE_DAYS: i64 = 14;
+
 impl Session {
+    /// When the user's yearly access to `course` ends, if that is within the
+    /// next `RENEW_NOTICE_DAYS` days (tracked).
+    pub fn plan_ending(&self, course: &str) -> Option<i64> {
+        let now = (js_sys::Date::now() / 1000.0) as i64;
+        self.profile.with(|p| {
+            p.as_ref()?
+                .plans
+                .iter()
+                .find(|pl| pl.course_id == course && pl.kind == "yearly")
+                .and_then(|pl| pl.until)
+                .filter(|u| *u > now && *u - now <= RENEW_NOTICE_DAYS * 86_400)
+        })
+    }
+
     pub fn load() -> Self {
         let lang = LocalStorage::get::<String>(LANG_KEY).map(|c| Lang::parse(&c)).unwrap_or_default();
         Session {

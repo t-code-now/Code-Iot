@@ -179,6 +179,15 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
                 <span class="chev">"▾"</span>
                 <span class="course-banner-bar"><span style=format!("width:{percent}%")></span></span>
             </a>
+            {
+                let id = course_id.clone();
+                move || session.plan_ending(&id).map(|u| view! {
+                    <a href=format!("/unlock/{id}") class="renew-banner">
+                        <span>{tf(session.lang.get(), "renew.banner", &[&crate::pages::profile::format_date(u, session.lang.get())])}</span>
+                        <strong>{session.t("renew.button")}</strong>
+                    </a>
+                })
+            }
             {sections}
             <div class="path-end">{session.t("home.finish")}</div>
         </div>

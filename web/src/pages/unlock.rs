@@ -223,7 +223,7 @@ pub fn UnlockPage() -> impl IntoView {
             <Suspense fallback=|| view! { <Loading/> }>
                 {move || course.get().map(|r| match r {
                     Err(e) => view! { <div class="form-error">{i18n::error(session.lang.get(), &e.message)}</div> }.into_view(),
-                    Ok(c) if c.unlocked => {
+                    Ok(c) if c.unlocked && session.plan_ending(&c.id).is_none() => {
                         // Read the id now: by the time the click runs, the page may have moved on.
                         let id = c.id.clone();
                         view! {
@@ -247,7 +247,10 @@ pub fn UnlockPage() -> impl IntoView {
                                     <span class="course-banner-icon"><LangIcon id=c.id.clone()/></span>
                                     <div>
                                         <h1 class="auth-title">{c.title.clone()}</h1>
-                                        <p class="muted">{tf(lang, "unlock.open_of", &[&open, &total])}</p>
+                                        <p class="muted">{match session.plan_ending(&c.id) {
+                                            Some(u) => tf(lang, "renew.unlock_sub", &[&crate::pages::profile::format_date(u, lang)]),
+                                            None => tf(lang, "unlock.open_of", &[&open, &total]),
+                                        }}</p>
                                     </div>
                                     <span class="unlock-icon"><IconLock/></span>
                                 </div>

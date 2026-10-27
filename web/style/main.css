@@ -999,3 +999,7 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .waitlist { display: flex; flex-direction: column; gap: 12px; }
 .waitlist-course { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: var(--radius); background: var(--surface); border: 2px solid var(--line); }
 .waitlist-row { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; padding-top: 6px; border-top: 1px solid var(--line); font-weight: 700; }
+
+/* ---------- renewal reminder (yearly access ending soon) ---------- */
+.renew-banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 16px 12px; padding: 12px 14px; border-radius: 12px; background: var(--surface); border: 2px solid var(--primary); color: var(--text); font-weight: 800; text-decoration: none; box-shadow: 0 4px 0 var(--primary-dark); }
+.renew-banner strong { flex: none; padding: 6px 12px; border-radius: 10px; background: var(--primary); color: var(--on-primary); font-weight: 900; }

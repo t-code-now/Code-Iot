@@ -192,6 +192,9 @@ def run():
     _, pays = call("GET", "/api/admin/payments", token=atok)
     y = next(p for p in pays if p["provider_ref"] == "ord_5001")
     check("$25 opens the course for one year", y["plan"] == "yearly" and abs(y["until"] - (y["created_at"] + YEAR)) < 5, str((y["plan"], y["until"], y["created_at"])))
+    plans = call("GET", "/api/me", token=tok)[1]["plans"]
+    pl = next((x for x in plans if x["course_id"] == "python"), None)
+    check("profile shows the year's end (for the renewal reminder)", pl is not None and pl["kind"] == "yearly" and pl["until"] == y["until"], str(plans))
     code, body = call("POST", "/api/payments/checkout", {"course_id": "python", "plan": "lifetime"}, tok)
     check("older apps' 'lifetime' still buys a year", code == 200 and calls[-1]["body"]["data"]["attributes"]["checkout_data"]["custom"]["plan"] == "yearly")
     old = json.loads(json.dumps(order))
