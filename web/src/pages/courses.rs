@@ -27,7 +27,7 @@ pub fn Courses() -> impl IntoView {
                 {
                     let navigate = navigate.clone();
                     move || courses.get().map(|r| match r {
-                        Ok(list) => list
+                        Ok(list) => view! { <div class="course-grid">{list
                             .into_iter()
                             .map(|c| {
                                 let navigate = navigate.clone();
@@ -59,7 +59,7 @@ pub fn Courses() -> impl IntoView {
                                     </button>
                                 }
                             })
-                            .collect_view(),
+                            .collect_view()}</div> }.into_view(),
                         Err(e) => view! { <ErrorState message=e.message/> }.into_view(),
                     })
                 }

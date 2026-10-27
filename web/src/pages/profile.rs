@@ -61,7 +61,8 @@ pub fn ProfilePage() -> impl IntoView {
                         let level_pct = if p.level_xp_needed == 0 { 0 } else { p.level_xp * 100 / p.level_xp_needed };
                         let earned: Vec<String> = p.badges.iter().map(|b| b.id.clone()).collect();
                         view! {
-                            <>
+                            <div class="profile-columns">
+                            <div class="profile-col">
                             <div class="profile-card">
                                 <a href="/avatar" class="avatar-edit" title=t("avatar.title")>
                                     <UserAvatar class="avatar big"/>
@@ -117,6 +118,8 @@ pub fn ProfilePage() -> impl IntoView {
                                 <div class="bar"><div class="bar-fill" style=format!("width:{level_pct}%")></div></div>
                             </div>
 
+                            </div>
+                            <div class="profile-col">
                             <h3 class="section-title">{t("profile.more")}</h3>
                             <div class="stats-grid">
                                 <div class="stat-tile"><span class="stat-emoji">"📅"</span><strong>{p.weekly_xp}</strong><span>{t("profile.week_xp")}</span></div>
@@ -143,7 +146,8 @@ pub fn ProfilePage() -> impl IntoView {
                             </div>
 
                             <button class="btn btn-ghost btn-block logout" on:click=move |_| session.sign_out()>{t("profile.logout")}</button>
-                            </>
+                            </div>
+                            </div>
                         }.into_view()
                     }
                     None if session.logged_in() => view! { <div class="center-load"><div class="spinner"></div></div> }.into_view(),

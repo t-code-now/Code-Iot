@@ -38,6 +38,11 @@ fn TabBar() -> impl IntoView {
     };
     view! {
         <nav class="tabbar">
+            // Shown only in the wide-screen sidebar.
+            <a href="/" class="side-brand">
+                <img src="/assets/mascot.png" alt=""/>
+                <span>"Code-Iot"</span>
+            </a>
             <a href="/" class="tab" class:active=is("/")>
                 <IconLearn/><span>{session.t("tab.learn")}</span>
             </a>

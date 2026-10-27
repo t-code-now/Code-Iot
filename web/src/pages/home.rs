@@ -57,6 +57,16 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
         .find(|l| !l.completed)
         .map(|l| l.id.clone());
     let last_id = course.sections.last().and_then(|s| s.lessons.last()).map(|l| l.id.clone());
+    // For the desktop side panel: the lesson to continue with.
+    let next_lesson = course
+        .sections
+        .iter()
+        .flat_map(|s| &s.lessons)
+        .find(|l| !l.completed)
+        .or_else(|| course.sections.first().and_then(|s| s.lessons.first()))
+        .map(|l| (format!("/lesson/{}", l.id), l.title.clone()));
+    let course_icon = course.icon.clone();
+    let course_title = course.title.clone();
 
     let mut sections = Vec::new();
     let mut number = 0usize;
@@ -140,7 +150,11 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
 
     let percent = if total == 0 { 0 } else { done * 100 / total };
 
+    let level = move || session.profile.with(|p| p.as_ref().map(|p| p.level));
+    let name = move || session.profile.with(|p| p.as_ref().map(|p| p.username.clone()));
+
     view! {
+        <div class="learn-layout">
         <div class="learn">
             <header class="topbar">
                 <a href="/profile" class="top-avatar-link"><UserAvatar class="top-logo"/></a>
@@ -157,6 +171,53 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
             </a>
             {sections}
             <div class="path-end">{session.t("home.finish")}</div>
+        </div>
+
+        // Wide screens only: stats and shortcuts beside the path.
+        <aside class="side-panel">
+            <div class="panel-card panel-me">
+                <a href="/profile" class="panel-avatar"><UserAvatar class="avatar"/></a>
+                <div class="panel-me-text">
+                    <strong>{move || name().unwrap_or_else(|| session.t("profile.guest")().to_string())}</strong>
+                    <span class="muted">{move || level().map(|l| tf(session.lang.get(), "profile.level", &[&l])).unwrap_or_default()}</span>
+                </div>
+                <StatPills/>
+            </div>
+
+            <div class="panel-card panel-course">
+                <div class="panel-course-head">
+                    <span class="course-banner-icon">{course_icon}</span>
+                    <div>
+                        <strong>{course_title}</strong>
+                        <span class="muted">{tf(lang, "home.lessons_progress", &[&done, &total])}</span>
+                    </div>
+                </div>
+                <div class="bar"><div class="bar-fill" style=format!("width:{percent}%")></div></div>
+                <span class="panel-percent">{format!("{percent}%")}</span>
+                {next_lesson.map(|(href, title)| view! {
+                    <a href=href class="btn btn-primary btn-block panel-continue">
+                        <IconPlay/><span>{session.t("home.continue")}</span>
+                    </a>
+                    <p class="panel-next muted">{title}</p>
+                })}
+                <a href="/courses" class="btn btn-ghost btn-block">{session.t("home.all_courses")}</a>
+            </div>
+
+            <a href="/leaderboard" class="panel-card panel-league">
+                <span class="panel-league-emblem">"🏆"</span>
+                <div>
+                    <strong>{session.t("league.name")}</strong>
+                    <span class="muted">{session.t("home.league_cta")}</span>
+                </div>
+            </a>
+
+            {move || (!session.logged_in()).then(|| view! {
+                <div class="panel-card panel-guest">
+                    <p>{session.t("profile.guest_desc")}</p>
+                    <a href="/signup" class="btn btn-primary btn-block">{session.t("profile.create_free")}</a>
+                </div>
+            })}
+        </aside>
         </div>
     }
 }
