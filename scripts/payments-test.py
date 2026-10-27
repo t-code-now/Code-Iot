@@ -145,6 +145,8 @@ def run():
     check("checkout prefills the country", sent["attributes"]["checkout_data"].get("billing_address") == {"country": "IL"})
 
     # --- the payment arrives
+    code, body = call("GET", "/api/courses/?lang=he", token=tok)
+    check("unknown API path answers JSON 404", code == 404 and isinstance(body, dict) and "error" in body, str((code, body)))
     check("python locked before paying", call("GET", "/api/courses/python", token=tok)[1]["unlocked"] is False)
     order = {"meta": {"event_name": "order_created", "custom_data": {"user_id": str(buyer_id), "course_id": "python"}},
              "data": {"type": "orders", "id": "5001", "attributes": {"status": "paid", "total": 2500, "currency": "USD",

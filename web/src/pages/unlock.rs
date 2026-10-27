@@ -124,8 +124,14 @@ pub fn UnlockPage() -> impl IntoView {
                 if !waiting.get_untracked() {
                     return;
                 }
+                let id = course_id();
+                if id.is_empty() {
+                    // Left this screen.
+                    waiting.set(false);
+                    return;
+                }
                 let token = session.token.get_untracked();
-                if let Ok(c) = api::course(course_id(), token, session.lang.get_untracked()).await {
+                if let Ok(c) = api::course(id, token, session.lang.get_untracked()).await {
                     if c.unlocked {
                         waiting.set(false);
                         refresh.update(|n| *n += 1);
@@ -169,16 +175,20 @@ pub fn UnlockPage() -> impl IntoView {
             <Suspense fallback=|| view! { <Loading/> }>
                 {move || course.get().map(|r| match r {
                     Err(e) => view! { <div class="form-error">{i18n::error(session.lang.get(), &e.message)}</div> }.into_view(),
-                    Ok(c) if c.unlocked => view! {
+                    Ok(c) if c.unlocked => {
+                        // Read the id now: by the time the click runs, the page may have moved on.
+                        let id = c.id.clone();
+                        view! {
                         <div class="unlock-card unlock-done">
                             <div class="unlock-icon done"><IconCheck/></div>
                             <h1 class="auth-title">{tf(session.lang.get(), "unlock.opened", &[&c.title])}</h1>
                             <p>{session.t("unlock.opened_sub")}</p>
-                            <a href="/" class="btn btn-primary btn-block" on:click=move |_| session.set_course(&course_id())>
+                            <a href="/" class="btn btn-primary btn-block" on:click=move |_| session.set_course(&id)>
                                 {session.t("home.continue")}
                             </a>
                         </div>
-                    }.into_view(),
+                    }.into_view()
+                    }
                     Ok(c) => {
                         let lang = session.lang.get();
                         let total = c.sections.len();

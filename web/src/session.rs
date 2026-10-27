@@ -35,7 +35,10 @@ impl Session {
             profile: create_rw_signal(None),
             guest: create_rw_signal(LocalStorage::get::<bool>(GUEST_KEY).unwrap_or(false)),
             course: create_rw_signal(
-                LocalStorage::get::<String>(COURSE_KEY).unwrap_or_else(|_| "python".to_string()),
+                LocalStorage::get::<String>(COURSE_KEY)
+                    .ok()
+                    .filter(|c| !c.is_empty())
+                    .unwrap_or_else(|| "python".to_string()),
             ),
             lang: create_rw_signal(lang),
         }
@@ -92,6 +95,9 @@ impl Session {
     }
 
     pub fn set_course(&self, id: &str) {
+        if id.is_empty() {
+            return;
+        }
         let _ = LocalStorage::set(COURSE_KEY, id);
         self.course.set(id.to_string());
     }

@@ -9,7 +9,7 @@ use argon2::password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, Salt
 use argon2::Argon2;
 use axum::extract::{Path, Query, State};
 use axum::http::HeaderMap;
-use axum::routing::{get, post, put};
+use axum::routing::{any, get, post, put};
 use axum::{Json, Router};
 use rand::RngCore;
 use serde::Deserialize;
@@ -64,6 +64,8 @@ pub fn api_router(state: AppState) -> Router {
         .route("/api/admin/cancel", post(crate::payments::admin_cancel))
         .route("/api/admin/settings", post(crate::admin::settings))
         .route("/api/me/contact", put(set_contact))
+        // Unknown API paths answer with a JSON 404 instead of the web page.
+        .route("/api/*rest", any(|| async { ApiError::NotFound }))
         .with_state(state)
 }
 
