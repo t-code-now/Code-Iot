@@ -295,11 +295,14 @@ pub fn UnlockPage() -> impl IntoView {
                                             let yearly = cfg["yearly"].as_str().or(cfg["lifetime"].as_str()).unwrap_or("$25").to_string();
                                             view! {
                                                 <div class="plans">
+                                                    // Renewing a running year: only another year makes sense.
+                                                    {session.plan_ending(&course_id()).is_none().then(|| view! {
                                                     <button class="plan-card" disabled=move || busy.get() on:click=move |_| buy("monthly")>
                                                         <span class="plan-name">{session.t("unlock.monthly")}</span>
                                                         <span class="plan-price">{monthly}<small>{session.t("unlock.per_month")}</small></span>
                                                         <span class="plan-note">{session.t("unlock.monthly_note")}</span>
                                                     </button>
+                                                    })}
                                                     <button class="plan-card best" disabled=move || busy.get() on:click=move |_| buy("yearly")>
                                                         <span class="plan-badge">{session.t("unlock.best")}</span>
                                                         <span class="plan-name">{session.t("unlock.yearly")}</span>
