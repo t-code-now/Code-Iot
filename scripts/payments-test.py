@@ -19,6 +19,15 @@ refunded = {}  # order/invoice id -> cents refunded so far
 failures = []
 
 
+YEAR = 365 * 86400
+
+
+def iso(days):
+    import datetime
+    t = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=days)
+    return t.strftime("%Y-%m-%dT%H:%M:%S.000000Z")
+
+
 def check(name, ok, detail=""):
     print(("PASS " if ok else "FAIL ") + name + (f"  [{detail}]" if detail and not ok else ""))
     if not ok:
@@ -152,11 +161,11 @@ def run():
     code, body = call("PUT", "/api/me/contact", {"country": "IL", "phone": "12"}, tok)
     check("bad phone rejected", code == 400, str((code, body)))
 
-    code, body = call("POST", "/api/payments/checkout", {"course_id": "python", "plan": "lifetime"}, tok)
+    code, body = call("POST", "/api/payments/checkout", {"course_id": "python", "plan": "yearly"}, tok)
     check("checkout url", code == 200 and body.get("url") == "https://checkout.fake/abc", str((code, body)))
     sent = calls[-1]["body"]["data"]
-    check("checkout sends the lifetime variant", sent["relationships"]["variant"]["data"]["id"] == VAR_LIFETIME)
-    check("checkout carries user and course", sent["attributes"]["checkout_data"]["custom"] == {"user_id": str(buyer_id), "course_id": "python", "plan": "lifetime"})
+    check("checkout sends the yearly variant", sent["relationships"]["variant"]["data"]["id"] == VAR_LIFETIME)
+    check("checkout carries user and course", sent["attributes"]["checkout_data"]["custom"] == {"user_id": str(buyer_id), "course_id": "python", "plan": "yearly"})
     check("checkout prefills the country", sent["attributes"]["checkout_data"].get("billing_address") == {"country": "IL"})
 
     # --- the payment arrives
@@ -167,7 +176,7 @@ def run():
              "data": {"type": "orders", "id": "5001", "attributes": {"status": "paid", "total": 2500, "currency": "USD",
                       "user_email": "buyer@example.com", "user_name": "Buyer One", "test_mode": True,
                       "first_order_item": {"variant_id": int(VAR_LIFETIME)}, "urls": {"receipt": "https://r/1"},
-                      "created_at": "2026-10-27T08:00:00.000000Z"}}}
+                      "created_at": iso(0)}}}
     raw = json.dumps(order).encode()
     bad = urllib.request.Request(BASE + "/api/payments/webhook", raw, {"Content-Type": "application/json", "X-Signature": "00" * 32})
     try:
@@ -180,6 +189,26 @@ def run():
     check("python opens after paying", call("GET", "/api/courses/python", token=tok)[1]["unlocked"] is True)
     check("rust stays locked", call("GET", "/api/courses/rust", token=tok)[1]["unlocked"] is False)
     check("same webhook twice is harmless", hook(order) == 200)
+    _, pays = call("GET", "/api/admin/payments", token=atok)
+    y = next(p for p in pays if p["provider_ref"] == "ord_5001")
+    check("$25 opens the course for one year", y["plan"] == "yearly" and abs(y["until"] - (y["created_at"] + YEAR)) < 5, str((y["plan"], y["until"], y["created_at"])))
+    code, body = call("POST", "/api/payments/checkout", {"course_id": "python", "plan": "lifetime"}, tok)
+    check("older apps' 'lifetime' still buys a year", code == 200 and calls[-1]["body"]["data"]["attributes"]["checkout_data"]["custom"]["plan"] == "yearly")
+    old = json.loads(json.dumps(order))
+    old["data"]["id"] = "5090"
+    old["meta"]["custom_data"]["course_id"] = "sql"
+    old["data"]["attributes"]["created_at"] = iso(-400)
+    check("a year that ended", hook(old) == 200 and call("GET", "/api/courses/sql", token=tok)[1]["unlocked"] is False)
+    first = json.loads(json.dumps(order))
+    first["data"]["id"] = "5091"
+    first["meta"]["custom_data"]["course_id"] = "javascript"
+    second = json.loads(json.dumps(first))
+    second["data"]["id"] = "5092"
+    hook(first); hook(second); hook(second)
+    _, pays = call("GET", "/api/admin/payments", token=atok)
+    a = next(p for p in pays if p["provider_ref"] == "ord_5091")
+    b = next(p for p in pays if p["provider_ref"] == "ord_5092")
+    check("buying another year adds a year to the end", abs(b["until"] - (a["until"] + YEAR)) < 5, str((a["until"], b["until"])))
 
     _, pays = call("GET", "/api/admin/payments", token=atok)
     pay = next(p for p in pays if p["provider_ref"] == "ord_5001")

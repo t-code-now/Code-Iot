@@ -108,6 +108,8 @@ pub fn CancelPage() -> impl IntoView {
                                     tf(lang, "cancel.s_active", &[&p.until.map(|u| format_date(u, lang)).unwrap_or_default()])
                                 } else if monthly {
                                     tf(lang, "cancel.s_cancelled", &[&p.until.map(|u| format_date(u, lang)).unwrap_or_default()])
+                                } else if p.plan == "yearly" {
+                                    tf(lang, "cancel.s_yearly", &[&p.until.map(|u| format_date(u, lang)).unwrap_or_default()])
                                 } else {
                                     t("cancel.s_lifetime").to_string()
                                 };

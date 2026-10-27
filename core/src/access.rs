@@ -2,7 +2,7 @@
 //!
 //! * Guests: the first topic (section) of every course.
 //! * Signed-in users: the first two topics of every course.
-//! * A course the user paid for ($5/month while subscribed, or $25 once),
+//! * A course the user paid for ($5/month while subscribed, or $25 once for a year),
 //!   or that the admin opened for them: every topic of that course.
 //! * The admin account: everything.
 //! * A course the admin blocked for a user: nothing in that course.
@@ -14,7 +14,9 @@ pub const FREE_SECTIONS_ACCOUNT: usize = 2;
 
 /// Prices shown in the app (the real amounts are set in the payment service).
 pub const PRICE_MONTHLY: &str = "$5";
-pub const PRICE_LIFETIME: &str = "$25";
+pub const PRICE_YEARLY: &str = "$25";
+/// How long a one-time ($25) purchase keeps a course open.
+pub const YEAR_SECS: i64 = 365 * 86_400;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Viewer {

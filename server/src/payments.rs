@@ -8,7 +8,7 @@
 //!
 //! Settings (Render → Environment): `LEMONSQUEEZY_API_KEY`,
 //! `LEMONSQUEEZY_STORE_ID`, `LEMONSQUEEZY_VARIANT_MONTHLY`,
-//! `LEMONSQUEEZY_VARIANT_LIFETIME`, `LEMONSQUEEZY_WEBHOOK_SECRET`.
+//! `LEMONSQUEEZY_VARIANT_YEARLY` (older name `LEMONSQUEEZY_VARIANT_LIFETIME`), `LEMONSQUEEZY_WEBHOOK_SECRET`.
 
 use std::time::Duration;
 
@@ -16,7 +16,7 @@ use axum::body::Bytes;
 use axum::extract::State;
 use axum::http::{HeaderMap, StatusCode};
 use axum::Json;
-use codesprout_core::access::{PRICE_LIFETIME, PRICE_MONTHLY};
+use codesprout_core::access::{PRICE_MONTHLY, PRICE_YEARLY, YEAR_SECS};
 use codesprout_core::api::{CheckoutRequest, CheckoutResponse};
 use codesprout_core::find_course;
 use hmac::{Hmac, Mac};
@@ -33,7 +33,8 @@ pub struct Config {
     pub api_key: String,
     pub store_id: String,
     pub variant_monthly: String,
-    pub variant_lifetime: String,
+    /// The one-time $25 product (a year of access).
+    pub variant_yearly: String,
     pub webhook_secret: String,
     pub public_url: String,
 }
@@ -47,7 +48,8 @@ pub fn config() -> Option<Config> {
         api_key: env("LEMONSQUEEZY_API_KEY")?,
         store_id: env("LEMONSQUEEZY_STORE_ID")?,
         variant_monthly: env("LEMONSQUEEZY_VARIANT_MONTHLY")?,
-        variant_lifetime: env("LEMONSQUEEZY_VARIANT_LIFETIME")?,
+        // LEMONSQUEEZY_VARIANT_LIFETIME is the older name of the same setting.
+        variant_yearly: env("LEMONSQUEEZY_VARIANT_YEARLY").or_else(|| env("LEMONSQUEEZY_VARIANT_LIFETIME"))?,
         webhook_secret: env("LEMONSQUEEZY_WEBHOOK_SECRET")?,
         public_url: env("PUBLIC_URL")
             .or_else(|| env("RENDER_EXTERNAL_URL"))
@@ -66,7 +68,7 @@ pub async fn config_info(State(state): State<AppState>) -> ApiResult<Json<Value>
         "enabled": config().is_some() && !paused,
         "paused": paused,
         "monthly": PRICE_MONTHLY,
-        "lifetime": PRICE_LIFETIME,
+        "yearly": PRICE_YEARLY,
     })))
 }
 
@@ -118,14 +120,15 @@ pub async fn checkout(
     let (_, country) = store::contact(&state.db, user_id)
         .await?
         .ok_or_else(|| ApiError::BadRequest("Please add your phone number first".into()))?;
-    let variant = match req.plan.as_str() {
-        "monthly" => &cfg.variant_monthly,
-        "lifetime" => &cfg.variant_lifetime,
+    // "lifetime" is the older name of the yearly plan (apps not yet updated).
+    let (variant, plan) = match req.plan.as_str() {
+        "monthly" => (&cfg.variant_monthly, "monthly"),
+        "yearly" | "lifetime" => (&cfg.variant_yearly, "yearly"),
         _ => return Err(ApiError::BadRequest("Unknown plan".into())),
     };
     let email = store::user_email(&state.db, user_id).await?.unwrap_or_default();
     let mut checkout_data = json!({
-        "custom": { "user_id": user_id.to_string(), "course_id": course.id, "plan": req.plan }
+        "custom": { "user_id": user_id.to_string(), "course_id": course.id, "plan": plan }
     });
     if !email.is_empty() {
         checkout_data["email"] = json!(email);
@@ -222,7 +225,7 @@ fn card(attrs: &Value) -> String {
 }
 
 /// Turns one webhook event into a payment record (None = not relevant).
-pub fn payment_from_event(cfg_monthly: &str, cfg_lifetime: &str, event: &Value, t: i64) -> Option<Payment> {
+pub fn payment_from_event(cfg_monthly: &str, cfg_yearly: &str, event: &Value, t: i64) -> Option<Payment> {
     let meta = &event["meta"];
     let name = meta["event_name"].as_str().unwrap_or("");
     let custom = &meta["custom_data"];
@@ -256,14 +259,15 @@ pub fn payment_from_event(cfg_monthly: &str, cfg_lifetime: &str, event: &Value, 
     match (name, kind) {
         ("order_created" | "order_refunded", "orders") => {
             let variant = text(&a["first_order_item"]["variant_id"]);
-            if variant != cfg_lifetime {
+            if variant != cfg_yearly {
                 // Monthly plans are covered by the subscription events; other
                 // products of the store don't open courses.
                 return None;
             }
             Some(Payment {
                 provider_ref: format!("ord_{id}"),
-                plan: "lifetime".into(),
+                plan: "yearly".into(),
+                until: Some(created + YEAR_SECS),
                 status: a["status"].as_str().unwrap_or("paid").to_string(),
                 amount_cents: cents(&a["total"]),
                 manage_url: a["urls"]["receipt"].as_str().unwrap_or("").to_string(),
@@ -304,7 +308,7 @@ pub async fn webhook(State(state): State<AppState>, headers: HeaderMap, body: By
         return StatusCode::UNAUTHORIZED;
     }
     let Ok(event) = serde_json::from_slice::<Value>(&body) else { return StatusCode::BAD_REQUEST };
-    let Some(mut p) = payment_from_event(&cfg.variant_monthly, &cfg.variant_lifetime, &event, now()) else {
+    let Some(mut p) = payment_from_event(&cfg.variant_monthly, &cfg.variant_yearly, &event, now()) else {
         return StatusCode::OK;
     };
     // Invoices may arrive without our custom data: copy it from the subscription.
@@ -315,6 +319,21 @@ pub async fn webhook(State(state): State<AppState>, headers: HeaderMap, body: By
                 if p.course_id.is_empty() {
                     p.course_id = sub.course_id.clone();
                 }
+            }
+        }
+    }
+    // Buying another year while one is still running adds a year to its end.
+    if p.plan == "yearly" {
+        if let (Some(uid), Ok(rows)) = (p.user_id, store::payments_for_user(&state.db, p.user_id.unwrap_or(0)).await) {
+            let known = rows.iter().any(|r| r.provider_ref == p.provider_ref);
+            let running = rows
+                .iter()
+                .filter(|r| r.user_id == Some(uid) && r.course_id == p.course_id && r.plan == "yearly" && r.provider_ref != p.provider_ref)
+                .filter(|r| r.active(p.created_at))
+                .filter_map(|r| r.until)
+                .max();
+            if let (false, Some(end)) = (known, running) {
+                p.until = Some(end.max(p.created_at) + YEAR_SECS);
             }
         }
     }
@@ -372,9 +391,11 @@ mod tests {
                 "created_at": "2024-05-01T10:20:30.000000Z" } }
         });
         let p = payment_from_event("111", "222", &order, 9).unwrap();
-        assert_eq!((p.provider_ref.as_str(), p.plan.as_str(), p.user_id, p.amount_cents), ("ord_55", "lifetime", Some(7), 2500));
+        assert_eq!((p.provider_ref.as_str(), p.plan.as_str(), p.user_id, p.amount_cents), ("ord_55", "yearly", Some(7), 2500));
         assert_eq!(p.email, "a@b.com");
-        assert!(p.active(0));
+        let bought = p.created_at;
+        assert_eq!(p.until, Some(bought + YEAR_SECS));
+        assert!(p.active(bought + 10) && !p.active(bought + YEAR_SECS + 1));
 
         let sub = json!({
             "meta": { "event_name": "subscription_cancelled", "custom_data": { "user_id": 7, "course_id": "rust" } },

@@ -289,7 +289,7 @@ pub fn UnlockPage() -> impl IntoView {
                                                 return view! { <Waitlist course_id=course_id()/> }.into_view();
                                             }
                                             let monthly = cfg["monthly"].as_str().unwrap_or("$5").to_string();
-                                            let lifetime = cfg["lifetime"].as_str().unwrap_or("$25").to_string();
+                                            let yearly = cfg["yearly"].as_str().or(cfg["lifetime"].as_str()).unwrap_or("$25").to_string();
                                             view! {
                                                 <div class="plans">
                                                     <button class="plan-card" disabled=move || busy.get() on:click=move |_| buy("monthly")>
@@ -297,11 +297,11 @@ pub fn UnlockPage() -> impl IntoView {
                                                         <span class="plan-price">{monthly}<small>{session.t("unlock.per_month")}</small></span>
                                                         <span class="plan-note">{session.t("unlock.monthly_note")}</span>
                                                     </button>
-                                                    <button class="plan-card best" disabled=move || busy.get() on:click=move |_| buy("lifetime")>
+                                                    <button class="plan-card best" disabled=move || busy.get() on:click=move |_| buy("yearly")>
                                                         <span class="plan-badge">{session.t("unlock.best")}</span>
-                                                        <span class="plan-name">{session.t("unlock.lifetime")}</span>
-                                                        <span class="plan-price">{lifetime}<small>{session.t("unlock.once")}</small></span>
-                                                        <span class="plan-note">{session.t("unlock.lifetime_note")}</span>
+                                                        <span class="plan-name">{session.t("unlock.yearly")}</span>
+                                                        <span class="plan-price">{yearly}<small>{session.t("unlock.per_year")}</small></span>
+                                                        <span class="plan-note">{session.t("unlock.yearly_note")}</span>
                                                     </button>
                                                 </div>
                                                 <p class="muted unlock-small">{session.t("unlock.only_this")}</p>

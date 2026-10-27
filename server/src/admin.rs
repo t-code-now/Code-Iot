@@ -41,10 +41,13 @@ fn active_plans(payments: &[Payment], t: i64) -> HashMap<(i64, String), (String,
         let key = (uid, p.course_id.clone());
         let better = match out.get(&key) {
             None => true,
-            Some((kind, _)) => kind != "lifetime" && p.plan == "lifetime",
+            Some((kind, until)) => {
+                let rank = |k: &str| match k { "lifetime" => 3, "yearly" => 2, _ => 1 };
+                rank(&p.plan) > rank(kind) || (p.plan == *kind && p.until > *until)
+            }
         };
         if better {
-            out.insert(key, (p.plan.clone(), if p.plan == "monthly" { p.until } else { None }));
+            out.insert(key, (p.plan.clone(), if p.plan == "lifetime" { None } else { p.until }));
         }
     }
     out
@@ -109,7 +112,7 @@ pub async fn overview(State(state): State<AppState>, headers: HeaderMap) -> ApiR
         active_users_7d: counts["active_users"] as u64,
         lessons_7d: counts["lessons"] as u64,
         paying_users: plans.keys().map(|(u, _)| *u).collect::<HashSet<_>>().len() as u64,
-        lifetime_purchases: real.iter().filter(|p| p.plan == "lifetime" && p.active(t)).count() as u64,
+        lifetime_purchases: real.iter().filter(|p| matches!(p.plan.as_str(), "lifetime" | "yearly") && p.active(t)).count() as u64,
         active_subscriptions: real
             .iter()
             .filter(|p| p.provider_ref.starts_with("sub_") && p.active(t))

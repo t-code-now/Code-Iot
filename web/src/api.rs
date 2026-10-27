@@ -166,7 +166,7 @@ pub async fn run(language: String, code: String, stdin: String) -> ApiResult<Run
 
 // ---------------------------------------------------------------- payments
 
-/// `{"enabled": bool, "monthly": "$5", "lifetime": "$25"}`
+/// `{"enabled": bool, "paused": bool, "monthly": "$5", "yearly": "$25"}`
 pub async fn payments_config() -> ApiResult<serde_json::Value> {
     get("/api/payments/config", &None).await
 }

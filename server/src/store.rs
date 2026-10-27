@@ -80,7 +80,7 @@ pub struct Payment {
     pub provider_ref: String,
     pub user_id: Option<i64>,
     pub course_id: String,
-    /// "lifetime" or "monthly".
+    /// "yearly", "monthly" or (older purchases) "lifetime".
     pub plan: String,
     pub status: String,
     pub amount_cents: i64,
@@ -136,6 +136,8 @@ impl Payment {
     pub fn active(&self, now: i64) -> bool {
         match self.plan.as_str() {
             "lifetime" => matches!(self.status.as_str(), "paid" | "partial_refund"),
+            // One payment, one year: open until `until`.
+            "yearly" => matches!(self.status.as_str(), "paid" | "partial_refund") && self.until.is_some_and(|u| u > now),
             "monthly" => {
                 matches!(self.status.as_str(), "active" | "on_trial" | "past_due" | "cancelled")
                     && self.until.map_or(true, |u| u > now)
@@ -192,7 +194,8 @@ pub async fn upsert_payment(db: &Db, p: &Payment) -> DbResult<()> {
             currency = excluded.currency,
             method = CASE WHEN excluded.method = '' THEN payments.method ELSE excluded.method END,
             email = CASE WHEN excluded.email = '' THEN payments.email ELSE excluded.email END,
-            until = excluded.until,
+            -- a yearly purchase keeps the end date it got when it arrived (it may extend an earlier year)
+            until = CASE WHEN payments.plan = 'yearly' AND payments.until IS NOT NULL THEN payments.until ELSE excluded.until END,
             manage_url = CASE WHEN excluded.manage_url = '' THEN payments.manage_url ELSE excluded.manage_url END,
             test_mode = excluded.test_mode,
             updated_at = excluded.updated_at,

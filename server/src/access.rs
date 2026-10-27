@@ -41,7 +41,8 @@ pub struct Access {
 
 fn plan_rank(kind: &str) -> u8 {
     match kind {
-        "lifetime" => 3,
+        "lifetime" => 4,
+        "yearly" => 3,
         "monthly" => 2,
         _ => 1,
     }
@@ -76,7 +77,7 @@ impl Access {
             offer(PlanDto {
                 course_id: p.course_id.clone(),
                 kind: p.plan.clone(),
-                until: if p.plan == "monthly" { p.until } else { None },
+                until: if matches!(p.plan.as_str(), "monthly" | "yearly") { p.until } else { None },
                 manage_url: (!p.manage_url.is_empty()).then(|| p.manage_url.clone()),
             });
         }

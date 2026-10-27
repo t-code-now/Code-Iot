@@ -143,6 +143,10 @@ pub fn ProfilePage() -> impl IntoView {
                                     {plans.into_iter().map(|pl| {
                                         let kind = match pl.kind.as_str() {
                                             "lifetime" => t("admin.state_lifetime").to_string(),
+                                            "yearly" => match pl.until {
+                                                Some(u) => tf(lang, "profile.year_until", &[&format_date(u, lang)]),
+                                                None => t("admin.state_yearly").to_string(),
+                                            },
                                             "monthly" => match pl.until {
                                                 Some(u) => tf(lang, "profile.until", &[&format_date(u, lang)]),
                                                 None => t("admin.state_monthly").to_string(),

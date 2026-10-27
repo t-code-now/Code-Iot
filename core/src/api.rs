@@ -83,7 +83,7 @@ pub struct ContactRequest {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct PlanDto {
     pub course_id: String,
-    /// "lifetime", "monthly" or "manual".
+    /// "yearly", "monthly", "manual" or (older purchases) "lifetime".
     pub kind: String,
     /// Subscription end/renewal (unix seconds), if any.
     pub until: Option<i64>,

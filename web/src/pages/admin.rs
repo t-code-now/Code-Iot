@@ -318,6 +318,7 @@ fn WaitlistPanel(courses: Vec<CourseSummary>) -> impl IntoView {
 fn state_label(lang: Lang, state: &str, until: Option<i64>) -> String {
     let key = match state {
         "lifetime" => "admin.state_lifetime",
+        "yearly" => "admin.state_yearly",
         "monthly" => "admin.state_monthly",
         "open" => "admin.state_open",
         "blocked" => "admin.state_blocked",
@@ -686,6 +687,8 @@ fn PaymentCard(
         t("admin.invoice")
     } else if p.provider_ref.starts_with("sub_") {
         t("admin.subscription")
+    } else if p.plan == "yearly" {
+        t("admin.state_yearly")
     } else {
         t("admin.state_lifetime")
     };
