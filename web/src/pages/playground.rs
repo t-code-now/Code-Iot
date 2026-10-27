@@ -8,6 +8,7 @@
 //! Each language keeps its own code in localStorage.
 
 use gloo_storage::{LocalStorage, Storage};
+use crate::components::lang_icon::LangIcon;
 use leptos::*;
 
 use crate::api::{self, RunResult};
@@ -26,7 +27,6 @@ const STARTER_JS: &str = "let clicks = 0;\ndocument.getElementById(\"btn\").oncl
 struct Lang {
     id: &'static str,
     name: &'static str,
-    icon: &'static str,
     starter: &'static str,
     stdin: &'static str,
     /// Runs on the server rather than in the browser.
@@ -36,28 +36,28 @@ struct Lang {
 
 const LANGS: &[Lang] = &[
     Lang {
-        id: "python", name: "Python", icon: "🐍", server: true, tip: "pg.tip_python", stdin: "Code-Iot",
+        id: "python", name: "Python", server: true, tip: "pg.tip_python", stdin: "Code-Iot",
         starter: "name = input(\"What's your name? \")\nprint(f\"Hello, {name}!\")\n\nfor i in range(1, 4):\n    print(i, \"squared is\", i * i)\n",
     },
     Lang {
-        id: "javascript", name: "JavaScript", icon: "⚡", server: false, tip: "pg.tip_js", stdin: "",
+        id: "javascript", name: "JavaScript", server: false, tip: "pg.tip_js", stdin: "",
         starter: "const langs = [\"Python\", \"JavaScript\", \"Rust\"];\nlangs.forEach((lang, i) => console.log(`${i + 1}. ${lang}`));\n\nconst app = { name: \"Code-Iot\", courses: 7 };\nconsole.log(app);\n",
     },
-    Lang { id: "web", name: "HTML/CSS", icon: "🌐", server: false, tip: "pg.tip", stdin: "", starter: "" },
+    Lang { id: "web", name: "HTML/CSS", server: false, tip: "pg.tip", stdin: "", starter: "" },
     Lang {
-        id: "sql", name: "SQL", icon: "🗄️", server: false, tip: "pg.tip_sql", stdin: "",
+        id: "sql", name: "SQL", server: false, tip: "pg.tip_sql", stdin: "",
         starter: "CREATE TABLE students (id INTEGER PRIMARY KEY, name TEXT, xp INTEGER);\n\nINSERT INTO students (name, xp) VALUES\n  ('Noa', 320), ('Ari', 150), ('Dana', 480);\n\nSELECT name, xp FROM students ORDER BY xp DESC;\n",
     },
     Lang {
-        id: "rust", name: "Rust", icon: "🦀", server: true, tip: "pg.tip_server", stdin: "Code-Iot",
+        id: "rust", name: "Rust", server: true, tip: "pg.tip_server", stdin: "Code-Iot",
         starter: "use std::io::{self, Read};\n\nfn main() {\n    let mut input = String::new();\n    io::stdin().read_to_string(&mut input).unwrap();\n    let name = input.trim();\n    println!(\"Hello, {}!\", if name.is_empty() { \"world\" } else { name });\n\n    let squares: Vec<u32> = (1..=5).map(|n| n * n).collect();\n    println!(\"Squares: {:?}\", squares);\n}\n",
     },
     Lang {
-        id: "cpp", name: "C++", icon: "⚙️", server: true, tip: "pg.tip_server", stdin: "Code-Iot",
+        id: "cpp", name: "C++", server: true, tip: "pg.tip_server", stdin: "Code-Iot",
         starter: "#include <iostream>\n#include <string>\n#include <vector>\n\nint main() {\n    std::string name;\n    std::getline(std::cin, name);\n    std::cout << \"Hello, \" << (name.empty() ? \"world\" : name) << \"!\\n\";\n\n    std::vector<int> nums = {3, 1, 2};\n    for (int n : nums) std::cout << n * n << ' ';\n    std::cout << '\\n';\n}\n",
     },
     Lang {
-        id: "arduino", name: "Arduino", icon: "🔌", server: true, tip: "pg.tip_arduino", stdin: "",
+        id: "arduino", name: "Arduino", server: true, tip: "pg.tip_arduino", stdin: "",
         starter: "void setup() {\n  pinMode(LED_BUILTIN, OUTPUT);\n  Serial.begin(9600);\n  Serial.println(\"Hello from the simulator!\");\n}\n\nvoid loop() {\n  digitalWrite(LED_BUILTIN, HIGH);\n  delay(500);\n  digitalWrite(LED_BUILTIN, LOW);\n  delay(500);\n  Serial.print(\"Seconds: \");\n  Serial.println(millis() / 1000);\n}\n",
     },
 ];
@@ -300,7 +300,7 @@ pub fn Playground() -> impl IntoView {
                     let l = *l;
                     view! {
                         <button class="pg-lang" class:active={move || lang.get() == l} on:click=move |_| switch_to(l)>
-                            <span>{l.icon}</span>{l.name}
+                            <LangIcon id=l.id/>{l.name}
                         </button>
                     }
                 }).collect_view()}

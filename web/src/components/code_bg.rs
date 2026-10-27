@@ -1,5 +1,6 @@
 //! The app background: painted clouds with faint words of code drifting
-//! slowly upward. On the learning path only the still clouds are shown.
+//! slowly upward. The words appear only on the welcome and sign-in screens;
+//! everywhere else the clouds are shown on their own.
 
 use leptos::*;
 use leptos_router::use_location;
@@ -21,8 +22,8 @@ fn rnd() -> f64 {
 #[component]
 pub fn CodeBackground() -> impl IntoView {
     let pathname = use_location().pathname;
-    // The learning path ("/") shows the clouds without the words.
-    let still = move || pathname.get() == "/";
+    // Drifting words only on the welcome / sign-in screens.
+    let still = move || !matches!(pathname.get().as_str(), "/welcome" | "/login" | "/signup");
 
     let words = (0..COUNT)
         .map(|_| {

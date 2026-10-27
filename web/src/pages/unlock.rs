@@ -4,6 +4,7 @@
 //! After paying, the page waits until the payment is confirmed.
 
 use codesprout_core::phone::{flag, COUNTRIES};
+use crate::components::lang_icon::LangIcon;
 use leptos::*;
 use leptos_router::*;
 use wasm_bindgen::prelude::*;
@@ -196,7 +197,7 @@ pub fn UnlockPage() -> impl IntoView {
                         view! {
                             <div class="unlock-card">
                                 <div class="unlock-head">
-                                    <span class="course-banner-icon">{c.icon.clone()}</span>
+                                    <span class="course-banner-icon"><LangIcon id=c.id.clone()/></span>
                                     <div>
                                         <h1 class="auth-title">{c.title.clone()}</h1>
                                         <p class="muted">{tf(lang, "unlock.open_of", &[&open, &total])}</p>

@@ -1,5 +1,6 @@
 //! Course picker. All courses are open.
 
+use crate::components::lang_icon::LangIcon;
 use leptos::*;
 use leptos_router::*;
 
@@ -45,7 +46,7 @@ pub fn Courses() -> impl IntoView {
                                             navigate("/", Default::default());
                                         }
                                     >
-                                        <div class="course-icon">{c.icon}</div>
+                                        <div class="course-icon"><LangIcon id=c.id.clone()/></div>
                                         <div class="course-info">
                                             <h3>{c.title} {c.unlocked.then(|| view! { <span class="tag gold">"🔓"</span> })}</h3>
                                             <p>{c.description}</p>

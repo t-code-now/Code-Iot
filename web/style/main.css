@@ -967,3 +967,12 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .pay-details dt { color: var(--muted); font-weight: 800; }
 .pay-details dd { margin: 0; word-break: break-all; }
 .pay-raw { max-height: 320px; overflow: auto; margin: 6px 0 0; padding: 10px; border-radius: 10px; background: #0b1028; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+
+/* ---------- official language logos ---------- */
+.lang-icon { direction: ltr; display: inline-flex; align-items: center; justify-content: center; gap: .1em; line-height: 1; vertical-align: middle; flex: none; }
+.lang-icon img { display: block; width: 1em; height: 1em; object-fit: contain; }
+.lang-pair img { width: .78em; height: .78em; }
+.lang-emoji { font-size: .95em; }
+.pg-lang .lang-icon { font-size: 18px; }
+.course-label { display: inline-flex; align-items: center; gap: 6px; }
+.course-label .lang-icon { font-size: 1.15em; }

@@ -983,7 +983,7 @@ pub(super) fn extend(sections: &mut Vec<Section>) {
         lesson("web-19-1", "Meta tags and SEO", vec![
             learn("Helping search engines",
                 "Every page needs a unique <title> and <meta name=\"description\">, which appear in search results. Use one h1 that matches the topic, meaningful link text (not \"click here\"), alt text, and a <link rel=\"canonical\"> when the same page has several URLs.",
-                Some("<title>Learn Python for free – Code-Iot</title>\n<meta name=\"description\" content=\"Bite-sized Python lessons with projects, in English and Hebrew.\">\n<link rel=\"canonical\" href=\"https://code-iot.onrender.com/python\">")),
+                Some("<title>Learn Python – Code-Iot</title>\n<meta name=\"description\" content=\"Bite-sized Python lessons with projects, in English and Hebrew.\">\n<link rel=\"canonical\" href=\"https://code-iot.onrender.com/python\">")),
             mc("Which link text is best for SEO and accessibility?", None,
                 &["Click here", "Read more", "Download the Python cheat sheet (PDF)", "Link"], 2,
                 "Descriptive text tells both people and search engines where the link goes."),

@@ -2,6 +2,7 @@
 //! server checks every request, this page only hides itself for others.
 
 use codesprout_core::api::{AdminOverview, AdminPayment, AdminUser, CourseSummary};
+use crate::components::lang_icon::LangIcon;
 use leptos::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
@@ -158,7 +159,7 @@ fn course_label(courses: &[CourseSummary], id: &str) -> String {
     courses
         .iter()
         .find(|c| c.id == id)
-        .map_or_else(|| id.to_string(), |c| format!("{} {}", c.icon, c.title))
+        .map_or_else(|| id.to_string(), |c| c.title.clone())
 }
 
 #[component]
@@ -240,7 +241,7 @@ fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
                                 </tr></thead>
                                 <tbody>
                                     {o.courses.iter().map(|(id, learners, full)| view! {
-                                        <tr><td>{courses.with_value(|cs| course_label(cs, id))}</td><td>{*learners}</td><td>{*full}</td></tr>
+                                        <tr><td><span class="course-label"><LangIcon id=id.clone()/> {courses.with_value(|cs| course_label(cs, id))}</span></td><td>{*learners}</td><td>{*full}</td></tr>
                                     }).collect_view()}
                                 </tbody>
                             </table>
@@ -422,7 +423,7 @@ fn user_card(
                     let label = course_label(&courses, &c.course_id);
                     view! {
                         <div class=format!("admin-course state-{state}")>
-                            <span class="admin-course-name">{label}</span>
+                            <span class="admin-course-name course-label"><LangIcon id=c.course_id.clone()/> {label}</span>
                             <span class="admin-course-state">{state_label(lang, &c.state, c.until)}</span>
                             {(!u.is_admin).then(|| {
                                 let course = course.clone();
@@ -728,7 +729,7 @@ fn PaymentCard(
             </div>
             <div class="pay-meta">
                 <span>{date(p.created_at, lang)}</span>
-                <span>{course}</span>
+                <span class="course-label"><LangIcon id=p.course_id.clone()/> {course}</span>
                 <span>{kind}</span>
                 <span class=format!("tag status-{}", p.status) title=p.status.clone()>{status_label(lang, &p.status)}</span>
                 {p.test_mode.then(|| view! { <span class="tag">"TEST"</span> })}

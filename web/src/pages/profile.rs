@@ -1,6 +1,7 @@
 //! Profile: level, streak, stats, badge collection and language setting.
 
 use codesprout_core::progress::all_badges;
+use crate::components::lang_icon::LangIcon;
 use leptos::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
@@ -33,13 +34,13 @@ fn tier(xp: u64) -> (&'static str, &'static str) {
 
 fn course_name(id: &str) -> String {
     let name = match id {
-        "python" => "🐍 Python",
-        "javascript" => "⚡ JavaScript",
-        "web" => "🌐 HTML & CSS",
-        "sql" => "🗄️ SQL",
-        "rust" => "🦀 Rust",
-        "cpp" => "⚙️ C++",
-        "arduino" => "🔌 Arduino",
+        "python" => "Python",
+        "javascript" => "JavaScript",
+        "web" => "HTML & CSS",
+        "sql" => "SQL",
+        "rust" => "Rust",
+        "cpp" => "C++",
+        "arduino" => "Arduino",
         other => other,
     };
     name.to_string()
@@ -150,7 +151,7 @@ pub fn ProfilePage() -> impl IntoView {
                                         };
                                         view! {
                                             <div class="plan-row">
-                                                <strong>{course_name(&pl.course_id)}</strong>
+                                                <strong class="course-label"><LangIcon id=pl.course_id.clone()/> {course_name(&pl.course_id)}</strong>
                                                 <span class="muted">{kind}</span>
                                                 {pl.manage_url.clone().filter(|_| pl.kind == "monthly").map(|u| view! {
                                                     <a href=u target="_blank" rel="noopener">{t("profile.manage")}</a>

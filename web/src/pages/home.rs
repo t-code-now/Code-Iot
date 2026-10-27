@@ -3,6 +3,7 @@
 //! nothing is locked.
 
 use codesprout_core::api::CourseDetail;
+use crate::components::lang_icon::LangIcon;
 use leptos::*;
 
 use crate::api;
@@ -65,7 +66,7 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
         .find(|l| !l.completed)
         .or_else(|| course.sections.first().and_then(|s| s.lessons.first()))
         .map(|l| (format!("/lesson/{}", l.id), l.title.clone()));
-    let course_icon = course.icon.clone();
+    let course_icon = course.id.clone();
     let course_id = course.id.clone();
     let unlocked = course.unlocked;
     let course_title = course.title.clone();
@@ -170,7 +171,7 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
                 <StatPills/>
             </header>
             <a href="/courses" class="course-banner">
-                <span class="course-banner-icon">{course.icon}</span>
+                <span class="course-banner-icon"><LangIcon id=course.id.clone()/></span>
                 <span class="course-banner-text">
                     <strong>{course.title}</strong>
                     <span class="course-banner-sub">{tf(lang, "home.lessons_progress", &[&done, &total])}</span>
@@ -195,7 +196,7 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
 
             <div class="panel-card panel-course">
                 <div class="panel-course-head">
-                    <span class="course-banner-icon">{course_icon}</span>
+                    <span class="course-banner-icon"><LangIcon id=course_icon/></span>
                     <div>
                         <strong>{course_title}</strong>
                         <span class="muted">{tf(lang, "home.lessons_progress", &[&done, &total])}</span>

@@ -6,3 +6,4 @@ pub mod shell;
 pub mod code_bg;
 pub mod avatar;
 pub mod google;
+pub mod lang_icon;
