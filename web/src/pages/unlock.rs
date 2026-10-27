@@ -268,7 +268,12 @@ pub fn UnlockPage() -> impl IntoView {
                                     }.into_view()
                                 } else {
                                     let has_phone = move || session.profile.with(|p| p.as_ref().is_some_and(|p| p.phone.is_some()));
+                                    // Purchases closed: the waiting list needs no phone number.
+                                    let closed = move || config.get().is_some_and(|c| !c.unwrap_or_default()["enabled"].as_bool().unwrap_or(false));
+                                    let cid = course_id();
                                     view! {
+                                        {move || closed().then(|| view! { <Waitlist course_id=cid.clone()/> })}
+                                        {move || (!closed() && config.get().is_some()).then(|| view! {
                                         {move || (!has_phone() || editing_phone.get()).then(|| view! {
                                             <PhoneForm on_saved=move |_| editing_phone.set(false)/>
                                         })}
@@ -301,6 +306,7 @@ pub fn UnlockPage() -> impl IntoView {
                                                 </div>
                                                 <p class="muted unlock-small">{session.t("unlock.only_this")}</p>
                                             }.into_view()
+                                        })}
                                         })}
                                         })}
                                     }.into_view()
