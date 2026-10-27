@@ -26,6 +26,27 @@ extern "C" {
     fn download_text(name: &str, text: &str);
 }
 
+/// A payment status in the viewer's language (the raw value stays in the tooltip).
+fn status_label(lang: crate::i18n::Lang, status: &str) -> String {
+    let key = match status {
+        "paid" => "status.paid",
+        "partial_refund" => "status.partial_refund",
+        "refunded" => "status.refunded",
+        "active" => "status.active",
+        "cancelled" => "status.cancelled",
+        "expired" => "status.expired",
+        "past_due" => "status.past_due",
+        "unpaid" => "status.unpaid",
+        "paused" => "status.paused",
+        "on_trial" => "status.on_trial",
+        "pending" => "status.pending",
+        "failed" => "status.failed",
+        "void" => "status.void",
+        other => return other.to_string(),
+    };
+    i18n::t(lang, key).to_string()
+}
+
 fn date(unix: i64, lang: Lang) -> String {
     if unix <= 0 {
         return "—".into();
@@ -505,7 +526,7 @@ fn PaymentsTab(courses: Vec<CourseSummary>) -> impl IntoView {
     };
 
     view! {
-        <p class="muted admin-count">{session.t("admin.refund_hint")}</p>
+        <p class="admin-hint">{session.t("admin.refund_hint")}</p>
         <div class="pay-filters">
             {filter_button(PayFilter::All, "admin.f_all")}
             {filter_button(PayFilter::Charges, "admin.f_charges")}
@@ -694,7 +715,14 @@ fn PaymentCard(
                     {(!p.phone.is_empty()).then(|| phone_links(&p.phone, &p.country))}
                 </div>
                 <div class="pay-amount" dir="ltr">
-                    {if p.amount_cents > 0 { money(p.amount_cents, &p.currency) } else { "—".into() }}
+                    {if p.amount_cents > 0 {
+                        money(p.amount_cents, &p.currency)
+                    } else if p.provider_ref.starts_with("sub_") {
+                        // A subscription itself carries no charge; show its price.
+                        format!("{}{}", codesprout_core::access::PRICE_MONTHLY, t("admin.per_month"))
+                    } else {
+                        "—".into()
+                    }}
                     {(p.refunded_cents > 0).then(|| view! { <small>"−" {money(p.refunded_cents, &p.currency)}</small> })}
                 </div>
             </div>
@@ -702,7 +730,7 @@ fn PaymentCard(
                 <span>{date(p.created_at, lang)}</span>
                 <span>{course}</span>
                 <span>{kind}</span>
-                <span class=format!("tag status-{}", p.status)>{p.status.clone()}</span>
+                <span class=format!("tag status-{}", p.status) title=p.status.clone()>{status_label(lang, &p.status)}</span>
                 {p.test_mode.then(|| view! { <span class="tag">"TEST"</span> })}
                 {(!p.method.is_empty()).then(|| view! { <span>{p.method.clone()}</span> })}
                 {p.until.map(|u| view! { <span>{t("admin.d_until")} ": " {date(u, lang)}</span> })}
