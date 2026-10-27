@@ -73,8 +73,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // client-side router can handle them.
     let spa = ServeDir::new(&dist).fallback(ServeFile::new(dist.join("index.html")));
 
+    // Paths under /api that match no route get a JSON 404, never the web page.
     let app = api_router(state)
-        .fallback_service(spa)
+        .fallback(move |req: axum::extract::Request| {
+            let mut spa = spa.clone();
+            async move {
+                use axum::response::IntoResponse;
+                if req.uri().path().starts_with("/api/") || req.uri().path() == "/api" {
+                    return crate::error::ApiError::NotFound.into_response();
+                }
+                match spa.try_call(req).await {
+                    Ok(resp) => resp.map(axum::body::Body::new).into_response(),
+                    Err(_) => axum::http::StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+                }
+            }
+        })
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http());
 
