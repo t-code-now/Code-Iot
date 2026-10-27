@@ -901,3 +901,8 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
   .unlock-page { max-width: 620px; }
   .admin { padding: 28px 36px 64px; }
 }
+.admin-setup { margin: 0 0 14px; padding: 14px 16px; border-radius: 16px; background: rgba(18, 26, 56, .92); border: 2px dashed var(--primary); font-size: 14px; }
+.admin-setup h3 { font-size: 16px; margin-bottom: 8px; color: var(--primary); }
+.admin-setup ul { margin: 4px 0 10px; padding-inline-start: 18px; }
+.admin-setup li { margin: 3px 0; }
+.admin-setup code { background: var(--bg); padding: 1px 6px; border-radius: 6px; margin-inline-end: 6px; }

@@ -205,3 +205,7 @@ pub async fn admin_ban(token: Option<String>, user_id: i64, banned: bool) -> Api
 pub async fn admin_delete(token: Option<String>, user_id: i64) -> ApiResult<serde_json::Value> {
     post("/api/admin/delete", &token, &AdminDeleteRequest { user_id }).await
 }
+
+pub async fn admin_payments_setup(token: Option<String>) -> ApiResult<serde_json::Value> {
+    get("/api/admin/payments-setup", &token).await
+}

@@ -53,6 +53,7 @@ pub fn api_router(state: AppState) -> Router {
         .route("/api/payments/checkout", post(crate::payments::checkout))
         .route("/api/payments/webhook", post(crate::payments::webhook))
         .route("/api/admin/overview", get(crate::admin::overview))
+        .route("/api/admin/payments-setup", get(crate::payments::setup_info))
         .route("/api/admin/users", get(crate::admin::users))
         .route("/api/admin/payments", get(crate::admin::payments))
         .route("/api/admin/log", get(crate::admin::log))

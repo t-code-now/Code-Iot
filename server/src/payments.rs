@@ -336,3 +336,76 @@ mod tests {
         assert!(payment_from_event("111", "222", &monthly_order, 0).is_none());
     }
 }
+
+/// `GET /api/admin/payments-setup` – helps the admin fill in the settings:
+/// lists the stores and product variants that the API key can see, and
+/// which settings are present.
+pub async fn setup_info(
+    axum::extract::State(state): axum::extract::State<AppState>,
+    headers: HeaderMap,
+) -> ApiResult<Json<Value>> {
+    let access = crate::routes::access_for(&state, &headers).await?;
+    if !access.is_admin() {
+        return Err(ApiError::Forbidden);
+    }
+    let present = json!({
+        "LEMONSQUEEZY_API_KEY": env("LEMONSQUEEZY_API_KEY").is_some(),
+        "LEMONSQUEEZY_STORE_ID": env("LEMONSQUEEZY_STORE_ID").is_some(),
+        "LEMONSQUEEZY_VARIANT_MONTHLY": env("LEMONSQUEEZY_VARIANT_MONTHLY").is_some(),
+        "LEMONSQUEEZY_VARIANT_LIFETIME": env("LEMONSQUEEZY_VARIANT_LIFETIME").is_some(),
+        "LEMONSQUEEZY_WEBHOOK_SECRET": env("LEMONSQUEEZY_WEBHOOK_SECRET").is_some(),
+    });
+    let Some(key) = env("LEMONSQUEEZY_API_KEY") else {
+        return Ok(Json(json!({ "present": present, "stores": [], "variants": [] })));
+    };
+    let get = |path: &'static str| {
+        let key = key.clone();
+        async move {
+            http()
+                .get(format!("https://api.lemonsqueezy.com/v1/{path}"))
+                .bearer_auth(key)
+                .header("Accept", "application/vnd.api+json")
+                .send()
+                .await
+                .ok()?
+                .json::<Value>()
+                .await
+                .ok()
+        }
+    };
+    let stores = get("stores").await.unwrap_or_default();
+    let products = get("products?page[size]=100").await.unwrap_or_default();
+    let variants = get("variants?page[size]=100").await.unwrap_or_default();
+    let product_name = |id: &str| {
+        products["data"]
+            .as_array()
+            .and_then(|a| a.iter().find(|p| text(&p["id"]) == id))
+            .and_then(|p| p["attributes"]["name"].as_str())
+            .unwrap_or("")
+            .to_string()
+    };
+    let stores: Vec<Value> = stores["data"]
+        .as_array()
+        .map(|a| a.iter().map(|s| json!({ "id": text(&s["id"]), "name": s["attributes"]["name"] })).collect())
+        .unwrap_or_default();
+    let variants: Vec<Value> = variants["data"]
+        .as_array()
+        .map(|a| {
+            a.iter()
+                .map(|v| {
+                    let at = &v["attributes"];
+                    json!({
+                        "id": text(&v["id"]),
+                        "product": product_name(&text(&at["product_id"])),
+                        "name": at["name"],
+                        "price_cents": at["price"],
+                        "subscription": at["is_subscription"],
+                        "interval": at["interval"],
+                        "status": at["status"],
+                    })
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    Ok(Json(json!({ "present": present, "stores": stores, "variants": variants })))
+}

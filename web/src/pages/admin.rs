@@ -162,7 +162,10 @@ fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
                         ("⛔", o.banned_users.to_string(), t("admin.banned")),
                     ];
                     view! {
-                        {(!o.payments_enabled).then(|| view! { <div class="guest-note">{t("admin.payments_off")}</div> })}
+                        {(!o.payments_enabled).then(|| view! {
+                            <div class="guest-note">{t("admin.payments_off")}</div>
+                            <PaymentsSetup/>
+                        })}
                         <div class="admin-cards">
                             {cards.into_iter().map(|(icon, value, label)| view! {
                                 <div class="admin-card">
@@ -453,6 +456,61 @@ fn LogTab() -> impl IntoView {
                             }).collect_view()}
                         </ul>
                     }.into_view()
+                }
+            })}
+        </Suspense>
+    }
+}
+
+/// Shows which payment settings are present and the store/variant ids the
+/// Lemon Squeezy API key can see, to copy into Render.
+#[component]
+fn PaymentsSetup() -> impl IntoView {
+    let session = use_session();
+    let data = create_local_resource(move || session.token.get(), api::admin_payments_setup);
+    view! {
+        <Suspense fallback=|| ()>
+            {move || data.get().and_then(|r| r.ok()).map(|v| {
+                let present: Vec<(String, bool)> = v["present"]
+                    .as_object()
+                    .map(|o| o.iter().map(|(k, b)| (k.clone(), b.as_bool().unwrap_or(false))).collect())
+                    .unwrap_or_default();
+                let stores = v["stores"].as_array().cloned().unwrap_or_default();
+                let variants = v["variants"].as_array().cloned().unwrap_or_default();
+                view! {
+                    <div class="admin-setup" dir="ltr">
+                        <h3>"Lemon Squeezy → Render (Environment)"</h3>
+                        <ul>
+                            {present.into_iter().map(|(k, ok)| view! {
+                                <li><span>{if ok { "✅" } else { "⬜" }}</span><code>{k}</code></li>
+                            }).collect_view()}
+                        </ul>
+                        {(!stores.is_empty()).then(|| view! {
+                            <p><b>"LEMONSQUEEZY_STORE_ID"</b></p>
+                            <ul>{stores.iter().map(|s| view! {
+                                <li><code>{s["id"].as_str().unwrap_or("").to_string()}</code>" — "{s["name"].as_str().unwrap_or("").to_string()}</li>
+                            }).collect_view()}</ul>
+                        })}
+                        {(!variants.is_empty()).then(|| view! {
+                            <p><b>"LEMONSQUEEZY_VARIANT_MONTHLY / LEMONSQUEEZY_VARIANT_LIFETIME"</b></p>
+                            <ul>{variants.iter().map(|x| {
+                                let price = x["price_cents"].as_f64().unwrap_or(0.0) / 100.0;
+                                let kind = if x["subscription"].as_bool().unwrap_or(false) {
+                                    format!("subscription / {}", x["interval"].as_str().unwrap_or(""))
+                                } else {
+                                    "one-time".to_string()
+                                };
+                                view! {
+                                    <li>
+                                        <code>{x["id"].as_str().unwrap_or("").to_string()}</code>
+                                        " — " {x["product"].as_str().unwrap_or("").to_string()} " · "
+                                        {x["name"].as_str().unwrap_or("").to_string()} " · "
+                                        {format!("${price:.2}")} " · " {kind}
+                                    </li>
+                                }
+                            }).collect_view()}</ul>
+                        })}
+                    </div>
                 }
             })}
         </Suspense>
