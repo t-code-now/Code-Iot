@@ -31,8 +31,8 @@ fn tier(xp: u64) -> (&'static str, &'static str) {
     }
 }
 
-fn course_name(id: &str) -> &str {
-    match id {
+fn course_name(id: &str) -> String {
+    let name = match id {
         "python" => "🐍 Python",
         "javascript" => "⚡ JavaScript",
         "web" => "🌐 HTML & CSS",
@@ -41,7 +41,8 @@ fn course_name(id: &str) -> &str {
         "cpp" => "⚙️ C++",
         "arduino" => "🔌 Arduino",
         other => other,
-    }
+    };
+    name.to_string()
 }
 
 fn format_date(unix_secs: i64, lang: Lang) -> String {
