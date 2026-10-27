@@ -559,15 +559,35 @@ pub async fn admin_cancel(
     Json(req): Json<codesprout_core::api::AdminCancelRequest>,
 ) -> ApiResult<Json<Value>> {
     let admin = crate::admin::require_admin(&state, &headers).await?;
-    let cfg = config().ok_or_else(|| ApiError::BadRequest("Payments are not connected".into()))?;
     let p = store::payment_by_id(&state.db, req.payment_id).await?.ok_or(ApiError::NotFound)?;
+    let who = admin.email.clone().unwrap_or_default();
+    cancel_subscription(&state, p, &who).await
+}
+
+/// `POST /api/me/cancel`: a user cancels their own subscription. Charges stop
+/// right away; the course stays open until the end of the paid month.
+pub async fn user_cancel(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(req): Json<codesprout_core::api::AdminCancelRequest>,
+) -> ApiResult<Json<Value>> {
+    let user_id = crate::routes::require_user(&state, &headers).await?;
+    let p = store::payment_by_id(&state.db, req.payment_id).await?.ok_or(ApiError::NotFound)?;
+    // Only the owner may cancel; anyone else gets "not found".
+    if p.user_id != Some(user_id) {
+        return Err(ApiError::NotFound);
+    }
+    cancel_subscription(&state, p, &format!("user {user_id}")).await
+}
+
+async fn cancel_subscription(state: &AppState, p: store::Payment, who: &str) -> ApiResult<Json<Value>> {
+    let cfg = config().ok_or_else(|| ApiError::BadRequest("Payments are not connected".into()))?;
     if !p.can_cancel() {
         return Err(ApiError::BadRequest("This is not an active subscription".into()));
     }
     let id = p.provider_ref.trim_start_matches("sub_").to_string();
     let _guard = InFlight::start(p.id)
         .ok_or_else(|| ApiError::Conflict("This payment is already being handled".into()))?;
-    let who = admin.email.clone().unwrap_or_default();
     let target = format!("{} ({})", p.email, p.provider_ref);
     let t = now();
     match ls_call(&cfg, reqwest::Method::DELETE, &format!("subscriptions/{id}"), None).await {
@@ -576,12 +596,49 @@ pub async fn admin_cancel(
             let status = a["status"].as_str().unwrap_or("cancelled").to_string();
             let until = a["ends_at"].as_str().and_then(parse_time);
             store::update_payment_state(&state.db, p.id, &status, p.refunded_cents, until, t).await?;
-            store::log(&state.db, &who, "cancel subscription", &target, &status, t).await?;
+            store::log(&state.db, who, "cancel subscription", &target, &status, t).await?;
             Ok(Json(json!({ "ok": true, "status": status, "until": until })))
         }
         Err(msg) => {
-            store::log(&state.db, &who, "cancel failed", &target, &msg, t).await?;
+            store::log(&state.db, who, "cancel failed", &target, &msg, t).await?;
             Err(ApiError::BadRequest(msg))
         }
     }
+}
+
+/// `GET /api/me/purchases`
+pub async fn my_purchases(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> ApiResult<Json<Vec<codesprout_core::api::MyPurchase>>> {
+    let user_id = crate::routes::require_user(&state, &headers).await?;
+    let rows = store::payments_for_user(&state.db, user_id).await?;
+    let mut out: Vec<codesprout_core::api::MyPurchase> = rows
+        .iter()
+        .filter(|p| !p.provider_ref.starts_with("inv_"))
+        .map(|p| {
+            // A subscription's amount and refunds live on its invoices.
+            let invoices = rows.iter().filter(|i| i.provider_ref.starts_with("inv_") && i.manage_url == p.provider_ref);
+            let (paid, back) = if p.provider_ref.starts_with("sub_") {
+                invoices.fold((0, 0), |(a, r), i| (a + i.amount_cents, r + i.refunded_cents))
+            } else {
+                (p.amount_cents, p.refunded_cents)
+            };
+            codesprout_core::api::MyPurchase {
+                id: p.id,
+                course_id: p.course_id.clone(),
+                plan: p.plan.clone(),
+                status: p.status.clone(),
+                amount_cents: paid,
+                refunded_cents: back,
+                currency: p.currency.clone(),
+                created_at: p.created_at,
+                until: p.until,
+                can_cancel: p.can_cancel(),
+                test_mode: p.test_mode,
+            }
+        })
+        .collect();
+    out.sort_by(|a, b| b.created_at.cmp(&a.created_at));
+    Ok(Json(out))
 }

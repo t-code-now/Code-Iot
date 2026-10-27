@@ -224,12 +224,25 @@ def run():
     code, body = call("POST", "/api/admin/refund", {"payment_id": i["id"], "amount_cents": 200}, atok)
     check("invoice partial refund", code == 200 and calls[-1]["path"] == "/v1/subscription-invoices/9001/refund"
           and calls[-1]["body"]["data"]["type"] == "subscription-invoices", str((code, body, calls[-1])))
-    code, body = call("POST", "/api/admin/cancel", {"payment_id": s["id"]}, atok)
+    _, mine = call("GET", "/api/me/purchases", token=tok)
+    ms = next((m for m in mine if m["id"] == s["id"]), None)
+    check("buyer sees own subscription with its charges", ms is not None and ms["amount_cents"] == 500
+          and ms["refunded_cents"] == 200 and ms["can_cancel"] is True and not any(m["id"] == i["id"] for m in mine), str(mine))
+    _, other = call("GET", "/api/me/purchases", token=atok)
+    check("another user doesn't see it", not any(m["id"] == s["id"] for m in other), str(other))
+    code, _ = call("POST", "/api/me/cancel", {"payment_id": s["id"]})
+    check("guest can't cancel", code == 401, str(code))
+    n_calls = len(calls)
+    code, _ = call("POST", "/api/me/cancel", {"payment_id": s["id"]}, atok)
+    check("another user can't cancel someone else's subscription", code == 404 and len(calls) == n_calls, str(code))
+    code, body = call("POST", "/api/me/cancel", {"payment_id": s["id"]}, tok)
     check("cancel subscription", code == 200 and body.get("status") == "cancelled" and calls[-1]["method"] == "DELETE"
           and calls[-1]["path"] == "/v1/subscriptions/7001", str((code, body)))
     check("cancelled stays open until the period ends", call("GET", "/api/courses/rust", token=tok)[1]["unlocked"] is True)
     code, _ = call("POST", "/api/admin/cancel", {"payment_id": s["id"]}, atok)
     check("can't cancel twice", code == 400)
+    _, mine = call("GET", "/api/me/purchases", token=tok)
+    check("after cancelling, no cancel button", next(m for m in mine if m["id"] == s["id"])["can_cancel"] is False)
     expired = json.loads(json.dumps(sub))
     expired["meta"]["event_name"] = "subscription_expired"
     expired["data"]["attributes"].update({"status": "expired", "ends_at": "2020-01-01T00:00:00.000000Z"})

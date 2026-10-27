@@ -976,3 +976,13 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .pg-lang .lang-icon { font-size: 18px; }
 .course-label { display: inline-flex; align-items: center; gap: 6px; }
 .course-label .lang-icon { font-size: 1.15em; }
+
+/* ---------- cancel a purchase ---------- */
+.cancel-page { max-width: 560px; margin: 0 auto; }
+.cancel-row { flex-wrap: wrap; margin-bottom: 10px; }
+.cancel-main { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 3px; }
+.cancel-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.cancel-note { flex-basis: 100%; margin: 4px 0 0; color: var(--muted); font-size: .88rem; }
+.cancel-contact { margin: 14px 0 8px; padding: 10px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); }
+.cancel-contact a { color: var(--primary); font-weight: 800; }
+.cancel-link { margin-top: 8px; }

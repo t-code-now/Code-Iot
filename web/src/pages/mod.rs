@@ -1,6 +1,7 @@
 pub mod admin;
 pub mod auth;
 pub mod avatar;
+pub mod cancel;
 pub mod courses;
 pub mod home;
 pub mod leaderboard;

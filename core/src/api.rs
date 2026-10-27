@@ -91,6 +91,26 @@ pub struct PlanDto {
     pub manage_url: Option<String>,
 }
 
+/// `GET /api/me/purchases`: the signed-in user's own purchases (one-time
+/// orders and subscriptions; monthly invoices are folded into their subscription).
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct MyPurchase {
+    pub id: i64,
+    pub course_id: String,
+    /// "lifetime" or "monthly".
+    pub plan: String,
+    pub status: String,
+    pub amount_cents: i64,
+    pub refunded_cents: i64,
+    pub currency: String,
+    pub created_at: i64,
+    /// Subscriptions: paid until / ends at.
+    pub until: Option<i64>,
+    pub can_cancel: bool,
+    pub test_mode: bool,
+}
+
 /// `POST /api/payments/checkout`
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

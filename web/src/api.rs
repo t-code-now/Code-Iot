@@ -225,3 +225,13 @@ pub async fn admin_cancel(token: Option<String>, payment_id: i64) -> ApiResult<s
 pub async fn admin_settings(token: Option<String>, sales_paused: bool) -> ApiResult<serde_json::Value> {
     post("/api/admin/settings", &token, &AdminSettingsRequest { sales_paused }).await
 }
+
+/// The signed-in user's own purchases.
+pub async fn my_purchases(token: Option<String>) -> ApiResult<Vec<MyPurchase>> {
+    get("/api/me/purchases", &token).await
+}
+
+/// Cancel one of the user's own subscriptions.
+pub async fn cancel_my_subscription(token: Option<String>, payment_id: i64) -> ApiResult<serde_json::Value> {
+    post("/api/me/cancel", &token, &AdminCancelRequest { payment_id }).await
+}

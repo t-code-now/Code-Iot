@@ -32,7 +32,7 @@ fn tier(xp: u64) -> (&'static str, &'static str) {
     }
 }
 
-fn course_name(id: &str) -> String {
+pub(crate) fn course_name(id: &str) -> String {
     let name = match id {
         "python" => "Python",
         "javascript" => "JavaScript",
@@ -46,7 +46,7 @@ fn course_name(id: &str) -> String {
     name.to_string()
 }
 
-fn format_date(unix_secs: i64, lang: Lang) -> String {
+pub(crate) fn format_date(unix_secs: i64, lang: Lang) -> String {
     let date = js_sys::Date::new(&JsValue::from_f64(unix_secs as f64 * 1000.0));
     String::from(date.to_locale_date_string(i18n::locale(lang), &JsValue::UNDEFINED))
 }
@@ -188,6 +188,7 @@ pub fn ProfilePage() -> impl IntoView {
                                 }).collect_view()}
                             </div>
 
+                            <a href="/cancel" class="btn btn-ghost btn-block cancel-link">{t("cancel.title")}</a>
                             <button class="btn btn-ghost btn-block logout" on:click=move |_| session.sign_out()>{t("profile.logout")}</button>
                             </div>
                             </div>
