@@ -833,8 +833,9 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 }
 .plan-name { font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-size: 13px; }
 [dir="rtl"] .plan-name { letter-spacing: 0; }
-.plan-price { font-family: var(--display); font-size: 34px; font-weight: 700; color: var(--text); }
-.plan-price small { font-size: 14px; color: var(--muted); font-family: var(--font); }
+.plan-price { display: flex; flex-direction: column; align-items: center; line-height: 1.1; font-family: var(--display); font-size: 36px; font-weight: 700; color: var(--text); direction: ltr; }
+.plan-price small { display: block; margin-top: 2px; font-size: 14px; font-weight: 800; color: var(--muted); font-family: var(--font); }
+[dir="rtl"] .plan-price small { direction: rtl; }
 .plan-note { font-size: 13px; color: var(--muted); font-weight: 700; }
 .signup-google { gap: 14px; }
 .signup-why { font-weight: 800; line-height: 1.5; text-align: center; color: var(--text); }
