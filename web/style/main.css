@@ -906,3 +906,63 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .admin-setup ul { margin: 4px 0 10px; padding-inline-start: 18px; }
 .admin-setup li { margin: 3px 0; }
 .admin-setup code { background: var(--bg); padding: 1px 6px; border-radius: 6px; margin-inline-end: 6px; }
+
+/* ---------- phone before paying ---------- */
+.phone-form { display: flex; flex-direction: column; gap: 10px; }
+.phone-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.phone-row select, .phone-row input {
+  padding: 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface);
+  color: var(--text); font: inherit; font-size: 16px; outline: none;
+}
+.phone-row select { flex: 1 1 100%; min-width: 0; }
+.phone-row input { flex: 1; min-width: 0; }
+.phone-row input:focus, .phone-row select:focus { border-color: var(--primary); }
+.phone-dial { font-weight: 900; color: var(--primary); }
+.phone-line { font-weight: 800; }
+.link-btn.small { padding: 0 4px; font-size: 14px; }
+
+/* ---------- admin: money ---------- */
+.ok-note { margin: 0 0 12px; padding: 10px 12px; border-radius: 10px; background: rgba(63, 191, 127, .18); color: #9ff0c4; font-weight: 800; }
+.sales-switch {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;
+  padding: 14px 16px; border-radius: 16px; background: rgba(18, 26, 56, .92); border: 2px solid #3fbf7f;
+}
+.sales-switch.paused { border-color: var(--danger); }
+.sales-switch > div { display: flex; flex-direction: column; gap: 2px; }
+.sales-switch .muted { font-size: 13px; }
+.admin-phone { font-size: 13px; font-weight: 800; }
+.admin-phone a { color: var(--primary); }
+.pay-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.pay-user-filter { margin: 4px 0 10px; font-weight: 800; }
+.pay-totals {
+  display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 4px 0 12px; padding: 12px 14px;
+  border-radius: 14px; background: rgba(18, 26, 56, .92); border: 2px solid var(--line); font-size: 14px;
+}
+.pay-list { display: flex; flex-direction: column; gap: 10px; }
+.pay-card { padding: 14px; border-radius: 16px; background: rgba(18, 26, 56, .94); border: 2px solid var(--line); }
+.pay-card.test { border-style: dashed; }
+.pay-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.pay-who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pay-who .muted { font-size: 13px; word-break: break-all; }
+.pay-amount { font-family: var(--display); font-size: 22px; font-weight: 700; text-align: end; white-space: nowrap; }
+.pay-amount small { display: block; font-size: 13px; color: #fda4af; font-family: var(--font); font-weight: 800; }
+.pay-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 8px 0; font-size: 13px; color: #d2d8f5; font-weight: 700; align-items: center; }
+.tag.status-paid, .tag.status-active { background: #2f8f61; }
+.tag.status-refunded, .tag.status-expired { background: var(--danger); }
+.tag.status-partial_refund, .tag.status-cancelled, .tag.status-past_due { background: #b7791f; }
+.pay-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.refund-box {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 10px; margin-top: 10px; padding: 12px;
+  border-radius: 12px; background: var(--surface); border: 1px solid var(--line);
+}
+.refund-box label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 800; color: var(--muted); }
+.refund-box input {
+  width: 130px; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line);
+  background: var(--bg); color: var(--text); font: inherit; font-size: 16px;
+}
+.refund-box .muted { font-size: 13px; }
+.pay-details { margin-top: 10px; padding: 12px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); }
+.pay-details dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0 0 8px; font-size: 13px; }
+.pay-details dt { color: var(--muted); font-weight: 800; }
+.pay-details dd { margin: 0; word-break: break-all; }
+.pay-raw { max-height: 320px; overflow: auto; margin: 6px 0 0; padding: 10px; border-radius: 10px; background: #0b1028; font-size: 12px; white-space: pre-wrap; word-break: break-all; }

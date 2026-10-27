@@ -45,6 +45,10 @@ jobs:
         if: always()
         run: cargo build -p codesprout-server --release 2>&1 | tee -a build.log; exit ${PIPESTATUS[0]}
 
+      - name: Payments test (fake Lemon Squeezy)
+        if: always()
+        run: python3 scripts/payments-test.py 2>&1 | tee -a build.log; exit ${PIPESTATUS[0]}
+
       - name: Playground smoke test
         if: always()
         env:

@@ -18,7 +18,7 @@ use crate::payments;
 use crate::routes::{access_for, now, AppState};
 use crate::store::{self, Payment};
 
-async fn require_admin(state: &AppState, headers: &HeaderMap) -> ApiResult<Access> {
+pub(crate) async fn require_admin(state: &AppState, headers: &HeaderMap) -> ApiResult<Access> {
     let access = access_for(state, headers).await?;
     if access.user_id.is_none() {
         return Err(ApiError::Unauthorized);
@@ -90,8 +90,18 @@ pub async fn overview(State(state): State<AppState>, headers: HeaderMap) -> ApiR
         })
         .collect();
 
+    let mut refunded: HashMap<String, i64> = HashMap::new();
+    for p in real.iter().filter(|p| p.refunded_cents > 0) {
+        *refunded.entry(p.currency.clone()).or_default() += p.refunded_cents;
+    }
+    // Revenue counts what was charged (refunds are shown separately).
+    for p in real.iter().filter(|p| p.status == "refunded" && !p.provider_ref.starts_with("sub_")) {
+        *revenue.entry(p.currency.clone()).or_default() += p.amount_cents;
+    }
     let mut revenue: Vec<(String, i64)> = revenue.into_iter().collect();
     revenue.sort();
+    let mut refunded: Vec<(String, i64)> = refunded.into_iter().collect();
+    refunded.sort();
     Ok(Json(AdminOverview {
         users: counts["users"] as u64,
         google_users: counts["google_users"] as u64,
@@ -108,6 +118,8 @@ pub async fn overview(State(state): State<AppState>, headers: HeaderMap) -> ApiR
         banned_users: counts["banned"] as u64,
         courses,
         payments_enabled: payments::config().is_some(),
+        refunded,
+        sales_paused: store::sales_paused(&state.db).await?,
     }))
 }
 
@@ -126,6 +138,7 @@ pub async fn users(
     require_admin(&state, &headers).await?;
     let t = now();
     let rows = store::user_rows(&state.db, &q.q, 500).await?;
+    let contacts = store::all_contacts(&state.db).await?;
     let all = store::all_payments(&state.db, 100_000).await?;
     let plans = active_plans(&all, t);
     let mut manual: HashMap<(i64, String), String> = HashMap::new();
@@ -160,7 +173,10 @@ pub async fn users(
                     AdminCourseState { course_id: c.id.into(), state, until, manual: m }
                 })
                 .collect();
+            let (phone, country) = contacts.get(&u.id).cloned().unwrap_or_default();
             AdminUser {
+                phone,
+                country,
                 id: u.id,
                 username: u.username,
                 email: u.email,
@@ -188,12 +204,14 @@ pub async fn payments(State(state): State<AppState>, headers: HeaderMap) -> ApiR
         .into_iter()
         .map(|u| (u.id, (u.username, u.email)))
         .collect();
-    let list = store::all_payments(&state.db, 500)
+    let contacts = store::all_contacts(&state.db).await?;
+    let list = store::all_payments(&state.db, 1000)
         .await?
         .into_iter()
         .map(|p| {
             let (username, email) = p.user_id.and_then(|id| names.get(&id).cloned()).unwrap_or_default();
             let link_ref = if p.provider_ref.starts_with("inv_") { p.manage_url.clone() } else { p.provider_ref.clone() };
+            let (phone, country) = p.user_id.and_then(|id| contacts.get(&id).cloned()).unwrap_or_default();
             AdminPayment {
                 id: p.id,
                 user_id: p.user_id,
@@ -211,6 +229,14 @@ pub async fn payments(State(state): State<AppState>, headers: HeaderMap) -> ApiR
                 test_mode: p.test_mode,
                 created_at: p.created_at,
                 dashboard_url: payments::dashboard_url(&link_ref),
+                refunded_cents: p.refunded_cents,
+                refundable_cents: p.refundable_cents(),
+                can_cancel: p.can_cancel(),
+                customer_name: p.customer_name.clone(),
+                phone,
+                country,
+                raw: p.raw.clone(),
+                updated_at: p.updated_at,
             }
         })
         .collect();
@@ -287,5 +313,18 @@ pub async fn delete(
     let t = now();
     store::delete_user(&state.db, req.user_id).await?;
     store::log(&state.db, &admin_name(&admin), "delete", &name, "", t).await?;
+    Ok(Json(json!({ "ok": true })))
+}
+
+/// `POST /api/admin/settings` – pause or resume new purchases.
+pub async fn settings(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(req): Json<AdminSettingsRequest>,
+) -> ApiResult<Json<Value>> {
+    let admin = require_admin(&state, &headers).await?;
+    store::set_setting(&state.db, "sales_paused", if req.sales_paused { "1" } else { "0" }).await?;
+    let action = if req.sales_paused { "pause purchases" } else { "resume purchases" };
+    store::log(&state.db, &admin_name(&admin), action, "-", "", now()).await?;
     Ok(Json(json!({ "ok": true })))
 }

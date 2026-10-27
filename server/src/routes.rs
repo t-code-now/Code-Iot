@@ -60,6 +60,10 @@ pub fn api_router(state: AppState) -> Router {
         .route("/api/admin/access", post(crate::admin::set_access))
         .route("/api/admin/ban", post(crate::admin::ban))
         .route("/api/admin/delete", post(crate::admin::delete))
+        .route("/api/admin/refund", post(crate::payments::admin_refund))
+        .route("/api/admin/cancel", post(crate::payments::admin_cancel))
+        .route("/api/admin/settings", post(crate::admin::settings))
+        .route("/api/me/contact", put(set_contact))
         .with_state(state)
 }
 
@@ -147,6 +151,7 @@ fn stats_for(user: &db::User, done: &HashMap<String, u32>) -> Stats {
 async fn build_profile(conn: &Db, user_id: i64) -> ApiResult<(Profile, Stats)> {
     let user = db::get_user(conn, user_id).await?.ok_or(ApiError::Unauthorized)?;
     let access = Access::for_user(conn, user_id, now()).await?;
+    let contact = crate::store::contact(conn, user_id).await?;
     let done = db::completions(conn, user_id).await?;
     let stats = stats_for(&user, &done);
 
@@ -172,6 +177,8 @@ async fn build_profile(conn: &Db, user_id: i64) -> ApiResult<(Profile, Stats)> {
         badges: progress::badges(&stats),
         joined_at: user.created_at,
         avatar: db::get_avatar(conn, user_id).await?,
+        phone: contact.as_ref().map(|c| c.0.clone()),
+        country: contact.map(|c| c.1),
         email: access.email.clone(),
         is_admin: access.is_admin(),
         plans: access.plans.clone(),
@@ -262,6 +269,20 @@ async fn set_avatar(
         validate_avatar(a).map_err(|m| ApiError::BadRequest(m.into()))?;
     }
     db::set_avatar(&state.db, user_id, req.avatar.as_deref()).await?;
+    let (profile, _) = build_profile(&state.db, user_id).await?;
+    Ok(Json(profile))
+}
+
+async fn set_contact(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(req): Json<ContactRequest>,
+) -> ApiResult<Json<Profile>> {
+    let user_id = require_user(&state, &headers).await?;
+    let phone = codesprout_core::phone::normalize(&req.country, &req.phone)
+        .map_err(|m| ApiError::BadRequest(m.into()))?;
+    let country = req.country.trim().to_uppercase();
+    crate::store::set_contact(&state.db, user_id, &phone, &country, now()).await?;
     let (profile, _) = build_profile(&state.db, user_id).await?;
     Ok(Json(profile))
 }

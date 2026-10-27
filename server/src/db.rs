@@ -73,6 +73,14 @@ pub async fn migrate(db: &Db) -> DbResult<()> {
         false,
     )
     .await?;
+    // Columns added later: adding one that already exists fails harmlessly.
+    for sql in crate::store::UPGRADES {
+        if let Err(e) = db.execute(sql, args![]).await {
+            if !e.0.contains("duplicate column") {
+                return Err(e);
+            }
+        }
+    }
     Ok(())
 }
 

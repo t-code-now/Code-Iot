@@ -209,3 +209,19 @@ pub async fn admin_delete(token: Option<String>, user_id: i64) -> ApiResult<serd
 pub async fn admin_payments_setup(token: Option<String>) -> ApiResult<serde_json::Value> {
     get("/api/admin/payments-setup", &token).await
 }
+
+pub async fn set_contact(token: Option<String>, country: String, phone: String) -> ApiResult<Profile> {
+    put("/api/me/contact", &token, &ContactRequest { country, phone }).await
+}
+
+pub async fn admin_refund(token: Option<String>, payment_id: i64, amount_cents: i64) -> ApiResult<serde_json::Value> {
+    post("/api/admin/refund", &token, &AdminRefundRequest { payment_id, amount_cents }).await
+}
+
+pub async fn admin_cancel(token: Option<String>, payment_id: i64) -> ApiResult<serde_json::Value> {
+    post("/api/admin/cancel", &token, &AdminCancelRequest { payment_id }).await
+}
+
+pub async fn admin_settings(token: Option<String>, sales_paused: bool) -> ApiResult<serde_json::Value> {
+    post("/api/admin/settings", &token, &AdminSettingsRequest { sales_paused }).await
+}

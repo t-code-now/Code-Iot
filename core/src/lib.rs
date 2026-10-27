@@ -18,6 +18,7 @@ pub mod content;
 pub mod grading;
 pub mod i18n;
 pub mod model;
+pub mod phone;
 pub mod progress;
 pub mod shuffle;
 

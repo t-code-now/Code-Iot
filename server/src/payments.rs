@@ -62,6 +62,11 @@ pub async fn config_info() -> Json<Value> {
     Json(json!({ "enabled": config().is_some(), "monthly": PRICE_MONTHLY, "lifetime": PRICE_LIFETIME }))
 }
 
+/// Lemon Squeezy's API address (tests point this at a local fake).
+fn api_base() -> String {
+    env("LEMONSQUEEZY_API_BASE").unwrap_or_else(|| "https://api.lemonsqueezy.com/v1".into()).trim_end_matches('/').to_string()
+}
+
 fn http() -> &'static reqwest::Client {
     static CLIENT: std::sync::OnceLock<reqwest::Client> = std::sync::OnceLock::new();
     CLIENT.get_or_init(|| reqwest::Client::builder().timeout(Duration::from_secs(25)).build().expect("http client"))
@@ -75,7 +80,14 @@ pub async fn checkout(
 ) -> ApiResult<Json<CheckoutResponse>> {
     let cfg = config().ok_or_else(|| ApiError::BadRequest("Payments are not open yet".into()))?;
     let user_id = require_user(&state, &headers).await?;
+    if store::sales_paused(&state.db).await? {
+        return Err(ApiError::BadRequest("Payments are not open yet".into()));
+    }
     let course = find_course(&req.course_id).ok_or(ApiError::NotFound)?;
+    // A phone number is required so the site owner can reach the buyer.
+    let (_, country) = store::contact(&state.db, user_id)
+        .await?
+        .ok_or_else(|| ApiError::BadRequest("Please add your phone number first".into()))?;
     let variant = match req.plan.as_str() {
         "monthly" => &cfg.variant_monthly,
         "lifetime" => &cfg.variant_lifetime,
@@ -88,6 +100,7 @@ pub async fn checkout(
     if !email.is_empty() {
         checkout_data["email"] = json!(email);
     }
+    checkout_data["billing_address"] = json!({ "country": country });
     let body = json!({
         "data": {
             "type": "checkouts",
@@ -105,7 +118,7 @@ pub async fn checkout(
         }
     });
     let resp: Value = http()
-        .post("https://api.lemonsqueezy.com/v1/checkouts")
+        .post(format!("{}/checkouts", api_base()))
         .bearer_auth(&cfg.api_key)
         .header("Accept", "application/vnd.api+json")
         .header("Content-Type", "application/vnd.api+json")
@@ -150,6 +163,11 @@ pub fn parse_time(s: &str) -> Option<i64> {
     Some(days * 86_400 + hh * 3600 + mm * 60 + ss)
 }
 
+/// An amount in cents (Lemon Squeezy sends integers; tolerate decimals).
+fn cents(v: &Value) -> i64 {
+    v.as_i64().or_else(|| v.as_f64().map(|f| f.round() as i64)).or_else(|| v.as_str().and_then(|s| s.parse().ok())).unwrap_or(0)
+}
+
 fn text(v: &Value) -> String {
     match v {
         Value::String(s) => s.clone(),
@@ -180,11 +198,16 @@ pub fn payment_from_event(cfg_monthly: &str, cfg_lifetime: &str, event: &Value, 
     let custom = &meta["custom_data"];
     let user_id = text(&custom["user_id"]).parse::<i64>().ok();
     let course_id = text(&custom["course_id"]);
-    let test_mode = meta["test_mode"].as_bool().unwrap_or(false);
     let data = &event["data"];
     let kind = data["type"].as_str().unwrap_or("");
     let id = text(&data["id"]);
     let a = &data["attributes"];
+    // Lemon Squeezy marks test purchases on the object (some payloads also in meta).
+    let test_mode = a["test_mode"].as_bool().or_else(|| meta["test_mode"].as_bool()).unwrap_or(false);
+    let raw = {
+        let s = event.to_string();
+        if s.len() > 20_000 { s.chars().take(20_000).collect() } else { s }
+    };
     let created = a["created_at"].as_str().and_then(parse_time).unwrap_or(t);
     let base = Payment {
         provider: PROVIDER.into(),
@@ -195,26 +218,30 @@ pub fn payment_from_event(cfg_monthly: &str, cfg_lifetime: &str, event: &Value, 
         test_mode,
         created_at: created,
         updated_at: t,
+        customer_name: a["user_name"].as_str().unwrap_or("").to_string(),
+        refunded_cents: cents(&a["refunded_amount"]),
+        raw,
         ..Default::default()
     };
     match (name, kind) {
         ("order_created" | "order_refunded", "orders") => {
             let variant = text(&a["first_order_item"]["variant_id"]);
-            if variant == cfg_monthly {
-                return None; // the subscription events cover monthly plans
+            if variant != cfg_lifetime {
+                // Monthly plans are covered by the subscription events; other
+                // products of the store don't open courses.
+                return None;
             }
-            let _ = cfg_lifetime;
             Some(Payment {
                 provider_ref: format!("ord_{id}"),
                 plan: "lifetime".into(),
                 status: a["status"].as_str().unwrap_or("paid").to_string(),
-                amount_cents: a["total"].as_i64().unwrap_or(0),
+                amount_cents: cents(&a["total"]),
                 manage_url: a["urls"]["receipt"].as_str().unwrap_or("").to_string(),
                 method: "Card / PayPal".into(),
                 ..base
             })
         }
-        (n, "subscriptions") if n.starts_with("subscription_") => Some(Payment {
+        (n, "subscriptions") if n.starts_with("subscription_") && text(&a["variant_id"]) == cfg_monthly => Some(Payment {
             provider_ref: format!("sub_{id}"),
             plan: "monthly".into(),
             status: a["status"].as_str().unwrap_or("active").to_string(),
@@ -224,11 +251,11 @@ pub fn payment_from_event(cfg_monthly: &str, cfg_lifetime: &str, event: &Value, 
             method: card(a),
             ..base
         }),
-        (n, "subscription-invoices") if n.starts_with("subscription_payment") => Some(Payment {
+        (n, "subscription-invoices" | "subscription_invoices") if n.starts_with("subscription_payment") => Some(Payment {
             provider_ref: format!("inv_{id}"),
             plan: "monthly".into(),
             status: a["status"].as_str().unwrap_or("paid").to_string(),
-            amount_cents: a["total"].as_i64().unwrap_or(0),
+            amount_cents: cents(&a["total"]),
             method: card(a),
             // remember which subscription it belongs to
             manage_url: format!("sub_{}", text(&a["subscription_id"])),
@@ -322,7 +349,7 @@ mod tests {
         let sub = json!({
             "meta": { "event_name": "subscription_cancelled", "custom_data": { "user_id": 7, "course_id": "rust" } },
             "data": { "type": "subscriptions", "id": "9", "attributes": {
-                "status": "cancelled", "card_brand": "visa", "card_last_four": "4242",
+                "variant_id": 111, "status": "cancelled", "card_brand": "visa", "card_last_four": "4242",
                 "renews_at": "2024-06-01T00:00:00Z", "ends_at": "2024-06-01T00:00:00Z",
                 "urls": { "customer_portal": "https://portal" } } }
         });
@@ -334,6 +361,14 @@ mod tests {
         let monthly_order = json!({ "meta": { "event_name": "order_created" },
             "data": { "type": "orders", "id": 1, "attributes": { "first_order_item": { "variant_id": "111" } } } });
         assert!(payment_from_event("111", "222", &monthly_order, 0).is_none());
+        let other_product = json!({ "meta": { "event_name": "order_created", "custom_data": { "user_id": "7", "course_id": "python" } },
+            "data": { "type": "orders", "id": 2, "attributes": { "status": "paid", "total": 900, "first_order_item": { "variant_id": "999" } } } });
+        assert!(payment_from_event("111", "222", &other_product, 0).is_none(), "other products never open courses");
+        let refunded = json!({ "meta": { "event_name": "order_refunded", "custom_data": { "user_id": "7", "course_id": "python" } },
+            "data": { "type": "orders", "id": 55, "attributes": { "status": "partial_refund", "total": 2500, "refunded_amount": 1000,
+                "test_mode": true, "user_name": "Noa", "first_order_item": { "variant_id": 222 } } } });
+        let r = payment_from_event("111", "222", &refunded, 0).unwrap();
+        assert_eq!((r.refunded_cents, r.refundable_cents(), r.test_mode, r.customer_name.as_str()), (1000, 1500, true, "Noa"));
     }
 }
 
@@ -408,4 +443,145 @@ pub async fn setup_info(
         })
         .unwrap_or_default();
     Ok(Json(json!({ "present": present, "stores": stores, "variants": variants })))
+}
+
+// ------------------------------------------------------- admin: refunds and cancellations
+
+/// Payments being refunded or cancelled right now (blocks a double click).
+static IN_FLIGHT: std::sync::Mutex<Vec<i64>> = std::sync::Mutex::new(Vec::new());
+
+struct InFlight(i64);
+
+impl InFlight {
+    fn start(id: i64) -> Option<InFlight> {
+        let mut busy = IN_FLIGHT.lock().ok()?;
+        if busy.contains(&id) {
+            return None;
+        }
+        busy.push(id);
+        Some(InFlight(id))
+    }
+}
+
+impl Drop for InFlight {
+    fn drop(&mut self) {
+        if let Ok(mut busy) = IN_FLIGHT.lock() {
+            busy.retain(|i| *i != self.0);
+        }
+    }
+}
+
+fn dollars(cents: i64, currency: &str) -> String {
+    format!("{:.2} {currency}", cents as f64 / 100.0)
+}
+
+/// One call to the Lemon Squeezy API. Never retried: a money action must
+/// not run twice. When there is no clear answer the admin is told to check.
+async fn ls_call(cfg: &Config, method: reqwest::Method, path: &str, body: Option<Value>) -> Result<Value, String> {
+    let mut req = http()
+        .request(method, format!("{}/{path}", api_base()))
+        .bearer_auth(&cfg.api_key)
+        .header("Accept", "application/vnd.api+json")
+        .header("Content-Type", "application/vnd.api+json");
+    if let Some(b) = body {
+        req = req.body(b.to_string());
+    }
+    let resp = req.send().await.map_err(|e| {
+        format!("No clear answer from Lemon Squeezy ({e}). Check this payment in Lemon Squeezy before trying again.")
+    })?;
+    let status = resp.status();
+    let value: Value = resp.json().await.unwrap_or(Value::Null);
+    if status.is_success() {
+        Ok(value)
+    } else {
+        let detail = value["errors"][0]["detail"].as_str().or(value["errors"][0]["title"].as_str()).unwrap_or("");
+        Err(format!("Lemon Squeezy refused ({status}): {detail}"))
+    }
+}
+
+/// `POST /api/admin/refund` – refunds part or all of a charge.
+pub async fn admin_refund(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(req): Json<codesprout_core::api::AdminRefundRequest>,
+) -> ApiResult<Json<Value>> {
+    let admin = crate::admin::require_admin(&state, &headers).await?;
+    let cfg = config().ok_or_else(|| ApiError::BadRequest("Payments are not connected".into()))?;
+    let p = store::payment_by_id(&state.db, req.payment_id).await?.ok_or(ApiError::NotFound)?;
+    let (kind, id) = match p.provider_ref.split_once('_') {
+        Some(("ord", id)) => ("orders", id.to_string()),
+        Some(("inv", id)) => ("subscription-invoices", id.to_string()),
+        _ => return Err(ApiError::BadRequest("Only a charge can be refunded (cancel a subscription instead)".into())),
+    };
+    let refundable = p.refundable_cents();
+    if refundable <= 0 {
+        return Err(ApiError::BadRequest("Nothing is left to refund on this payment".into()));
+    }
+    if req.amount_cents <= 0 || req.amount_cents > refundable {
+        return Err(ApiError::BadRequest(format!(
+            "The refund must be between 0.01 and {}",
+            dollars(refundable, &p.currency)
+        )));
+    }
+    let _guard = InFlight::start(p.id)
+        .ok_or_else(|| ApiError::Conflict("This payment is already being handled".into()))?;
+    let who = admin.email.clone().unwrap_or_default();
+    let target = format!("{} ({})", p.email, p.provider_ref);
+    let body = json!({ "data": { "type": kind, "id": id, "attributes": { "amount": req.amount_cents } } });
+    let t = now();
+    match ls_call(&cfg, reqwest::Method::POST, &format!("{kind}/{id}/refund"), Some(body)).await {
+        Ok(resp) => {
+            let a = &resp["data"]["attributes"];
+            let reported = cents(&a["refunded_amount"]);
+            let refunded = if reported > 0 { reported } else { p.refunded_cents + req.amount_cents };
+            let status = a["status"]
+                .as_str()
+                .map(str::to_string)
+                .unwrap_or_else(|| if refunded >= p.amount_cents { "refunded".into() } else { "partial_refund".into() });
+            store::update_payment_state(&state.db, p.id, &status, refunded, None, t).await?;
+            store::log(&state.db, &who, "refund", &target, &format!("{} → {status}", dollars(req.amount_cents, &p.currency)), t)
+                .await?;
+            Ok(Json(json!({ "ok": true, "status": status, "refunded_cents": refunded })))
+        }
+        Err(msg) => {
+            store::log(&state.db, &who, "refund failed", &target, &format!("{}: {msg}", dollars(req.amount_cents, &p.currency)), t)
+                .await?;
+            Err(ApiError::BadRequest(msg))
+        }
+    }
+}
+
+/// `POST /api/admin/cancel` – cancels a subscription. Lemon Squeezy stops
+/// charging; the course stays open until the end of the period already paid.
+pub async fn admin_cancel(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(req): Json<codesprout_core::api::AdminCancelRequest>,
+) -> ApiResult<Json<Value>> {
+    let admin = crate::admin::require_admin(&state, &headers).await?;
+    let cfg = config().ok_or_else(|| ApiError::BadRequest("Payments are not connected".into()))?;
+    let p = store::payment_by_id(&state.db, req.payment_id).await?.ok_or(ApiError::NotFound)?;
+    if !p.can_cancel() {
+        return Err(ApiError::BadRequest("This is not an active subscription".into()));
+    }
+    let id = p.provider_ref.trim_start_matches("sub_").to_string();
+    let _guard = InFlight::start(p.id)
+        .ok_or_else(|| ApiError::Conflict("This payment is already being handled".into()))?;
+    let who = admin.email.clone().unwrap_or_default();
+    let target = format!("{} ({})", p.email, p.provider_ref);
+    let t = now();
+    match ls_call(&cfg, reqwest::Method::DELETE, &format!("subscriptions/{id}"), None).await {
+        Ok(resp) => {
+            let a = &resp["data"]["attributes"];
+            let status = a["status"].as_str().unwrap_or("cancelled").to_string();
+            let until = a["ends_at"].as_str().and_then(parse_time);
+            store::update_payment_state(&state.db, p.id, &status, p.refunded_cents, until, t).await?;
+            store::log(&state.db, &who, "cancel subscription", &target, &status, t).await?;
+            Ok(Json(json!({ "ok": true, "status": status, "until": until })))
+        }
+        Err(msg) => {
+            store::log(&state.db, &who, "cancel failed", &target, &msg, t).await?;
+            Err(ApiError::BadRequest(msg))
+        }
+    }
 }

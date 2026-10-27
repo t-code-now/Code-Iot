@@ -62,6 +62,20 @@ pub struct Profile {
     /// Courses this account has fully opened (bought, subscribed or opened by the admin).
     #[cfg_attr(feature = "serde", serde(default))]
     pub plans: Vec<PlanDto>,
+    /// Phone left for purchases, international format ("+972501234567").
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub phone: Option<String>,
+    /// ISO country of that phone ("IL").
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub country: Option<String>,
+}
+
+/// `PUT /api/me/contact`
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct ContactRequest {
+    pub country: String,
+    pub phone: String,
 }
 
 /// A course the user can fully open.
@@ -108,6 +122,12 @@ pub struct AdminOverview {
     /// Total paid, per currency, e.g. [("USD", 12500)] in cents.
     pub revenue: Vec<(String, i64)>,
     pub banned_users: u64,
+    /// Refunded so far, per currency (cents).
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub refunded: Vec<(String, i64)>,
+    /// New purchases are paused by the admin.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub sales_paused: bool,
     /// (course id, users who started it, users with full access)
     pub courses: Vec<(String, u64, u64)>,
     pub payments_enabled: bool,
@@ -138,6 +158,10 @@ pub struct AdminUser {
     pub lessons_completed: u64,
     pub banned: bool,
     pub is_admin: bool,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub phone: String,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub country: String,
     /// Payment methods seen, e.g. "Visa •••• 4242".
     pub payment_methods: Vec<String>,
     pub total_paid_cents: i64,
@@ -163,8 +187,49 @@ pub struct AdminPayment {
     pub until: Option<i64>,
     pub test_mode: bool,
     pub created_at: i64,
-    /// Opens this payment in the payment service (refunds are done there).
+    /// Opens this payment in the payment service.
     pub dashboard_url: String,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub refunded_cents: i64,
+    /// What can still be refunded (cents); 0 when nothing can.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub refundable_cents: i64,
+    /// An active subscription that can be cancelled.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub can_cancel: bool,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub customer_name: String,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub phone: String,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub country: String,
+    /// The last event received from the payment service (JSON), for the details view.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub raw: String,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub updated_at: i64,
+}
+
+/// `POST /api/admin/refund` – amount in cents (partial or full).
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminRefundRequest {
+    pub payment_id: i64,
+    pub amount_cents: i64,
+}
+
+/// `POST /api/admin/cancel` – cancels a subscription.
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminCancelRequest {
+    pub payment_id: i64,
+}
+
+/// `POST /api/admin/settings`
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminSettingsRequest {
+    pub sales_paused: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]

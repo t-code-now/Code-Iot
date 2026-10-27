@@ -69,12 +69,21 @@ enum Tab {
     Log,
 }
 
+/// Shared between the tabs: "show this user's payments" jumps tabs.
+#[derive(Clone, Copy)]
+struct AdminNav {
+    tab: RwSignal<Tab>,
+    /// (user id, username) to filter the payments by.
+    user: RwSignal<Option<(i64, String)>>,
+}
+
 #[component]
 pub fn AdminPage() -> impl IntoView {
     let session = use_session();
     session.refresh_profile();
     let is_admin = move || session.profile.with(|p| p.as_ref().is_some_and(|p| p.is_admin));
     let tab = create_rw_signal(Tab::Overview);
+    provide_context(AdminNav { tab, user: create_rw_signal(None) });
     let courses = create_local_resource(
         move || (session.token.get(), session.lang.get()),
         |(token, lang)| async move { api::courses(token, lang).await.unwrap_or_default() },
@@ -149,6 +158,23 @@ fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
                     } else {
                         o.revenue.iter().map(|(c, v)| money(*v, c)).collect::<Vec<_>>().join(" + ")
                     };
+                    let refunded = if o.refunded.is_empty() {
+                        money(0, "USD")
+                    } else {
+                        o.refunded.iter().map(|(c, v)| money(*v, c)).collect::<Vec<_>>().join(" + ")
+                    };
+                    let paused = o.sales_paused;
+                    let toggle_sales = move |_| {
+                        let msg = if paused { t("admin.resume_confirm") } else { t("admin.pause_confirm") };
+                        if !ask(msg) {
+                            return;
+                        }
+                        let token = session.token.get_untracked();
+                        spawn_local(async move {
+                            let _ = api::admin_settings(token, !paused).await;
+                            data.refetch();
+                        });
+                    };
                     let cards = vec![
                         ("👥", o.users.to_string(), t("admin.users")),
                         ("🟢", o.active_users_7d.to_string(), t("admin.active_7d")),
@@ -158,6 +184,7 @@ fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
                         ("♾️", o.lifetime_purchases.to_string(), t("admin.lifetime")),
                         ("🔁", o.active_subscriptions.to_string(), t("admin.subs")),
                         ("💰", revenue, t("admin.revenue")),
+                        ("↩️", refunded, t("admin.refunded")),
                         ("G", o.google_users.to_string(), t("admin.google_users")),
                         ("⛔", o.banned_users.to_string(), t("admin.banned")),
                     ];
@@ -166,6 +193,15 @@ fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
                             <div class="guest-note">{t("admin.payments_off")}</div>
                             <PaymentsSetup/>
                         })}
+                        <div class="sales-switch" class:paused=paused>
+                            <div>
+                                <strong>{if paused { t("admin.sales_paused") } else { t("admin.sales_open") }}</strong>
+                                <span class="muted">{t("admin.sales_hint")}</span>
+                            </div>
+                            <button class={if paused { "btn btn-small btn-check" } else { "btn btn-small btn-danger" }} on:click=toggle_sales>
+                                {if paused { t("admin.resume") } else { t("admin.pause") }}
+                            </button>
+                        </div>
                         <div class="admin-cards">
                             {cards.into_iter().map(|(icon, value, label)| view! {
                                 <div class="admin-card">
@@ -317,6 +353,14 @@ fn user_card(
         let token = session.token.get_untracked();
         spawn_local(async move { after(api::admin_ban(token, uid, !banned).await) });
     };
+    let nav = use_context::<AdminNav>();
+    let name_for_payments = name.clone();
+    let show_payments = move |_| {
+        if let Some(nav) = nav {
+            nav.user.set(Some((uid, name_for_payments.clone())));
+            nav.tab.set(Tab::Payments);
+        }
+    };
     let name_for_delete = name.clone();
     let remove = move |_| {
         if !ask(&tf(lang, "admin.delete_confirm", &[&name_for_delete])) {
@@ -333,6 +377,7 @@ fn user_card(
                 <div class="admin-user-id">
                     <strong><bdi>{u.username.clone()}</bdi></strong>
                     <span class="muted" dir="ltr">{if u.email.is_empty() { "—".to_string() } else { u.email.clone() }}</span>
+                    {(!u.phone.is_empty()).then(|| phone_links(&u.phone, &u.country))}
                 </div>
                 <div class="admin-tags">
                     <span class="tag">{if u.sign_in == "google" { "Google" } else { t("admin.password") }}</span>
@@ -374,6 +419,7 @@ fn user_card(
             </div>
             {(!u.is_admin).then(|| view! {
                 <div class="admin-actions">
+                    <button class="btn btn-small btn-ghost" on:click=show_payments.clone()>"💳 " {t("admin.user_payments")}</button>
                     <button class="btn btn-small btn-ghost" on:click=toggle_ban>
                         {if banned { t("admin.restore") } else { t("admin.suspend") }}
                     </button>
@@ -384,52 +430,321 @@ fn user_card(
     }
 }
 
+/// Phone with country flag, plus call and WhatsApp links.
+fn phone_links(phone: &str, country: &str) -> impl IntoView {
+    let digits: String = phone.chars().filter(|c| c.is_ascii_digit()).collect();
+    view! {
+        <span class="admin-phone" dir="ltr">
+            {codesprout_core::phone::flag(country)} " "
+            <a href=format!("tel:{phone}")>{phone.to_string()}</a>
+            " · "
+            <a href=format!("https://wa.me/{digits}") target="_blank" rel="noopener">"WhatsApp"</a>
+        </span>
+    }
+}
+
+/// "12.50" → 1250 cents.
+fn parse_cents(s: &str) -> Option<i64> {
+    let s = s.trim().replace(',', ".");
+    let v: f64 = s.parse().ok()?;
+    if !v.is_finite() || v <= 0.0 {
+        return None;
+    }
+    let cents = (v * 100.0).round() as i64;
+    // Reject more than two decimals ("1.005").
+    ((cents as f64 / 100.0 - v).abs() < 1e-9).then_some(cents)
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum PayFilter {
+    All,
+    Charges,
+    Refunds,
+    Subscriptions,
+    Test,
+}
+
 #[component]
 fn PaymentsTab(courses: Vec<CourseSummary>) -> impl IntoView {
     let session = use_session();
+    let nav = use_context::<AdminNav>().expect("admin nav");
     let courses = store_value(courses);
-    let data = create_local_resource(move || session.token.get(), api::admin_payments);
+    let reload = create_rw_signal(0u32);
+    let data = create_local_resource(move || (session.token.get(), reload.get()), |(t, _)| api::admin_payments(t));
+    let filter = create_rw_signal(PayFilter::All);
+    let search = create_rw_signal(String::new());
+    let note = create_rw_signal(None::<(bool, String)>);
+
+    let matches = move |p: &AdminPayment| -> bool {
+        if let Some((uid, _)) = nav.user.get() {
+            if p.user_id != Some(uid) {
+                return false;
+            }
+        }
+        let q = search.get().trim().to_lowercase();
+        if !q.is_empty()
+            && ![&p.email, &p.username, &p.customer_name, &p.phone, &p.provider_ref]
+                .iter()
+                .any(|f| f.to_lowercase().contains(&q))
+        {
+            return false;
+        }
+        match filter.get() {
+            PayFilter::All => true,
+            PayFilter::Charges => !p.provider_ref.starts_with("sub_"),
+            PayFilter::Refunds => p.refunded_cents > 0,
+            PayFilter::Subscriptions => p.provider_ref.starts_with("sub_"),
+            PayFilter::Test => p.test_mode,
+        }
+    };
+
+    let filter_button = move |f: PayFilter, key: &'static str| {
+        view! {
+            <button class="pg-tab" class:active={move || filter.get() == f} on:click=move |_| filter.set(f)>{session.t(key)}</button>
+        }
+    };
+
     view! {
+        <p class="muted admin-count">{session.t("admin.refund_hint")}</p>
+        <div class="pay-filters">
+            {filter_button(PayFilter::All, "admin.f_all")}
+            {filter_button(PayFilter::Charges, "admin.f_charges")}
+            {filter_button(PayFilter::Refunds, "admin.f_refunds")}
+            {filter_button(PayFilter::Subscriptions, "admin.f_subs")}
+            {filter_button(PayFilter::Test, "admin.f_test")}
+        </div>
+        <div class="admin-search">
+            <input
+                type="search"
+                dir="auto"
+                placeholder=session.t("admin.pay_search_ph")
+                prop:value=move || search.get()
+                on:input=move |ev| search.set(event_target_value(&ev))
+            />
+        </div>
+        {move || nav.user.get().map(|(_, name)| view! {
+            <p class="pay-user-filter">
+                {session.t("admin.payments_of")} " " <bdi><strong>{name}</strong></bdi>
+                " " <button class="link-btn small" on:click=move |_| nav.user.set(None)>"✕ " {session.t("admin.show_all")}</button>
+            </p>
+        })}
+        {move || note.get().map(|(ok, msg)| view! { <div class={if ok { "ok-note" } else { "form-error" }}>{msg}</div> })}
         <Suspense fallback=|| view! { <Loading/> }>
             {move || data.get().map(|r| match r {
                 Err(e) => view! { <div class="form-error">{e.message}</div> }.into_view(),
-                Ok(list) if list.is_empty() => view! { <div class="empty">{session.t("admin.no_payments")}</div> }.into_view(),
                 Ok(list) => {
                     let lang = session.lang.get();
+                    let shown: Vec<AdminPayment> = list.into_iter().filter(|p| matches(p)).collect();
+                    // Totals of what is shown (real payments only).
+                    let mut gross: Vec<(String, i64)> = Vec::new();
+                    let mut back: Vec<(String, i64)> = Vec::new();
+                    let add = |v: &mut Vec<(String, i64)>, cur: &str, n: i64| {
+                        match v.iter_mut().find(|(c, _)| c == cur) {
+                            Some(e) => e.1 += n,
+                            None => v.push((cur.to_string(), n)),
+                        }
+                    };
+                    for p in shown.iter().filter(|p| !p.test_mode && !p.provider_ref.starts_with("sub_")) {
+                        if matches!(p.status.as_str(), "paid" | "partial_refund" | "refunded") {
+                            add(&mut gross, &p.currency, p.amount_cents);
+                        }
+                        if p.refunded_cents > 0 {
+                            add(&mut back, &p.currency, p.refunded_cents);
+                        }
+                    }
+                    let fmt = |v: &Vec<(String, i64)>| if v.is_empty() { money(0, "USD") } else {
+                        v.iter().map(|(c, n)| money(*n, c)).collect::<Vec<_>>().join(" + ")
+                    };
+                    let net: Vec<(String, i64)> = gross.iter().map(|(c, g)| {
+                        let r = back.iter().find(|(c2, _)| c2 == c).map_or(0, |x| x.1);
+                        (c.clone(), g - r)
+                    }).collect();
                     let t = move |k| i18n::t(lang, k);
                     view! {
-                        <p class="muted admin-count">{t("admin.refund_hint")}</p>
-                        <div class="admin-table-wrap">
-                            <table class="admin-table">
-                                <thead><tr>
-                                    <th>{t("admin.date")}</th><th>{t("admin.user")}</th><th>{t("admin.course")}</th>
-                                    <th>{t("admin.plan")}</th><th>{t("admin.status")}</th><th>{t("admin.amount")}</th>
-                                    <th>{t("admin.method")}</th><th></th>
-                                </tr></thead>
-                                <tbody>
-                                    {list.into_iter().map(|p: AdminPayment| {
-                                        let plan = if p.provider_ref.starts_with("inv_") { t("admin.invoice") }
-                                            else if p.plan == "lifetime" { t("admin.state_lifetime") } else { t("admin.state_monthly") };
-                                        view! {
-                                            <tr>
-                                                <td>{date(p.created_at, lang)}</td>
-                                                <td><bdi>{p.username.clone()}</bdi><br/><small dir="ltr">{p.email.clone()}</small></td>
-                                                <td>{courses.with_value(|cs| course_label(cs, &p.course_id))}</td>
-                                                <td>{plan}{p.until.map(|u| format!(" → {}", date(u, lang)))}</td>
-                                                <td>{p.status.clone()}{p.test_mode.then(|| view! { <span class="tag">"TEST"</span> })}</td>
-                                                <td dir="ltr">{if p.amount_cents > 0 { money(p.amount_cents, &p.currency) } else { "—".into() }}</td>
-                                                <td>{if p.method.is_empty() { "—".to_string() } else { p.method.clone() }}</td>
-                                                <td><a href=p.dashboard_url.clone() target="_blank" rel="noopener">{t("admin.open_in_ls")}</a></td>
-                                            </tr>
-                                        }
-                                    }).collect_view()}
-                                </tbody>
-                            </table>
+                        <div class="pay-totals">
+                            <span>{t("admin.count_payments")} ": " <b>{shown.len()}</b></span>
+                            <span>{t("admin.gross")} ": " <b dir="ltr">{fmt(&gross)}</b></span>
+                            <span>{t("admin.refunded")} ": " <b dir="ltr">{fmt(&back)}</b></span>
+                            <span>{t("admin.net")} ": " <b dir="ltr">{fmt(&net)}</b></span>
+                        </div>
+                        {shown.is_empty().then(|| view! { <div class="empty">{t("admin.no_payments")}</div> })}
+                        <div class="pay-list">
+                            {shown.into_iter().map(|p| {
+                                let label = courses.with_value(|cs| course_label(cs, &p.course_id));
+                                view! { <PaymentCard p=p course=label note=note reload=reload/> }
+                            }).collect_view()}
                         </div>
                     }.into_view()
                 }
             })}
         </Suspense>
+    }
+}
+
+#[component]
+fn PaymentCard(
+    p: AdminPayment,
+    course: String,
+    note: RwSignal<Option<(bool, String)>>,
+    reload: RwSignal<u32>,
+) -> impl IntoView {
+    let session = use_session();
+    let lang = session.lang.get_untracked();
+    let t = move |k| i18n::t(lang, k);
+    let open = create_rw_signal(false);
+    let busy = create_rw_signal(false);
+    let amount = create_rw_signal(format!("{:.2}", p.refundable_cents as f64 / 100.0));
+    let id = p.id;
+    let refundable = p.refundable_cents;
+    let currency = p.currency.clone();
+    let who = if p.username.is_empty() { p.email.clone() } else { format!("{} ({})", p.username, p.email) };
+    let kind = if p.provider_ref.starts_with("inv_") {
+        t("admin.invoice")
+    } else if p.provider_ref.starts_with("sub_") {
+        t("admin.subscription")
+    } else {
+        t("admin.state_lifetime")
+    };
+
+    let refund = {
+        let currency = currency.clone();
+        let who = who.clone();
+        move |_| {
+            if busy.get_untracked() {
+                return;
+            }
+            let Some(cents) = parse_cents(&amount.get_untracked()) else {
+                note.set(Some((false, t("admin.amount_invalid").to_string())));
+                return;
+            };
+            if cents > refundable {
+                note.set(Some((false, tf(lang, "admin.amount_too_high", &[&money(refundable, &currency)]))));
+                return;
+            }
+            let question = tf(lang, "admin.refund_confirm", &[&money(cents, &currency), &who]);
+            if !ask(&question) {
+                return;
+            }
+            busy.set(true);
+            note.set(None);
+            let token = session.token.get_untracked();
+            let currency = currency.clone();
+            spawn_local(async move {
+                let r = api::admin_refund(token, id, cents).await;
+                busy.set(false);
+                match r {
+                    Ok(_) => {
+                        note.set(Some((true, tf(lang, "admin.refund_done", &[&money(cents, &currency)]))));
+                        reload.update(|n| *n += 1);
+                    }
+                    Err(e) => note.set(Some((false, e.message))),
+                }
+            });
+        }
+    };
+    let cancel = {
+        let who = who.clone();
+        move |_| {
+            if busy.get_untracked() || !ask(&tf(lang, "admin.cancel_confirm", &[&who])) {
+                return;
+            }
+            busy.set(true);
+            note.set(None);
+            let token = session.token.get_untracked();
+            spawn_local(async move {
+                let r = api::admin_cancel(token, id).await;
+                busy.set(false);
+                match r {
+                    Ok(_) => {
+                        note.set(Some((true, t("admin.cancel_done").to_string())));
+                        reload.update(|n| *n += 1);
+                    }
+                    Err(e) => note.set(Some((false, e.message))),
+                }
+            });
+        }
+    };
+
+    let raw_pretty = serde_json::from_str::<serde_json::Value>(&p.raw)
+        .ok()
+        .and_then(|v| serde_json::to_string_pretty(&v).ok())
+        .unwrap_or_default();
+    let details: Vec<(&'static str, String)> = vec![
+        ("admin.d_ref", p.provider_ref.clone()),
+        ("admin.d_customer", p.customer_name.clone()),
+        ("admin.d_email", p.email.clone()),
+        ("admin.d_phone", p.phone.clone()),
+        ("admin.d_country", p.country.clone()),
+        ("admin.d_user", p.user_id.map(|u| u.to_string()).unwrap_or_default()),
+        ("admin.d_amount", money(p.amount_cents, &p.currency)),
+        ("admin.d_refunded", money(p.refunded_cents, &p.currency)),
+        ("admin.d_refundable", money(p.refundable_cents, &p.currency)),
+        ("admin.d_until", p.until.map(|u| date(u, lang)).unwrap_or_default()),
+        ("admin.d_created", date(p.created_at, lang)),
+        ("admin.d_updated", date(p.updated_at, lang)),
+        ("admin.d_test", if p.test_mode { "TEST".into() } else { "LIVE".into() }),
+    ];
+
+    view! {
+        <div class="pay-card" class:test=p.test_mode>
+            <div class="pay-head">
+                <div class="pay-who">
+                    <strong><bdi>{if p.username.is_empty() { "—".to_string() } else { p.username.clone() }}</bdi></strong>
+                    <span class="muted" dir="ltr">{p.email.clone()}</span>
+                    {(!p.phone.is_empty()).then(|| phone_links(&p.phone, &p.country))}
+                </div>
+                <div class="pay-amount" dir="ltr">
+                    {if p.amount_cents > 0 { money(p.amount_cents, &p.currency) } else { "—".into() }}
+                    {(p.refunded_cents > 0).then(|| view! { <small>"−" {money(p.refunded_cents, &p.currency)}</small> })}
+                </div>
+            </div>
+            <div class="pay-meta">
+                <span>{date(p.created_at, lang)}</span>
+                <span>{course}</span>
+                <span>{kind}</span>
+                <span class=format!("tag status-{}", p.status)>{p.status.clone()}</span>
+                {p.test_mode.then(|| view! { <span class="tag">"TEST"</span> })}
+                {(!p.method.is_empty()).then(|| view! { <span>{p.method.clone()}</span> })}
+                {p.until.map(|u| view! { <span>{t("admin.d_until")} ": " {date(u, lang)}</span> })}
+            </div>
+            <div class="pay-actions">
+                <button class="btn btn-small btn-ghost" on:click=move |_| open.update(|o| *o = !*o)>
+                    {move || if open.get() { t("admin.hide_details") } else { t("admin.details") }}
+                </button>
+                {p.can_cancel.then(|| view! {
+                    <button class="btn btn-small btn-danger" disabled=move || busy.get() on:click=cancel.clone()>{t("admin.cancel_sub")}</button>
+                })}
+                <a class="btn btn-small btn-ghost" href=p.dashboard_url.clone() target="_blank" rel="noopener">{t("admin.open_in_ls")}</a>
+            </div>
+            {(refundable > 0).then(|| view! {
+                <div class="refund-box">
+                    <label>
+                        <span>{t("admin.refund_amount")} " (" {currency.clone()} ")"</span>
+                        <input type="text" inputmode="decimal" dir="ltr"
+                            prop:value=move || amount.get()
+                            on:input=move |ev| amount.set(event_target_value(&ev))/>
+                    </label>
+                    <span class="muted">{tf(lang, "admin.max_refund", &[&money(refundable, &currency)])}</span>
+                    <button class="btn btn-small btn-ghost" on:click=move |_| amount.set(format!("{:.2}", refundable as f64 / 100.0))>
+                        {t("admin.full_refund")}
+                    </button>
+                    <button class="btn btn-small btn-check" disabled=move || busy.get() on:click=refund.clone()>
+                        {move || if busy.get() { t("auth.wait") } else { t("admin.refund") }}
+                    </button>
+                </div>
+            })}
+            {move || open.get().then(|| view! {
+                <div class="pay-details">
+                    <dl>
+                        {details.iter().map(|(k, v)| view! { <dt>{t(*k)}</dt><dd dir="auto">{if v.is_empty() { "—".to_string() } else { v.clone() }}</dd> }).collect_view()}
+                    </dl>
+                    {(!raw_pretty.is_empty()).then(|| view! {
+                        <p class="muted">{t("admin.raw")}</p>
+                        <pre class="pay-raw" dir="ltr">{raw_pretty.clone()}</pre>
+                    })}
+                </div>
+            })}
+        </div>
     }
 }
 
