@@ -115,12 +115,18 @@ pub async fn course(id: String, token: Option<String>, lang: Lang) -> ApiResult<
     get(&format!("/api/courses/{id}?lang={}", lang.code()), &token).await
 }
 
-pub async fn lesson(id: String, lang: Lang) -> ApiResult<LessonDto> {
-    get(&format!("/api/lessons/{id}?lang={}", lang.code()), &None).await
+pub async fn lesson(id: String, token: Option<String>, lang: Lang) -> ApiResult<LessonDto> {
+    get(&format!("/api/lessons/{id}?lang={}", lang.code()), &token).await
 }
 
-pub async fn check(lesson_id: String, step: usize, answer: Answer, lang: Lang) -> ApiResult<CheckResponse> {
-    post(&format!("/api/lessons/{lesson_id}/check?lang={}", lang.code()), &None, &CheckRequest { step, answer }).await
+pub async fn check(
+    lesson_id: String,
+    token: Option<String>,
+    step: usize,
+    answer: Answer,
+    lang: Lang,
+) -> ApiResult<CheckResponse> {
+    post(&format!("/api/lessons/{lesson_id}/check?lang={}", lang.code()), &token, &CheckRequest { step, answer }).await
 }
 
 pub async fn complete(lesson_id: String, token: Option<String>, correct: u32) -> ApiResult<CompleteResponse> {
@@ -156,4 +162,46 @@ struct RunBody<'a> {
 
 pub async fn run(language: String, code: String, stdin: String) -> ApiResult<RunResult> {
     post("/api/run", &None, &RunBody { language: &language, code: &code, stdin: &stdin }).await
+}
+
+// ---------------------------------------------------------------- payments
+
+/// `{"enabled": bool, "monthly": "$5", "lifetime": "$25"}`
+pub async fn payments_config() -> ApiResult<serde_json::Value> {
+    get("/api/payments/config", &None).await
+}
+
+pub async fn checkout(token: Option<String>, course_id: String, plan: &str) -> ApiResult<CheckoutResponse> {
+    post("/api/payments/checkout", &token, &CheckoutRequest { course_id, plan: plan.to_string() }).await
+}
+
+// ---------------------------------------------------------------- admin
+
+pub async fn admin_overview(token: Option<String>) -> ApiResult<AdminOverview> {
+    get("/api/admin/overview", &token).await
+}
+
+pub async fn admin_users(token: Option<String>, q: String) -> ApiResult<Vec<AdminUser>> {
+    let q = String::from(js_sys::encode_uri_component(&q));
+    get(&format!("/api/admin/users?q={q}"), &token).await
+}
+
+pub async fn admin_payments(token: Option<String>) -> ApiResult<Vec<AdminPayment>> {
+    get("/api/admin/payments", &token).await
+}
+
+pub async fn admin_log(token: Option<String>) -> ApiResult<Vec<AdminLogEntry>> {
+    get("/api/admin/log", &token).await
+}
+
+pub async fn admin_access(token: Option<String>, user_id: i64, course_id: String, mode: &str) -> ApiResult<serde_json::Value> {
+    post("/api/admin/access", &token, &AdminAccessRequest { user_id, course_id, mode: mode.to_string() }).await
+}
+
+pub async fn admin_ban(token: Option<String>, user_id: i64, banned: bool) -> ApiResult<serde_json::Value> {
+    post("/api/admin/ban", &token, &AdminBanRequest { user_id, banned }).await
+}
+
+pub async fn admin_delete(token: Option<String>, user_id: i64) -> ApiResult<serde_json::Value> {
+    post("/api/admin/delete", &token, &AdminDeleteRequest { user_id }).await
 }

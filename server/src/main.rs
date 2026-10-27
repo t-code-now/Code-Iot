@@ -15,6 +15,10 @@ mod error;
 mod google;
 mod routes;
 mod sql;
+mod store;
+mod access;
+mod payments;
+mod admin;
 mod run;
 mod sketch;
 

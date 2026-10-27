@@ -47,7 +47,7 @@ pub fn Courses() -> impl IntoView {
                                     >
                                         <div class="course-icon">{c.icon}</div>
                                         <div class="course-info">
-                                            <h3>{c.title}</h3>
+                                            <h3>{c.title} {c.unlocked.then(|| view! { <span class="tag gold">"🔓"</span> })}</h3>
                                             <p>{c.description}</p>
                                             <div class="bar small">
                                                 <div class="bar-fill" style=format!("width:{percent}%")></div>

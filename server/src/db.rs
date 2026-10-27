@@ -68,7 +68,11 @@ pub async fn migrate(db: &Db) -> DbResult<()> {
     if let Db::Local(_) = db {
         db.execute("PRAGMA foreign_keys = ON", args![]).await?;
     }
-    db.run(SCHEMA.iter().map(|s| Stmt::new(*s, args![])).collect(), false).await?;
+    db.run(
+        SCHEMA.iter().chain(crate::store::SCHEMA).map(|s| Stmt::new(*s, args![])).collect(),
+        false,
+    )
+    .await?;
     Ok(())
 }
 
@@ -148,7 +152,11 @@ pub async fn create_session(db: &Db, token: &str, user_id: i64, now: i64) -> DbR
 
 pub async fn user_for_token(db: &Db, token: &str) -> DbResult<Option<i64>> {
     Ok(db
-        .query_one("SELECT user_id FROM sessions WHERE token = ?1", args![token])
+        .query_one(
+            "SELECT s.user_id FROM sessions s WHERE s.token = ?1
+               AND NOT EXISTS (SELECT 1 FROM bans b WHERE b.user_id = s.user_id)",
+            args![token],
+        )
         .await?
         .map(|r| r[0].int()))
 }

@@ -31,6 +31,19 @@ fn tier(xp: u64) -> (&'static str, &'static str) {
     }
 }
 
+fn course_name(id: &str) -> &str {
+    match id {
+        "python" => "🐍 Python",
+        "javascript" => "⚡ JavaScript",
+        "web" => "🌐 HTML & CSS",
+        "sql" => "🗄️ SQL",
+        "rust" => "🦀 Rust",
+        "cpp" => "⚙️ C++",
+        "arduino" => "🔌 Arduino",
+        other => other,
+    }
+}
+
 fn format_date(unix_secs: i64, lang: Lang) -> String {
     let date = js_sys::Date::new(&JsValue::from_f64(unix_secs as f64 * 1000.0));
     String::from(date.to_locale_date_string(i18n::locale(lang), &JsValue::UNDEFINED))
@@ -118,6 +131,33 @@ pub fn ProfilePage() -> impl IntoView {
                                 <div class="bar"><div class="bar-fill" style=format!("width:{level_pct}%")></div></div>
                             </div>
 
+                            {p.is_admin.then(|| view! {
+                                <a href="/admin" class="btn btn-primary btn-block admin-link">"🛠 " {t("admin.title")}</a>
+                            })}
+                            {(!p.plans.is_empty()).then(|| view! {
+                                <h3 class="section-title">{t("profile.plans")}</h3>
+                                <div class="plans-list">
+                                    {p.plans.iter().map(|pl| {
+                                        let kind = match pl.kind.as_str() {
+                                            "lifetime" => t("admin.state_lifetime").to_string(),
+                                            "monthly" => match pl.until {
+                                                Some(u) => tf(lang, "profile.until", &[&format_date(u, lang)]),
+                                                None => t("admin.state_monthly").to_string(),
+                                            },
+                                            _ => t("admin.state_open").to_string(),
+                                        };
+                                        view! {
+                                            <div class="plan-row">
+                                                <strong>{course_name(&pl.course_id)}</strong>
+                                                <span class="muted">{kind}</span>
+                                                {pl.manage_url.clone().filter(|_| pl.kind == "monthly").map(|u| view! {
+                                                    <a href=u target="_blank" rel="noopener">{t("profile.manage")}</a>
+                                                })}
+                                            </div>
+                                        }
+                                    }).collect_view()}
+                                </div>
+                            })}
                             </div>
                             <div class="profile-col">
                             <h3 class="section-title">{t("profile.more")}</h3>

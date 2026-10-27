@@ -6,7 +6,7 @@ use codesprout_core::api::CourseDetail;
 use leptos::*;
 
 use crate::api;
-use crate::components::icons::{IconBolt, IconCheck, IconPlay, IconPuzzle};
+use crate::components::icons::{IconBolt, IconCheck, IconLock, IconPlay, IconPuzzle};
 use crate::components::avatar::UserAvatar;
 use crate::components::shell::StatPills;
 use crate::i18n::tf;
@@ -66,12 +66,15 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
         .or_else(|| course.sections.first().and_then(|s| s.lessons.first()))
         .map(|l| (format!("/lesson/{}", l.id), l.title.clone()));
     let course_icon = course.icon.clone();
+    let course_id = course.id.clone();
+    let unlocked = course.unlocked;
     let course_title = course.title.clone();
 
     let mut sections = Vec::new();
     let mut number = 0usize;
     for (si, section) in course.sections.into_iter().enumerate() {
         let section_done = section.lessons.iter().filter(|l| l.completed).count();
+        let section_locked = section.lessons.first().is_some_and(|l| l.locked);
         let section_total = section.lessons.len();
         let rows = section.lessons.len();
         let height = TOP + rows as i32 * ROW_H;
@@ -96,7 +99,10 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
             let (x, y) = center(COLS[i % COLS.len()], i);
             let is_current = current.as_deref() == Some(lesson.id.as_str());
             let is_project = lesson.id.ends_with("-p") || last_id.as_deref() == Some(lesson.id.as_str());
-            let face = if lesson.completed && !is_project {
+            let locked = lesson.locked;
+            let face = if locked {
+                view! { <IconLock/> }.into_view()
+            } else if lesson.completed && !is_project {
                 view! { <IconCheck/> }.into_view()
             } else if is_project {
                 view! { <IconPuzzle/> }.into_view()
@@ -107,7 +113,7 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
             };
             nodes.push(view! {
                 <a
-                    href=format!("/lesson/{}", lesson.id)
+                    href=if locked { format!("/unlock/{course_id}") } else { format!("/lesson/{}", lesson.id) }
                     class="node-wrap"
                     style=format!("left:{}px;top:{}px", x - 60, y - 36)
                     title=lesson.title.clone()
@@ -119,6 +125,7 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
                         class:done=lesson.completed
                         class:current=is_current
                         class:project=is_project
+                        class:locked=locked
                     >
                         <span class="node-face">{face}</span>
                         <span class="node-num">{number}</span>
@@ -131,7 +138,9 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
         sections.push(view! {
             <section class="unit">
                 <div class="unit-banner">
-                    <span class="unit-puzzle"><IconPuzzle/></span>
+                    <span class="unit-puzzle" class:locked=section_locked>
+                        {if section_locked { view! { <IconLock/> }.into_view() } else { view! { <IconPuzzle/> }.into_view() }}
+                    </span>
                     <div class="unit-text">
                         <div class="unit-kicker">{tf(lang, "home.section", &[&(si + 1)])}</div>
                         <h2 class="unit-title">{section.title}</h2>
@@ -199,6 +208,11 @@ fn LearningPath(course: CourseDetail) -> impl IntoView {
                         <IconPlay/><span>{session.t("home.continue")}</span>
                     </a>
                     <p class="panel-next muted">{title}</p>
+                })}
+                {(!unlocked).then(|| view! {
+                    <a href=format!("/unlock/{}", course_id.clone()) class="btn btn-outline btn-block">
+                        <IconLock/><span>{session.t("unlock.open_course")}</span>
+                    </a>
                 })}
                 <a href="/courses" class="btn btn-ghost btn-block">{session.t("home.all_courses")}</a>
             </div>

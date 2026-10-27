@@ -51,6 +51,153 @@ pub struct Profile {
     /// image as a data URL. None until the user picks one.
     #[cfg_attr(feature = "serde", serde(default))]
     pub avatar: Option<String>,
+    /// The verified Google e-mail, when the account signs in with Google.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub email: Option<String>,
+    /// Signed in with the admin Google account.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub is_admin: bool,
+    /// Courses this account has fully opened (bought, subscribed or opened by the admin).
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub plans: Vec<PlanDto>,
+}
+
+/// A course the user can fully open.
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct PlanDto {
+    pub course_id: String,
+    /// "lifetime", "monthly" or "manual".
+    pub kind: String,
+    /// Subscription end/renewal (unix seconds), if any.
+    pub until: Option<i64>,
+    /// Where the user manages a subscription or sees a receipt.
+    pub manage_url: Option<String>,
+}
+
+/// `POST /api/payments/checkout`
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct CheckoutRequest {
+    pub course_id: String,
+    /// "monthly" or "lifetime".
+    pub plan: String,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct CheckoutResponse {
+    pub url: String,
+}
+
+// ---------- admin ----------
+
+#[derive(Debug, Clone, PartialEq, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminOverview {
+    pub users: u64,
+    pub google_users: u64,
+    pub new_users_7d: u64,
+    pub active_users_7d: u64,
+    pub lessons_7d: u64,
+    pub paying_users: u64,
+    pub lifetime_purchases: u64,
+    pub active_subscriptions: u64,
+    /// Total paid, per currency, e.g. [("USD", 12500)] in cents.
+    pub revenue: Vec<(String, i64)>,
+    pub banned_users: u64,
+    /// (course id, users who started it, users with full access)
+    pub courses: Vec<(String, u64, u64)>,
+    pub payments_enabled: bool,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminCourseState {
+    pub course_id: String,
+    /// "free", "lifetime", "monthly", "open" (opened by admin) or "blocked".
+    pub state: String,
+    pub until: Option<i64>,
+    /// The admin's manual setting: "open", "block" or "" (none).
+    pub manual: String,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminUser {
+    pub id: i64,
+    pub username: String,
+    pub email: String,
+    /// "google" or "password".
+    pub sign_in: String,
+    pub joined_at: i64,
+    pub last_active_day: Option<i64>,
+    pub xp: i64,
+    pub lessons_completed: u64,
+    pub banned: bool,
+    pub is_admin: bool,
+    /// Payment methods seen, e.g. "Visa •••• 4242".
+    pub payment_methods: Vec<String>,
+    pub total_paid_cents: i64,
+    pub courses: Vec<AdminCourseState>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminPayment {
+    pub id: i64,
+    pub user_id: Option<i64>,
+    pub username: String,
+    pub email: String,
+    pub course_id: String,
+    /// "lifetime" or "monthly".
+    pub plan: String,
+    pub status: String,
+    pub amount_cents: i64,
+    pub currency: String,
+    pub method: String,
+    pub provider: String,
+    pub provider_ref: String,
+    pub until: Option<i64>,
+    pub test_mode: bool,
+    pub created_at: i64,
+    /// Opens this payment in the payment service (refunds are done there).
+    pub dashboard_url: String,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminLogEntry {
+    pub at: i64,
+    pub admin: String,
+    pub action: String,
+    pub target: String,
+    pub detail: String,
+}
+
+/// `POST /api/admin/access`
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminAccessRequest {
+    pub user_id: i64,
+    pub course_id: String,
+    /// "open", "block" or "default".
+    pub mode: String,
+}
+
+/// `POST /api/admin/ban`
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminBanRequest {
+    pub user_id: i64,
+    pub banned: bool,
+}
+
+/// `POST /api/admin/delete`
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct AdminDeleteRequest {
+    pub user_id: i64,
 }
 
 /// Body of `PUT /api/me/avatar`. None removes the picture.
@@ -100,6 +247,9 @@ pub struct CourseSummary {
     pub icon: String,
     pub lesson_count: u32,
     pub completed_count: u32,
+    /// Every topic is open for this viewer.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub unlocked: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -112,6 +262,12 @@ pub struct CourseDetail {
     pub color: String,
     pub icon: String,
     pub sections: Vec<SectionDto>,
+    /// Every topic is open for this viewer.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub unlocked: bool,
+    /// "guest", "user" or "admin".
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub viewer: String,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -130,6 +286,8 @@ pub struct LessonSummary {
     pub exercise_count: u32,
     pub completed: bool,
     pub best_correct: u32,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub locked: bool,
 }
 
 /// A lesson ready to be played. Answers are never included.

@@ -116,3 +116,12 @@ pub fn IconShield() -> impl IntoView {
         </svg>
     }
 }
+
+#[component]
+pub fn IconLock() -> impl IntoView {
+    view! {
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.5a4.5 4.5 0 0 0-4.5 4.5v3H6.5A1.5 1.5 0 0 0 5 11.5v8A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5v-8a1.5 1.5 0 0 0-1.5-1.5h-1V7A4.5 4.5 0 0 0 12 2.5zm-2.5 4.5a2.5 2.5 0 0 1 5 0v3h-5zm2.5 6.5a1.6 1.6 0 0 1 .8 3v1.6h-1.6v-1.6a1.6 1.6 0 0 1 .8-3z"/>
+        </svg>
+    }
+}

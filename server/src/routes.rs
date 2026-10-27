@@ -20,6 +20,7 @@ use codesprout_core::progress::{self, Stats};
 use codesprout_core::i18n::{self, Lang};
 use codesprout_core::{catalog, find_course, find_lesson, grading, shuffle};
 
+use crate::access::Access;
 use crate::db;
 use crate::sql::Db;
 use crate::error::{ApiError, ApiResult};
@@ -48,6 +49,16 @@ pub fn api_router(state: AppState) -> Router {
         .route("/api/lessons/:id/complete", post(complete_lesson))
         .route("/api/leaderboard", get(leaderboard))
         .route("/api/run", post(crate::run::run))
+        .route("/api/payments/config", get(crate::payments::config_info))
+        .route("/api/payments/checkout", post(crate::payments::checkout))
+        .route("/api/payments/webhook", post(crate::payments::webhook))
+        .route("/api/admin/overview", get(crate::admin::overview))
+        .route("/api/admin/users", get(crate::admin::users))
+        .route("/api/admin/payments", get(crate::admin::payments))
+        .route("/api/admin/log", get(crate::admin::log))
+        .route("/api/admin/access", post(crate::admin::set_access))
+        .route("/api/admin/ban", post(crate::admin::ban))
+        .route("/api/admin/delete", post(crate::admin::delete))
         .with_state(state)
 }
 
@@ -80,8 +91,16 @@ async fn optional_user(state: &AppState, headers: &HeaderMap) -> ApiResult<Optio
     }
 }
 
-async fn require_user(state: &AppState, headers: &HeaderMap) -> ApiResult<i64> {
+pub(crate) async fn require_user(state: &AppState, headers: &HeaderMap) -> ApiResult<i64> {
     optional_user(state, headers).await?.ok_or(ApiError::Unauthorized)
+}
+
+/// What the person making this request may open.
+pub(crate) async fn access_for(state: &AppState, headers: &HeaderMap) -> ApiResult<Access> {
+    match optional_user(state, headers).await? {
+        Some(id) => Ok(Access::for_user(&state.db, id, now()).await?),
+        None => Ok(Access::guest()),
+    }
 }
 
 fn validate(req: &AuthRequest) -> ApiResult<()> {
@@ -126,6 +145,7 @@ fn stats_for(user: &db::User, done: &HashMap<String, u32>) -> Stats {
 
 async fn build_profile(conn: &Db, user_id: i64) -> ApiResult<(Profile, Stats)> {
     let user = db::get_user(conn, user_id).await?.ok_or(ApiError::Unauthorized)?;
+    let access = Access::for_user(conn, user_id, now()).await?;
     let done = db::completions(conn, user_id).await?;
     let stats = stats_for(&user, &done);
 
@@ -150,6 +170,9 @@ async fn build_profile(conn: &Db, user_id: i64) -> ApiResult<(Profile, Stats)> {
         badges: progress::badges(&stats),
         joined_at: user.created_at,
         avatar: db::get_avatar(conn, user_id).await?,
+        email: access.email.clone(),
+        is_admin: access.is_admin(),
+        plans: access.plans.clone(),
     };
     Ok((profile, stats))
 }
@@ -157,6 +180,11 @@ async fn build_profile(conn: &Db, user_id: i64) -> ApiResult<(Profile, Stats)> {
 // ---------------------------------------------------------------- auth
 
 async fn signup(State(state): State<AppState>, Json(req): Json<AuthRequest>) -> ApiResult<Json<AuthResponse>> {
+    // New accounts sign up with Google. (Tests and self-hosting can turn
+    // password sign-up back on with ALLOW_PASSWORD_SIGNUP=1.)
+    if std::env::var("ALLOW_PASSWORD_SIGNUP").as_deref() != Ok("1") {
+        return Err(ApiError::BadRequest("Please sign up with Google".into()));
+    }
     validate(&req)?;
     let username = req.username.trim().to_string();
     let password = req.password.clone();
@@ -197,6 +225,9 @@ async fn login(State(state): State<AppState>, Json(req): Json<AuthRequest>) -> A
     .await?;
     if !ok {
         return Err(wrong());
+    }
+    if crate::store::is_banned(&state.db, user_id).await? {
+        return Err(ApiError::BadRequest("This account is suspended".into()));
     }
 
     let conn = &state.db;
@@ -261,6 +292,7 @@ async fn list_courses(
 ) -> ApiResult<Json<Vec<CourseSummary>>> {
     let lang = q.lang();
     let done = user_completions(&state, &headers).await?;
+    let access = access_for(&state, &headers).await?;
     let courses = catalog()
         .iter()
         .map(|c| CourseSummary {
@@ -272,6 +304,7 @@ async fn list_courses(
             icon: c.icon.into(),
             lesson_count: c.lesson_count() as u32,
             completed_count: c.lessons().filter(|l| done.contains_key(l.id)).count() as u32,
+            unlocked: access.unlocked(c),
         })
         .collect();
     Ok(Json(courses))
@@ -286,6 +319,7 @@ async fn get_course(
     let lang = q.lang();
     let course = find_course(&id).ok_or(ApiError::NotFound)?;
     let done = user_completions(&state, &headers).await?;
+    let access = access_for(&state, &headers).await?;
     Ok(Json(CourseDetail {
         id: course.id.into(),
         title: i18n::course_title(lang, course.id, course.title).into(),
@@ -296,7 +330,8 @@ async fn get_course(
         sections: course
             .sections
             .iter()
-            .map(|s| SectionDto {
+            .enumerate()
+            .map(|(si, s)| SectionDto {
                 id: s.id.into(),
                 title: i18n::section_title(lang, s.id, s.title).into(),
                 lessons: s
@@ -308,10 +343,13 @@ async fn get_course(
                         exercise_count: l.exercise_count() as u32,
                         completed: done.contains_key(l.id),
                         best_correct: done.get(l.id).copied().unwrap_or(0),
+                        locked: access.section_locked(course, si),
                     })
                     .collect(),
             })
             .collect(),
+        unlocked: access.unlocked(course),
+        viewer: access.viewer_name().into(),
     }))
 }
 
@@ -352,9 +390,17 @@ fn step_dto(step: &Step, lesson_id: &str, idx: usize, lang: Lang, seed: u64) -> 
     }
 }
 
-async fn get_lesson(Path(id): Path<String>, Query(q): Query<LangQuery>) -> ApiResult<Json<LessonDto>> {
+async fn get_lesson(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+    Query(q): Query<LangQuery>,
+) -> ApiResult<Json<LessonDto>> {
     let lang = q.lang();
     let (course, lesson, next) = find_lesson(&id).ok_or(ApiError::NotFound)?;
+    if access_for(&state, &headers).await?.lesson_locked(course, lesson.id) {
+        return Err(ApiError::Locked(course.id.into()));
+    }
     let base = seed();
     Ok(Json(LessonDto {
         id: lesson.id.into(),
@@ -373,12 +419,17 @@ async fn get_lesson(Path(id): Path<String>, Query(q): Query<LangQuery>) -> ApiRe
 }
 
 async fn check_answer(
+    State(state): State<AppState>,
+    headers: HeaderMap,
     Path(id): Path<String>,
     Query(q): Query<LangQuery>,
     Json(req): Json<CheckRequest>,
 ) -> ApiResult<Json<CheckResponse>> {
     let lang = q.lang();
-    let (_, lesson, _) = find_lesson(&id).ok_or(ApiError::NotFound)?;
+    let (course, lesson, _) = find_lesson(&id).ok_or(ApiError::NotFound)?;
+    if access_for(&state, &headers).await?.lesson_locked(course, lesson.id) {
+        return Err(ApiError::Locked(course.id.into()));
+    }
     let step = lesson.steps.get(req.step).ok_or(ApiError::NotFound)?;
     let verdict = grading::check(step, &req.answer)
         .ok_or_else(|| ApiError::BadRequest("This step is not an exercise".into()))?;
@@ -404,7 +455,10 @@ async fn complete_lesson(
     Json(req): Json<CompleteRequest>,
 ) -> ApiResult<Json<CompleteResponse>> {
     let user_id = require_user(&state, &headers).await?;
-    let (_, lesson, _) = find_lesson(&id).ok_or(ApiError::NotFound)?;
+    let (course, lesson, _) = find_lesson(&id).ok_or(ApiError::NotFound)?;
+    if Access::for_user(&state.db, user_id, now()).await?.lesson_locked(course, lesson.id) {
+        return Err(ApiError::Locked(course.id.into()));
+    }
     let total = lesson.exercise_count() as u32;
     let tz = req.tz_offset_minutes.clamp(-14 * 60, 14 * 60);
     let t = now();

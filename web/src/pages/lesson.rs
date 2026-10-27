@@ -20,14 +20,21 @@ const PRAISE: [&str; 5] = ["praise.0", "praise.1", "praise.2", "praise.3", "prai
 pub fn LessonPage() -> impl IntoView {
     let session = use_session();
     let params = use_params_map();
-    let key = move || (params.with(|p| p.get("id").cloned().unwrap_or_default()), session.lang.get());
-    let lesson = create_local_resource(key, |(id, lang)| api::lesson(id, lang));
+    let key = move || {
+        (params.with(|p| p.get("id").cloned().unwrap_or_default()), session.token.get(), session.lang.get())
+    };
+    let lesson = create_local_resource(key, |(id, token, lang)| api::lesson(id, token, lang));
 
     view! {
         <div class="lesson-screen">
             <Suspense fallback=|| view! { <Loading/> }>
                 {move || lesson.get().map(|r| match r {
                     Ok(l) => view! { <Player lesson=l/> }.into_view(),
+                    // A locked lesson: go to the screen that explains how to open it.
+                    Err(e) if e.status == 402 => {
+                        let course = e.message.strip_prefix("locked:").unwrap_or("").to_string();
+                        view! { <Redirect path=format!("/unlock/{course}")/> }.into_view()
+                    }
                     Err(e) => view! { <ErrorState message=e.message/> }.into_view(),
                 })}
             </Suspense>
@@ -105,7 +112,7 @@ fn Player(lesson: LessonDto) -> impl IntoView {
         let step = index.get_untracked();
         let ui = session.lang.get_untracked();
         spawn_local(async move {
-            match api::check(id, step, ans, ui).await {
+            match api::check(id, session.token.get_untracked(), step, ans, ui).await {
                 Ok(resp) => {
                     if resp.correct {
                         correct_first.update(|c| *c += 1);

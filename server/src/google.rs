@@ -143,9 +143,12 @@ async fn exchange(cfg: &Config, code: &str) -> Result<GoogleUser, String> {
         .await
         .map_err(|e| e.to_string())?;
     let sub = info["sub"].as_str().ok_or("Google didn't return an account id")?.to_string();
+    // Only a verified address is kept: it identifies the admin account.
+    let verified = info["email_verified"].as_bool().unwrap_or(false)
+        || info["email_verified"].as_str() == Some("true");
     Ok(GoogleUser {
         sub,
-        email: info["email"].as_str().unwrap_or("").to_string(),
+        email: if verified { info["email"].as_str().unwrap_or("").to_lowercase() } else { String::new() },
         name: info["given_name"].as_str().or(info["name"].as_str()).unwrap_or("").to_string(),
     })
 }
@@ -178,6 +181,8 @@ fn base_username(user: &GoogleUser) -> String {
 /// (user id, created now).
 async fn account_for(state: &AppState, user: &GoogleUser) -> ApiResult<(i64, bool)> {
     if let Some(id) = db::google_user(&state.db, &user.sub).await? {
+        // Keep the stored e-mail current (it identifies the admin).
+        db::link_google(&state.db, &user.sub, id, &user.email).await?;
         return Ok((id, false));
     }
     let base = base_username(user);
@@ -239,6 +244,9 @@ pub async fn callback(State(state): State<AppState>, Query(q): Query<CallbackQue
         let code = q.code.as_deref().ok_or("Google didn't send a sign-in code")?;
         let user = exchange(&cfg, code).await?;
         let (user_id, is_new) = account_for(&state, &user).await.map_err(|e| format!("{e:?}"))?;
+        if crate::store::is_banned(&state.db, user_id).await.map_err(|e| e.to_string())? {
+            return Err("This account is suspended.".to_string());
+        }
         let token = random_hex(32);
         db::create_session(&state.db, &token, user_id, now()).await.map_err(|e| e.to_string())?;
         Ok((token, is_new))

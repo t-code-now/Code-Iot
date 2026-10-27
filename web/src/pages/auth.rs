@@ -51,6 +51,24 @@ pub enum AuthMode {
 #[component]
 pub fn AuthPage(mode: AuthMode) -> impl IntoView {
     let session = use_session();
+    // New accounts are created with Google only.
+    if mode == AuthMode::Signup {
+        return view! {
+            <div class="auth">
+                <a href="/welcome" class="back-link">{session.t("back")}</a>
+                <img class="auth-logo" src="/assets/mascot.png" alt=""/>
+                <h1 class="auth-title">{session.t("auth.signup_title")}</h1>
+                <div class="auth-form signup-google">
+                    <p class="signup-why">{session.t("auth.signup_google")}</p>
+                    <GoogleButton/>
+                </div>
+                <p class="auth-switch">
+                    {session.t("auth.have_account")} " " <a href="/login">{session.t("auth.login")}</a>
+                </p>
+            </div>
+        }
+        .into_view();
+    }
     let navigate = use_navigate();
     let username = create_rw_signal(String::new());
     let password = create_rw_signal(String::new());
@@ -131,4 +149,5 @@ pub fn AuthPage(mode: AuthMode) -> impl IntoView {
             </p>
         </div>
     }
+    .into_view()
 }

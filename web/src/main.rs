@@ -19,6 +19,8 @@ use crate::pages::courses::Courses;
 use crate::pages::home::Home;
 use crate::pages::leaderboard::LeaderboardPage;
 use crate::pages::legal::{PrivacyPage, TermsPage};
+use crate::pages::unlock::UnlockPage;
+use crate::pages::admin::AdminPage;
 use crate::pages::lesson::LessonPage;
 use crate::pages::playground::Playground;
 use crate::pages::profile::ProfilePage;
@@ -55,6 +57,8 @@ fn App() -> impl IntoView {
                 <Route path="/avatar" view=AvatarPage/>
                 <Route path="/auth/done" view=AuthDone/>
                 <Route path="/privacy" view=PrivacyPage/>
+                <Route path="/unlock/:course" view=UnlockPage/>
+                <Route path="/admin" view=AdminPage/>
                 <Route path="/terms" view=TermsPage/>
                 <Route path="/lesson/:id" view=LessonPage/>
                 <Route path="/" view=Shell>

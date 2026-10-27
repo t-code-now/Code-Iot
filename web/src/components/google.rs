@@ -32,10 +32,10 @@ export function random_id() {
 }
 "#)]
 extern "C" {
-    fn in_app() -> bool;
-    fn open_external(url: &str) -> bool;
-    fn go_to(url: &str);
-    fn sleep(ms: u32) -> js_sys::Promise;
+    pub fn in_app() -> bool;
+    pub fn open_external(url: &str) -> bool;
+    pub fn go_to(url: &str);
+    pub fn sleep(ms: u32) -> js_sys::Promise;
     fn random_id() -> String;
 }
 

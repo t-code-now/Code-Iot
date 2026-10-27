@@ -12,6 +12,7 @@
 //! There is intentionally no locking anywhere: every course and every lesson
 //! is open from the start.
 
+pub mod access;
 pub mod api;
 pub mod content;
 pub mod grading;

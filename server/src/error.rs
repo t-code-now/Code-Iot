@@ -9,6 +9,9 @@ pub enum ApiError {
     Unauthorized,
     NotFound,
     Conflict(String),
+    /// The lesson is beyond what this viewer may open; carries the course id.
+    Locked(String),
+    Forbidden,
     Internal(String),
 }
 
@@ -21,6 +24,8 @@ impl IntoResponse for ApiError {
             ApiError::Unauthorized => (StatusCode::UNAUTHORIZED, "Please log in".to_string()),
             ApiError::NotFound => (StatusCode::NOT_FOUND, "Not found".to_string()),
             ApiError::Conflict(m) => (StatusCode::CONFLICT, m),
+            ApiError::Locked(course) => (StatusCode::PAYMENT_REQUIRED, format!("locked:{course}")),
+            ApiError::Forbidden => (StatusCode::FORBIDDEN, "Admins only".to_string()),
             ApiError::Internal(m) => {
                 tracing::error!("internal error: {m}");
                 (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong".to_string())

@@ -1,3 +1,4 @@
+pub mod admin;
 pub mod auth;
 pub mod avatar;
 pub mod courses;
@@ -7,6 +8,7 @@ pub mod legal;
 pub mod lesson;
 pub mod playground;
 pub mod profile;
+pub mod unlock;
 
 use leptos::*;
 
