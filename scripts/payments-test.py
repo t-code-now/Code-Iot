@@ -58,7 +58,7 @@ class FakeLemonSqueezy(BaseHTTPRequestHandler):
         if self.command == "POST" and len(parts) == 4 and parts[3] == "refund":
             kind, rid = parts[1], parts[2]
             amount = body["data"]["attributes"].get("amount")
-            totals = {"5001": 2500, "9001": 500}
+            totals = {"5001": 2500, "9001": 500, "5095": 2500}
             done = refunded.get(rid, 0) + amount
             if done > totals.get(rid, 0):
                 return self.reply(422, {"errors": [{"detail": "Refund exceeds the order total"}]})
@@ -294,7 +294,7 @@ def run():
     check("nothing left to refund", code == 400)
     check("repeated 'paid' message after a refund", hook(order) == 200)
     check("a late 'paid' message doesn't reopen a refunded course", call("GET", "/api/courses/python", token=tok)[1]["unlocked"] is False)
-    check("Lemon Squeezy got exactly two refund calls", sum(1 for c in calls if c["path"].endswith("/refund")) == 2)
+    check("Lemon Squeezy got exactly three refund calls", sum(1 for c in calls if c["path"].endswith("/refund")) == 3)
 
     # --- subscription: invoice refund and cancellation
     sub = {"meta": {"event_name": "subscription_created", "custom_data": {"user_id": str(buyer_id), "course_id": "rust"}},
