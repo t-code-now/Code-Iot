@@ -1010,5 +1010,5 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .bundle .muted { margin: 0; }
 .bundle .plan-card { border-color: var(--purple); }
 .setup-toggle { margin: 0 0 12px; }
-.lock-check { display: flex; align-items: center; gap: 8px; flex-basis: 100%; font-weight: 800; color: var(--text); cursor: pointer; }
+.refund-box .lock-check, .lock-check { display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 8px; flex-basis: 100%; font-weight: 800; color: var(--text); cursor: pointer; }
 .lock-check input { width: 18px; height: 18px; accent-color: var(--primary); }
