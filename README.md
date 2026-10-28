@@ -1,14 +1,15 @@
 # Code-Iot 🌱
 
-A learn-to-code app in the style of bite-sized coding apps, written entirely in Rust:
+A learn-to-code app with short lessons, a game-like learning path and a code playground, written entirely in Rust. It runs as a website (https://code-iot.onrender.com) and as an Android app.
 
-- **Backend:** axum + SQLite (accounts, progress, XP, streaks, badges, leaderboards)
-- **Frontend:** Leptos compiled to WebAssembly, mobile-first dark UI
+- **Backend:** axum + SQLite locally or Turso in production (accounts, progress, XP, streaks, badges, leaderboards, purchases)
+- **Frontend:** Leptos compiled to WebAssembly, mobile-first, with a desktop layout
 - **Core:** dependency-free crate with all course content and game logic, shared by both
+- **Android:** a Tauri v2 shell around the same web app (`app/`)
 
 **English and Hebrew (עברית).** The whole interface and all 719 lessons are available in both languages, with a full right-to-left layout for Hebrew. Switch from the welcome screen or Profile. Code always stays in English and left-to-right, as in a real editor.
 
-**Everything is open.** No locked lessons, no hearts/energy, no paywall. Every course and every lesson can be opened from the start. An account is only needed to save progress; you can also try it as a guest.
+**Free and paid content.** The first topic of every course is open to everyone; signing in with Google opens the second topic too. The rest of a course is opened by a purchase for that course ($5.99/month or $29 for a year), or every course at once ($9.99/month or $59 for a year). Payments are handled by Lemon Squeezy (merchant of record). No hearts or energy limits.
 
 ## Features
 
@@ -31,17 +32,22 @@ A learn-to-code app in the style of bite-sized coding apps, written entirely in 
 - Lesson-complete screen: XP, accuracy, streak, newly unlocked badges
 - XP and levels, daily streaks (timezone-aware), 8 badges
 - Weekly league + all-time leaderboard
-- HTML/CSS/JS playground running in a sandboxed iframe
-- Sign up / log in (Argon2 password hashing, bearer-token sessions)
+- Playground for every course language: HTML/CSS/JS and SQL run in the browser; Python, C++, Rust and Arduino (simulated) run on the server through Compiler Explorer
+- Sign in with Google (website: OAuth redirect; Android app: in-app Google sheet via Credential Manager); older password accounts can still log in
+- Profile pictures (presets, the mascot, or the camera / an upload)
+- Purchases: per-course or all-courses plans, renewal reminders, self-service cancellation page, waiting list while sales are paused
+- Admin page (one Google account): users, payments, refunds of any amount (with suggested amounts for unused time), subscription cancellation, closing access, disputes, pausing sales, activity log
 - English / Hebrew with right-to-left layout and a language switcher
 
 ## Project layout
 
 ```
 codesprout/
-├── core/     # content, grading, XP/levels/streaks/badges, API types (no deps)
-├── server/   # axum API + SQLite, serves the built frontend
-└── web/      # Leptos WASM app (Trunk), style/main.css
+├── core/     # content, grading, XP/levels/streaks/badges, access rules, API types (no deps)
+├── server/   # axum API + SQLite/Turso, payments, admin, serves the built frontend
+├── web/      # Leptos WASM app (Trunk), style/main.css
+├── app/      # Android app (Tauri v2) + its in-app Google sign-in plugin
+└── scripts/  # end-to-end tests (payments against a fake Lemon Squeezy, playground)
 ```
 
 ## Requirements
@@ -74,17 +80,26 @@ cargo run -p codesprout-server --release
 
 Server settings (environment variables):
 
-| Variable        | Default          |
+| Variable        | Default / purpose |
 |-----------------|------------------|
 | `ADDR`          | `0.0.0.0:3000`   |
-| `DATABASE_PATH` | `codesprout.db`  |
+| `DATABASE_PATH` | `codesprout.db` (local SQLite) |
+| `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` | use Turso instead of the local file |
 | `WEB_DIST`      | `web/dist`       |
+| `PUBLIC_URL`    | the site's address (Render sets `RENDER_EXTERNAL_URL`) |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google sign-in |
+| `ADMIN_EMAILS`  | Google e-mails allowed on the admin page |
+| `LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_STORE_ID`, `LEMONSQUEEZY_WEBHOOK_SECRET` | payments |
+| `LEMONSQUEEZY_VARIANT_MONTHLY`, `LEMONSQUEEZY_VARIANT_YEARLY`, `LEMONSQUEEZY_VARIANT_ALL_MONTHLY`, `LEMONSQUEEZY_VARIANT_ALL_YEARLY` | the four products |
+
+Secrets are set in the hosting dashboard, never in the repository.
 
 ## Tests
 
 ```bash
 cargo test -p codesprout-core     # content validity, grading, XP, streaks, badges, shuffle
-cargo test -p codesprout-server   # database layer
+cargo test -p codesprout-server   # database, access, payments logic
+python3 scripts/payments-test.py  # end-to-end purchases, refunds, cancellations (see .github/workflows/build.yml)
 ```
 
 ## API
@@ -101,6 +116,14 @@ cargo test -p codesprout-server   # database layer
 | POST   | `/api/lessons/:id/check`      |          | Check one answer                  |
 | POST   | `/api/lessons/:id/complete`   | required | Save completion, award XP         |
 | GET    | `/api/leaderboard?scope=weekly\|all_time` | optional | Rankings              |
+| GET    | `/api/auth/google/start`      |          | Sign in with Google (website)     |
+| POST   | `/api/auth/google/id-token`   |          | Sign in with Google (Android app) |
+| POST   | `/api/payments/checkout`      | required | Start a purchase                  |
+| POST   | `/api/payments/webhook`       | signed   | Lemon Squeezy events              |
+| GET    | `/api/me/purchases`           | required | Your purchases                    |
+| POST   | `/api/me/cancel`              | required | Cancel your subscription          |
+| GET/POST | `/api/me/waitlist`          | required | Waiting list while sales are paused |
+| *      | `/api/admin/*`                | admin    | Admin page                        |
 
 Auth uses `Authorization: Bearer <token>`. Content endpoints (`/api/courses`, `/api/courses/:id`, `/api/lessons/:id`, `/api/lessons/:id/check`) accept `?lang=he` for Hebrew; English is the default.
 
@@ -113,8 +136,8 @@ the content tests catch broken exercises (missing tiles, bad indexes, duplicate 
 
 ## Note
 
-Code-Iot is an independent project. It is not affiliated with or endorsed by Mimo,
-and uses its own name, design and course content.
+Code-Iot is an independent project with its own name, design and course content. Programming
+language names and logos belong to their owners (see the Terms page in the app).
 
 ## License
 
