@@ -7,6 +7,8 @@ pub fn run() {
     tauri::Builder::default()
         // Opens links (e.g. "Continue with Google") in the phone's browser.
         .plugin(tauri_plugin_opener::init())
+        // In-app "Sign in with Google" (no browser).
+        .plugin(tauri_plugin_google_signin::init())
         .run(tauri::generate_context!())
         .expect("failed to start Code-Iot");
 }

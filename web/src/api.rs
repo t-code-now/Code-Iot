@@ -86,6 +86,11 @@ pub async fn providers() -> ApiResult<serde_json::Value> {
     get("/api/auth/providers", &None).await
 }
 
+/// Signs in with the ID token from the Android app's in-app Google sheet.
+pub async fn google_id_token(id_token: String) -> ApiResult<serde_json::Value> {
+    post("/api/auth/google/id-token", &None, &serde_json::json!({ "id_token": id_token })).await
+}
+
 /// Has the browser sign-in with id `poll` finished?
 pub async fn google_poll(poll: &str) -> ApiResult<serde_json::Value> {
     get(&format!("/api/auth/google/poll?id={poll}"), &None).await

@@ -68,8 +68,70 @@ fn http() -> &'static reqwest::Client {
 }
 
 /// `GET /api/auth/providers` – which extra sign-in methods are available.
+/// `google_client_id` (the web client) is what the Android app asks Google's
+/// in-app sign-in for, so the ID token it gets is meant for this server.
 pub async fn providers() -> Json<Value> {
-    Json(json!({ "google": config().is_some() }))
+    let cfg = config();
+    Json(json!({ "google": cfg.is_some(), "google_client_id": cfg.map(|c| c.client_id) }))
+}
+
+/// Checks the claims of a Google ID token (as returned by Google's tokeninfo
+/// endpoint): issued by Google, for our client, not expired, e-mail verified.
+pub fn user_from_claims(info: &Value, client_id: &str, now: i64) -> Result<GoogleUser, String> {
+    let s = |k: &str| info[k].as_str().map(str::to_string).or_else(|| info[k].as_i64().map(|n| n.to_string())).unwrap_or_default();
+    if s("aud") != client_id {
+        return Err("This sign-in wasn't meant for Code-Iot".into());
+    }
+    if !matches!(s("iss").as_str(), "accounts.google.com" | "https://accounts.google.com") {
+        return Err("This sign-in didn't come from Google".into());
+    }
+    if s("exp").parse::<i64>().map_or(true, |exp| exp < now) {
+        return Err("This sign-in has expired. Please try again.".into());
+    }
+    let sub = s("sub");
+    if sub.is_empty() {
+        return Err("Google didn't return an account id".into());
+    }
+    let verified = info["email_verified"].as_bool().unwrap_or(false) || s("email_verified") == "true";
+    Ok(GoogleUser {
+        sub,
+        email: if verified { s("email").to_lowercase() } else { String::new() },
+        name: info["given_name"].as_str().or(info["name"].as_str()).unwrap_or("").to_string(),
+    })
+}
+
+#[derive(Deserialize)]
+pub struct IdTokenRequest {
+    id_token: String,
+}
+
+/// `POST /api/auth/google/id-token` `{id_token}` – the Android app's in-app
+/// "Sign in with Google": Google gives the app an ID token, the server checks
+/// it with Google and signs the person in (same accounts as the website).
+pub async fn id_token(State(state): State<AppState>, Json(req): Json<IdTokenRequest>) -> ApiResult<Json<Value>> {
+    let cfg = config().ok_or_else(|| ApiError::BadRequest("Google sign-in is not set up".into()))?;
+    if req.id_token.len() > 8000 || req.id_token.split('.').count() != 3 {
+        return Err(ApiError::BadRequest("Invalid sign-in".into()));
+    }
+    let base = std::env::var("GOOGLE_TOKENINFO_URL").unwrap_or_else(|_| "https://oauth2.googleapis.com/tokeninfo".into());
+    let resp = http()
+        .get(base)
+        .query(&[("id_token", req.id_token.as_str())])
+        .send()
+        .await
+        .map_err(|e| ApiError::BadRequest(format!("Couldn't reach Google ({e})")))?;
+    if !resp.status().is_success() {
+        return Err(ApiError::BadRequest("Google didn't accept this sign-in. Please try again.".into()));
+    }
+    let info: Value = resp.json().await.map_err(|e| ApiError::BadRequest(e.to_string()))?;
+    let user = user_from_claims(&info, &cfg.client_id, now()).map_err(ApiError::BadRequest)?;
+    let (user_id, is_new) = account_for(&state, &user).await?;
+    if crate::store::is_banned(&state.db, user_id).await? {
+        return Err(ApiError::BadRequest("This account is suspended.".into()));
+    }
+    let token = random_hex(32);
+    db::create_session(&state.db, &token, user_id, now()).await?;
+    Ok(Json(json!({ "token": token, "is_new": is_new })))
 }
 
 #[derive(Deserialize)]
@@ -106,7 +168,7 @@ pub struct CallbackQuery {
     error: Option<String>,
 }
 
-struct GoogleUser {
+pub struct GoogleUser {
     sub: String,
     email: String,
     name: String,
@@ -299,5 +361,23 @@ mod tests {
         assert_eq!(base_username(&u("", "a@b.c")), "coder");
         assert_eq!(base_username(&u("Jean-Luc Picard Enterprise", "")), "jean_luc_picar");
         assert_eq!(enc("a b&c"), "a%20b%26c");
+    }
+
+    #[test]
+    fn id_token_claims() {
+        let ok = json!({ "aud": "web-id", "iss": "https://accounts.google.com", "exp": "2000", "sub": "42",
+                         "email": "A@Gmail.com", "email_verified": "true", "given_name": "Ann" });
+        let u = user_from_claims(&ok, "web-id", 1000).unwrap();
+        assert_eq!((u.sub.as_str(), u.email.as_str(), u.name.as_str()), ("42", "a@gmail.com", "Ann"));
+        let mut other = ok.clone();
+        other["aud"] = json!("someone-else");
+        assert!(user_from_claims(&other, "web-id", 1000).is_err(), "token for another app");
+        assert!(user_from_claims(&ok, "web-id", 3000).is_err(), "expired");
+        let mut fake = ok.clone();
+        fake["iss"] = json!("evil.example");
+        assert!(user_from_claims(&fake, "web-id", 1000).is_err(), "not from Google");
+        let mut unverified = ok.clone();
+        unverified["email_verified"] = json!("false");
+        assert_eq!(user_from_claims(&unverified, "web-id", 1000).unwrap().email, "", "unverified e-mail is not kept");
     }
 }

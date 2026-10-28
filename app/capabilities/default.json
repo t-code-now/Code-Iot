@@ -5,6 +5,7 @@
   "permissions": [
     "core:default",
     "opener:default",
+    "google-signin:default",
     {
       "identifier": "opener:allow-open-url",
       "allow": [{ "url": "https://*" }]

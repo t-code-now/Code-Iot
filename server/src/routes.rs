@@ -40,6 +40,7 @@ pub fn api_router(state: AppState) -> Router {
         .route("/api/auth/google/start", get(crate::google::start))
         .route("/api/auth/google/callback", get(crate::google::callback))
         .route("/api/auth/google/poll", get(crate::google::poll))
+        .route("/api/auth/google/id-token", post(crate::google::id_token))
         .route("/api/me", get(me))
         .route("/api/me/avatar", put(set_avatar))
         .route("/api/courses", get(list_courses))

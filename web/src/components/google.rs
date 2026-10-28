@@ -1,6 +1,8 @@
 //! "Continue with Google". On the website the page goes to Google and comes
-//! back to `/auth/done`. In the Android app Google doesn't allow signing in
-//! inside the app, so the phone's browser is opened and the app waits until
+//! back to `/auth/done`. In the Android app, Google's own account sheet opens
+//! over the app (Android's Credential Manager) and the server checks the ID
+//! token it returns: no browser. If that isn't available (an older app, or
+//! no Google services), the phone's browser is used and the app waits until
 //! the server reports that the sign-in finished.
 
 use leptos::*;
@@ -24,6 +26,12 @@ export function open_external(url) {
   window.open(url, '_blank');
   return false;
 }
+export function native_google(clientId) {
+  var inv = (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke)
+    || (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke);
+  if (!inv) { return Promise.reject('unavailable'); }
+  return inv('plugin:google-signin|sign_in', { clientId: clientId }).then(function (r) { return r.idToken; });
+}
 export function go_to(url) { window.location.href = url; }
 export function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 export function random_id() {
@@ -35,6 +43,7 @@ extern "C" {
     pub fn in_app() -> bool;
     pub fn open_external(url: &str) -> bool;
     pub fn go_to(url: &str);
+    fn native_google(client_id: &str) -> js_sys::Promise;
     pub fn sleep(ms: u32) -> js_sys::Promise;
     fn random_id() -> String;
 }
@@ -55,9 +64,14 @@ pub async fn finish_sign_in(session: Session, token: String, is_new: bool) -> Re
 pub fn GoogleButton() -> impl IntoView {
     let session = use_session();
     let navigate = use_navigate();
-    let enabled = create_local_resource(|| (), |_| async {
-        api::providers().await.map(|v| v["google"].as_bool().unwrap_or(false)).unwrap_or(false)
+    // (enabled, the server's Google client id for the in-app sign-in)
+    let providers = create_local_resource(|| (), |_| async {
+        api::providers()
+            .await
+            .map(|v| (v["google"].as_bool().unwrap_or(false), v["google_client_id"].as_str().unwrap_or("").to_string()))
+            .unwrap_or((false, String::new()))
     });
+    let enabled = Signal::derive(move || providers.get().map(|(on, _)| on));
     let waiting = create_rw_signal(false);
     let error = create_rw_signal(None::<String>);
 
@@ -68,12 +82,46 @@ pub fn GoogleButton() -> impl IntoView {
             go_to(&base);
             return;
         }
-        let poll = random_id();
-        open_external(&format!("{base}?poll={poll}"));
+        let client_id = providers.get_untracked().map(|(_, id)| id).unwrap_or_default();
         waiting.set(true);
         let navigate = navigate.clone();
         let lang = session.lang.get_untracked();
         spawn_local(async move {
+            // 1. Google's sheet inside the app.
+            if !client_id.is_empty() {
+                match JsFuture::from(native_google(&client_id)).await {
+                    Ok(v) => {
+                        let id_token = v.as_string().unwrap_or_default();
+                        let result = match api::google_id_token(id_token).await {
+                            Ok(r) => finish_sign_in(
+                                session,
+                                r["token"].as_str().unwrap_or("").to_string(),
+                                r["is_new"].as_bool().unwrap_or(false),
+                            )
+                            .await,
+                            Err(e) => Err(e.message),
+                        };
+                        waiting.set(false);
+                        match result {
+                            Ok(next) => navigate(&next, Default::default()),
+                            Err(e) => error.set(Some(i18n::error(lang, &e))),
+                        }
+                        return;
+                    }
+                    Err(e) => {
+                        let msg = e.as_string().unwrap_or_default();
+                        if msg.to_lowercase().contains("cancel") {
+                            waiting.set(false);
+                            return;
+                        }
+                        // Not available here: fall back to the browser below.
+                        leptos::logging::warn!("in-app Google sign-in unavailable: {msg}");
+                    }
+                }
+            }
+            // 2. The phone's browser, while the app waits for the result.
+            let poll = random_id();
+            open_external(&format!("{base}?poll={poll}"));
             // Wait up to ~10 minutes for the browser sign-in.
             for _ in 0..300 {
                 let _ = JsFuture::from(sleep(2000)).await;
