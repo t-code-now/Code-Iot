@@ -949,7 +949,7 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .pay-amount small { display: block; font-size: 13px; color: #fda4af; font-family: var(--font); font-weight: 800; }
 .pay-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 8px 0; font-size: 13px; color: #d2d8f5; font-weight: 700; align-items: center; }
 .tag.status-paid, .tag.status-active { background: #2f8f61; }
-.tag.status-refunded, .tag.status-expired { background: var(--danger); }
+.tag.status-refunded, .tag.status-expired, .tag.status-disputed { background: var(--danger); }
 .tag.status-partial_refund, .tag.status-cancelled, .tag.status-past_due { background: #b7791f; }
 .pay-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .refund-box {
