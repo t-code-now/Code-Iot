@@ -203,6 +203,10 @@ async fn account_for(state: &AppState, user: &GoogleUser) -> ApiResult<(i64, boo
     Err(ApiError::Internal("could not pick a username".into()))
 }
 
+/// Brings the Android app back to the front after signing in in the phone's
+/// browser (an Android intent link to the app's package).
+const APP_INTENT: &str = "intent://open#Intent;package=com.tcodenow.codeiot;end";
+
 fn app_page(ok: bool, detail: &str) -> Response {
     let (title, he, en) = if ok {
         ("✅", "התחברת ל-Code-Iot! אפשר לחזור לאפליקציה.", "You're signed in to Code-Iot. You can go back to the app now.")
@@ -214,8 +218,14 @@ fn app_page(ok: bool, detail: &str) -> Response {
         "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\
          <title>Code-Iot</title><style>body{{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;\
          background:#8fb4e6;color:#1a1f3d;text-align:center}}.card{{background:#fff;border-radius:20px;padding:28px 22px;max-width:340px;\
-         box-shadow:0 8px 30px rgba(0,0,0,.15)}}.big{{font-size:52px}}p{{font-size:18px;line-height:1.5;margin:10px 0}}small{{color:#777}}</style></head>\
-         <body><div class=\"card\"><div class=\"big\">{title}</div><p dir=\"rtl\"><b>{he}</b></p><p>{en}</p><small>{detail}</small></div></body></html>"
+         box-shadow:0 8px 30px rgba(0,0,0,.15)}}.big{{font-size:52px}}p{{font-size:18px;line-height:1.5;margin:10px 0}}small{{color:#777}}\
+         .back{{display:block;margin:18px auto 6px;padding:14px 20px;border-radius:14px;background:#ffc72c;color:#1a1f3d;font-weight:800;\
+         font-size:18px;text-decoration:none;box-shadow:0 4px 0 #c48a00}}</style></head>\
+         <body><div class=\"card\"><div class=\"big\">{title}</div><p dir=\"rtl\"><b>{he}</b></p><p>{en}</p>\
+         <a class=\"back\" href=\"{back}\">חזרה לאפליקציה · Back to the app</a><small>{detail}</small></div>\
+         <script>setTimeout(function(){{location.href={back_js};}},300);</script></body></html>",
+        back = APP_INTENT,
+        back_js = format!("\"{APP_INTENT}\""),
     ))
     .into_response()
 }
