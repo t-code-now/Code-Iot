@@ -252,6 +252,8 @@ const STRINGS: &[(&str, &str, &str)] = &[
     ("cancel.s_yearly", "One year of access · until {}", "גישה לשנה · עד {}"),
     ("unlock.yearly", "Yearly", "שנתי"),
     ("bundle.name", "All courses", "כל המסלולים"),
+    ("admin.setup_show", "Payment settings (numbers for Render)", "הגדרות תשלום (מספרים ל-Render)"),
+    ("admin.setup_hide", "Hide payment settings", "הסתרת הגדרות התשלום"),
     ("bundle.title", "Or open all {} courses at once", "או לפתוח את כל {} המסלולים בבת אחת"),
     ("bundle.sub", "Every language, every topic and project — one price.", "כל השפות, כל הנושאים והפרויקטים – במחיר אחד."),
     ("bundle.monthly_note", "Cancel anytime", "אפשר לבטל בכל זמן"),

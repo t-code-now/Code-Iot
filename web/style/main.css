@@ -1009,3 +1009,4 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .bundle-title { font-family: var(--display); font-size: 19px; color: var(--text); }
 .bundle .muted { margin: 0; }
 .bundle .plan-card { border-color: var(--purple); }
+.setup-toggle { margin: 0 0 12px; }

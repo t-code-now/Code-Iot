@@ -220,6 +220,15 @@ fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
                             <div class="guest-note">{t("admin.payments_off")}</div>
                             <PaymentsSetup/>
                         })}
+                        {o.payments_enabled.then(|| {
+                            let show = create_rw_signal(false);
+                            view! {
+                                <button class="btn btn-small btn-ghost setup-toggle" on:click=move |_| show.update(|v| *v = !*v)>
+                                    {move || if show.get() { t("admin.setup_hide") } else { t("admin.setup_show") }}
+                                </button>
+                                {move || show.get().then(|| view! { <PaymentsSetup/> })}
+                            }
+                        })}
                         <div class="sales-switch" class:paused=paused>
                             <div>
                                 <strong>{if paused { t("admin.sales_paused") } else { t("admin.sales_open") }}</strong>
@@ -920,7 +929,7 @@ fn PaymentsSetup() -> impl IntoView {
                             }).collect_view()}</ul>
                         })}
                         {(!variants.is_empty()).then(|| view! {
-                            <p><b>"LEMONSQUEEZY_VARIANT_MONTHLY / LEMONSQUEEZY_VARIANT_LIFETIME"</b></p>
+                            <p><b>"Variant IDs (LEMONSQUEEZY_VARIANT_…)"</b></p>
                             <ul>{variants.iter().map(|x| {
                                 let price = x["price_cents"].as_f64().unwrap_or(0.0) / 100.0;
                                 let kind = if x["subscription"].as_bool().unwrap_or(false) {
