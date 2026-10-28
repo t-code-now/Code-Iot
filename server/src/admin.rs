@@ -210,6 +210,7 @@ pub async fn users(
 /// `GET /api/admin/payments`
 pub async fn payments(State(state): State<AppState>, headers: HeaderMap) -> ApiResult<Json<Vec<AdminPayment>>> {
     require_admin(&state, &headers).await?;
+    let t = now();
     let names: HashMap<i64, (String, String)> = store::user_rows(&state.db, "", 100_000)
         .await?
         .into_iter()
@@ -222,6 +223,15 @@ pub async fn payments(State(state): State<AppState>, headers: HeaderMap) -> ApiR
     let subs: HashMap<String, store::Payment> =
         all.iter().filter(|p| p.provider_ref.starts_with("sub_")).map(|p| (p.provider_ref.clone(), p.clone())).collect();
     let prorata = |p: &store::Payment| -> (Option<i64>, Option<(i64, i64, i64)>) {
+        // A yearly purchase after its 14 full-refund days: the unused part of its year.
+        if p.plan == "yearly" && p.provider_ref.starts_with("ord_") {
+            let Some(end) = p.until else { return (None, None) };
+            let start = end - codesprout_core::access::YEAR_SECS;
+            if t - p.created_at <= 14 * 86_400 || end <= t {
+                return (None, None);
+            }
+            return (None, store::prorata(p.amount_cents, p.refundable_cents(), start, end, t));
+        }
         if !p.provider_ref.starts_with("inv_") {
             return (p.cancelled_at, None);
         }
@@ -274,6 +284,7 @@ pub async fn payments(State(state): State<AppState>, headers: HeaderMap) -> ApiR
                 prorata_cents,
                 prorata_unused_days,
                 prorata_total_days,
+                can_lock: p.plan == "yearly" && p.until.is_some_and(|u| u > t) && matches!(p.status.as_str(), "paid" | "partial_refund"),
             }
         })
         .collect();

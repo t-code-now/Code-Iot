@@ -214,8 +214,8 @@ pub async fn set_contact(token: Option<String>, country: String, phone: String) 
     put("/api/me/contact", &token, &ContactRequest { country, phone }).await
 }
 
-pub async fn admin_refund(token: Option<String>, payment_id: i64, amount_cents: i64) -> ApiResult<serde_json::Value> {
-    post("/api/admin/refund", &token, &AdminRefundRequest { payment_id, amount_cents }).await
+pub async fn admin_refund(token: Option<String>, payment_id: i64, amount_cents: i64, lock: bool) -> ApiResult<serde_json::Value> {
+    post("/api/admin/refund", &token, &AdminRefundRequest { payment_id, amount_cents, lock }).await
 }
 
 pub async fn admin_cancel(token: Option<String>, payment_id: i64) -> ApiResult<serde_json::Value> {

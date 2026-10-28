@@ -260,6 +260,9 @@ pub struct AdminPayment {
     pub prorata_unused_days: i64,
     #[cfg_attr(feature = "serde", serde(default))]
     pub prorata_total_days: i64,
+    /// A yearly purchase still open (the refund can close it).
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub can_lock: bool,
 }
 
 /// `POST /api/admin/refund` – amount in cents (partial or full).
@@ -268,6 +271,9 @@ pub struct AdminPayment {
 pub struct AdminRefundRequest {
     pub payment_id: i64,
     pub amount_cents: i64,
+    /// Yearly purchases: close the course right after a partial refund.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub lock: bool,
 }
 
 /// `POST /api/admin/cancel` – cancels a subscription.

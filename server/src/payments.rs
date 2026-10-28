@@ -623,9 +623,14 @@ pub async fn admin_refund(
                 .as_str()
                 .map(str::to_string)
                 .unwrap_or_else(|| if refunded >= p.amount_cents { "refunded".into() } else { "partial_refund".into() });
-            store::update_payment_state(&state.db, p.id, &status, refunded, None, t).await?;
+            // A yearly purchase ends now if the admin asked to close it.
+            let lock = req.lock && p.plan == "yearly" && p.until.is_some_and(|u| u > t);
+            store::update_payment_state(&state.db, p.id, &status, refunded, lock.then_some(t), t).await?;
             store::log(&state.db, &who, "refund", &target, &format!("{} → {status}", dollars(req.amount_cents, &p.currency)), t)
                 .await?;
+            if lock {
+                store::log(&state.db, &who, "closed after refund", &target, &p.course_id, t).await?;
+            }
             Ok(Json(json!({ "ok": true, "status": status, "refunded_cents": refunded })))
         }
         Err(msg) => {

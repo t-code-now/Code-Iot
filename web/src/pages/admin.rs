@@ -691,6 +691,8 @@ fn PaymentCard(
     let open = create_rw_signal(false);
     let busy = create_rw_signal(false);
     let amount = create_rw_signal(format!("{:.2}", p.refundable_cents as f64 / 100.0));
+    let lock = create_rw_signal(false);
+    let can_lock = p.can_lock;
     let id = p.id;
     let refundable = p.refundable_cents;
     let currency = p.currency.clone();
@@ -720,7 +722,11 @@ fn PaymentCard(
                 note.set(Some((false, tf(lang, "admin.amount_too_high", &[&money(refundable, &currency)]))));
                 return;
             }
-            let question = tf(lang, "admin.refund_confirm", &[&money(cents, &currency), &who]);
+            let close = can_lock && lock.get_untracked() && cents < refundable;
+            let mut question = tf(lang, "admin.refund_confirm", &[&money(cents, &currency), &who]);
+            if close {
+                question = format!("{question}\n{}", t("admin.lock_confirm"));
+            }
             if !ask(&question) {
                 return;
             }
@@ -729,7 +735,7 @@ fn PaymentCard(
             let token = session.token.get_untracked();
             let currency = currency.clone();
             spawn_local(async move {
-                let r = api::admin_refund(token, id, cents).await;
+                let r = api::admin_refund(token, id, cents, close).await;
                 busy.set(false);
                 match r {
                     Ok(_) => {
@@ -825,12 +831,15 @@ fn PaymentCard(
             </div>
             {(p.prorata_cents > 0 && refundable > 0).then(|| {
                 let cents = p.prorata_cents;
-                let when = p.cancelled_at.map(|c| date(c, lang)).unwrap_or_default();
+                let why = match p.cancelled_at {
+                    Some(c) => tf(lang, "admin.prorata_why", &[&date(c, lang), &p.prorata_unused_days, &p.prorata_total_days]),
+                    None => tf(lang, "admin.prorata_year_why", &[&p.prorata_unused_days, &p.prorata_total_days]),
+                };
                 view! {
                     <div class="prorata">
                         <div>
                             <strong>{t("admin.prorata")} ": " <bdi dir="ltr">{money(cents, &currency)}</bdi></strong>
-                            <span class="muted">{tf(lang, "admin.prorata_why", &[&when, &p.prorata_unused_days, &p.prorata_total_days])}</span>
+                            <span class="muted">{why}</span>
                         </div>
                         <button class="btn btn-small btn-ghost" on:click=move |_| amount.set(format!("{:.2}", cents as f64 / 100.0))>
                             {t("admin.prorata_fill")}
@@ -850,6 +859,12 @@ fn PaymentCard(
                     <button class="btn btn-small btn-ghost" on:click=move |_| amount.set(format!("{:.2}", refundable as f64 / 100.0))>
                         {t("admin.full_refund")}
                     </button>
+                    {can_lock.then(|| view! {
+                        <label class="lock-check">
+                            <input type="checkbox" prop:checked=move || lock.get() on:change=move |ev| lock.set(event_target_checked(&ev))/>
+                            <span>{t("admin.lock_after")}</span>
+                        </label>
+                    })}
                     <button class="btn btn-small btn-check" disabled=move || busy.get() on:click=refund.clone()>
                         {move || if busy.get() { t("auth.wait") } else { t("admin.refund") }}
                     </button>

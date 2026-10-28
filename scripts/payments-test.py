@@ -203,6 +203,25 @@ def run():
     old["meta"]["custom_data"]["course_id"] = "sql"
     old["data"]["attributes"]["created_at"] = iso(-400)
     check("a year that ended", hook(old) == 200 and call("GET", "/api/courses/sql", token=tok)[1]["unlocked"] is False)
+    # --- unused part of a year, and closing the course after a partial refund
+    _, pays = call("GET", "/api/admin/payments", token=atok)
+    check("no unused-year suggestion in the first 14 days", next(p for p in pays if p["provider_ref"] == "ord_5001")["prorata_cents"] == 0)
+    mid = json.loads(json.dumps(order))
+    mid["data"]["id"] = "5095"
+    mid["meta"]["custom_data"]["course_id"] = "cpp"
+    mid["data"]["attributes"]["created_at"] = iso(-100)
+    hook(mid)
+    _, pays = call("GET", "/api/admin/payments", token=atok)
+    m = next(p for p in pays if p["provider_ref"] == "ord_5095")
+    expect = 2500 * 265 // 365
+    check("unused part of the year suggested after 14 days", abs(m["prorata_cents"] - expect) <= 8 and m["prorata_unused_days"] == 265
+          and m["prorata_total_days"] == 365 and m["can_lock"] is True, str((m["prorata_cents"], expect, m.get("prorata_unused_days"), m.get("can_lock"))))
+    check("cpp open before the refund", call("GET", "/api/courses/cpp", token=tok)[1]["unlocked"] is True)
+    code, body = call("POST", "/api/admin/refund", {"payment_id": m["id"], "amount_cents": m["prorata_cents"], "lock": True}, atok)
+    check("partial refund that closes the course", code == 200 and call("GET", "/api/courses/cpp", token=tok)[1]["unlocked"] is False, str((code, body)))
+    _, pays = call("GET", "/api/admin/payments", token=atok)
+    m2 = next(p for p in pays if p["provider_ref"] == "ord_5095")
+    check("closed purchase can't be closed again and offers nothing more", m2["can_lock"] is False and m2["prorata_cents"] == 0, str(m2))
     first = json.loads(json.dumps(order))
     first["data"]["id"] = "5091"
     first["meta"]["custom_data"]["course_id"] = "javascript"
@@ -351,7 +370,7 @@ def run():
           ov.get("revenue") == [["USD", 500]] and ov.get("refunded") == [["USD", 200]], str(ov))
     _, log = call("GET", "/api/admin/log", token=atok)
     actions = [e["action"] for e in log]
-    check("every money action logged", actions.count("refund") == 3 and "cancel subscription" in actions
+    check("every money action logged", actions.count("refund") == 4 and "closed after refund" in actions and "cancel subscription" in actions
           and "pause purchases" in actions, str(actions))
     check("all fake API calls used the API key", all(c["auth"] == f"Bearer {API_KEY}" for c in calls))
 
