@@ -141,7 +141,7 @@ language names and logos belong to their owners (see the Terms page in the app).
 
 ## License
 
-MIT
+Proprietary – all rights reserved. See [LICENSE](LICENSE). Viewing the code does not grant any right to copy or use it.
 
 ## Translations
 

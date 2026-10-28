@@ -3,7 +3,7 @@ name = "tauri-plugin-google-signin"
 description = "In-app \"Sign in with Google\" for Code-Iot on Android (Credential Manager)"
 version = "0.1.0"
 edition = "2021"
-license = "MIT"
+license = "LicenseRef-Proprietary"
 links = "tauri-plugin-google-signin"
 
 [dependencies]

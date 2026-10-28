@@ -3,7 +3,7 @@ name = "codesprout-app"
 description = "Android app shell for Code-Iot (Tauri)"
 version = "0.1.0"
 edition = "2021"
-license = "MIT"
+license = "LicenseRef-Proprietary"
 
 [lib]
 name = "codesprout_app_lib"
