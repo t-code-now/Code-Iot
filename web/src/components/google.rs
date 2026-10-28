@@ -82,7 +82,7 @@ pub fn GoogleButton() -> impl IntoView {
             go_to(&base);
             return;
         }
-        let client_id = providers.get_untracked().map(|(_, id)| id).unwrap_or_default();
+        let client_id = providers.get().map(|(_, id)| id).unwrap_or_default();
         waiting.set(true);
         let navigate = navigate.clone();
         let lang = session.lang.get_untracked();
