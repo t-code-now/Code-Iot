@@ -54,7 +54,7 @@ const PRIVACY_HE: Doc = Doc {
 
 const TERMS_EN: Doc = Doc {
     title: "Terms of use",
-    updated: "Last updated: October 27, 2026",
+    updated: "Last updated: October 28, 2026",
     sections: &[
         ("Using Code-Iot", "Code-Iot is an app for learning to code. Please use it respectfully: don't try to break the service, overload it or access other people's accounts."),
         ("Your account", "Keep your password to yourself. You are responsible for what happens in your account. Usernames must not be offensive or pretend to be someone else."),
@@ -62,6 +62,7 @@ const TERMS_EN: Doc = Doc {
         ("Payments", "Payments are processed by Lemon Squeezy, which is the seller (merchant of record) for every purchase; its terms also apply to the payment. You receive a receipt by e-mail. We never see your card details."),
         ("Subscriptions", "A subscription renews every month until you cancel it. You can cancel at any time: with \"Cancel a purchase\" on your Profile page (or the page /cancel), with \"Manage subscription\", or by e-mail. Charges stop immediately, and in any case no later than 3 business days after your request. The course stays open until the end of the month you already paid for, and you may ask for a refund of the unused part of that month."),
         ("Refunds", "You may cancel any purchase within 14 days of the payment and get a full refund, with no cancellation fee — use \"Ask for a refund\" on the Cancel a purchase page or e-mail us. Refunds are made to the original payment method within 14 days of your request (usually much sooner); your bank may take a few more days to show them. Later requests are handled case by case. After a full refund the paid part of the course is locked again. Nothing here limits your rights under the Consumer Protection Law."),
+        ("Content and copyright", "All content in Code-Iot – the lessons, exercises, texts, design, mascot and the app's code – belongs to Code-Iot and is protected by copyright. You may use it for your own learning only. You may not copy, distribute, sell, republish or automatically collect (scrape) it, in whole or in part, without written permission. Code you write yourself in the Playground belongs to you."),
         ("Playground code", "Code you run in the Playground must not be harmful (for example malware or attacks on other systems). Code is run by an outside service with time limits."),
         ("Content", "The lessons are provided as-is for education. We try to keep them accurate, but mistakes can happen."),
         ("Availability", "The service may change, pause or end, and features may be added or removed."),
@@ -73,7 +74,7 @@ const TERMS_EN: Doc = Doc {
 
 const TERMS_HE: Doc = Doc {
     title: "תנאי שימוש",
-    updated: "עודכן לאחרונה: 27 באוקטובר 2026",
+    updated: "עודכן לאחרונה: 28 באוקטובר 2026",
     sections: &[
         ("שימוש ב-Code-Iot", "Code-Iot היא אפליקציה ללימוד תכנות. השתמשו בה בכבוד: אל תנסו לפרוץ את השירות, להעמיס עליו או להיכנס לחשבונות של אחרים."),
         ("החשבון שלכם", "שמרו את הסיסמה לעצמכם. אתם אחראים למה שקורה בחשבון שלכם. שם המשתמש לא יכול להיות פוגעני או להתחזות למישהו אחר."),
@@ -81,6 +82,7 @@ const TERMS_HE: Doc = Doc {
         ("תשלומים", "התשלומים מעובדים על ידי Lemon Squeezy, שהיא המוכרת הרשמית (Merchant of Record) בכל רכישה, ולכן גם התנאים שלה חלים על התשלום. קבלה נשלחת במייל. אנחנו לא רואים את פרטי הכרטיס."),
         ("מנויים", "מנוי מתחדש כל חודש עד שמבטלים אותו. אפשר לבטל בכל זמן: בכפתור \"ביטול עסקה\" בעמוד הפרופיל (או בעמוד /cancel), דרך \"ניהול המנוי\", או במייל. החיובים נפסקים מיד, ובכל מקרה לא יאוחר מ-3 ימי עסקים מהבקשה. המסלול נשאר פתוח עד סוף החודש שכבר שולם, ואפשר לבקש החזר על החלק שלא נוצל מאותו חודש."),
         ("החזרים", "אפשר לבטל כל רכישה תוך 14 יום מהתשלום ולקבל החזר מלא, בלי דמי ביטול – בכפתור \"בקשת החזר\" בעמוד ביטול עסקה או במייל. ההחזר נעשה לאמצעי התשלום המקורי תוך 14 יום מהבקשה (בדרך כלל הרבה קודם); ייתכן שיעברו עוד כמה ימים עד שיופיע אצל חברת האשראי. בקשות מאוחרות יותר נבדקות לגופן. אחרי החזר מלא החלק בתשלום במסלול ננעל שוב. אין באמור כדי לגרוע מזכויותיכם לפי חוק הגנת הצרכן."),
+        ("זכויות בתוכן", "כל התוכן ב-Code-Iot – השיעורים, התרגילים, הטקסטים, העיצוב, הדמות והקוד של האפליקציה – שייך ל-Code-Iot ומוגן בזכויות יוצרים. מותר להשתמש בו ללימוד אישי בלבד. אסור להעתיק, להפיץ, למכור, לפרסם מחדש או לאסוף אותו באופן אוטומטי, כולו או חלקו, בלי אישור בכתב. הקוד שאתם כותבים בעצמכם במגרש המשחקים שייך לכם."),
         ("קוד במגרש המשחקים", "אסור להריץ במגרש המשחקים קוד מזיק (למשל נוזקה או התקפות על מערכות אחרות). הקוד רץ בשירות חיצוני עם מגבלות זמן."),
         ("התוכן", "השיעורים ניתנים כמו שהם, לצורכי לימוד. אנחנו משתדלים שיהיו מדויקים, אבל טעויות יכולות לקרות."),
         ("זמינות", "השירות יכול להשתנות, להיעצר או להסתיים, ותכונות יכולות להתווסף או להיעלם."),
