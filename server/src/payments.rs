@@ -2,7 +2,7 @@
 //! customer, handles VAT/sales tax worldwide and pays out to the seller).
 //!
 //! * `POST /api/payments/checkout` creates a checkout for one course and one
-//!   plan ($5/month subscription or $25 one-time) and returns its URL.
+//!   plan ($5.99/month subscription or $29 one-time) and returns its URL.
 //! * `POST /api/payments/webhook` receives Lemon Squeezy's events (signed
 //!   with HMAC-SHA256) and records them; access is derived from the records.
 //!
@@ -33,7 +33,7 @@ pub struct Config {
     pub api_key: String,
     pub store_id: String,
     pub variant_monthly: String,
-    /// The one-time $25 product (a year of access).
+    /// The one-time $29 product (a year of access).
     pub variant_yearly: String,
     /// "All courses" products (optional: without them the bundle isn't offered).
     pub variant_all_monthly: Option<String>,

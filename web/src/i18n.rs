@@ -202,7 +202,7 @@ const STRINGS: &[(&str, &str, &str)] = &[
     ("unlock.open_of", "{} of {} topics open", "{} מתוך {} נושאים פתוחים"),
     ("unlock.waiting", "Confirming your payment… this screen opens the course by itself.", "מאשרים את התשלום… המסך הזה יפתח את המסלול לבד."),
     ("unlock.guest", "Sign in with Google to open the second topic of every course for free and keep your progress.", "התחברו עם Google כדי לפתוח בחינם את הנושא השני בכל מסלול ולשמור את ההתקדמות."),
-    ("unlock.guest_then", "After that you can open a full course for $5 a month or $25 once.", "אחר כך אפשר לפתוח מסלול מלא ב-5$ לחודש או ב-25$ חד-פעמי."),
+    ("unlock.guest_then", "After that you can open a full course for $5.99 a month or $29 for a year.", "אחר כך אפשר לפתוח מסלול מלא ב-5.99$ לחודש או ב-29$ לשנה."),
     ("unlock.choose", "Open every topic and project of this course:", "פתחו את כל הנושאים והפרויקטים במסלול הזה:"),
     ("unlock.soon_title", "The full course opens soon", "המסלול המלא נפתח בקרוב"),
     ("unlock.soon", "Purchases aren't open yet. Meanwhile the first topics of every course are open to you.", "הרכישה עוד לא נפתחה. בינתיים הנושאים הראשונים בכל מסלול פתוחים לך."),

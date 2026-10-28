@@ -214,7 +214,7 @@ def run():
     b = next(p for p in pays if p["provider_ref"] == "ord_5092")
     # --- "all courses"
     _, cfg = call("GET", "/api/payments/config")
-    check("bundle offered with its prices", cfg.get("all") is True and cfg.get("all_monthly") == "$9.99" and cfg.get("all_yearly") == "$49" and cfg.get("courses") == 7, str(cfg))
+    check("bundle offered with its prices", cfg.get("all") is True and cfg.get("all_monthly") == "$9.99" and cfg.get("all_yearly") == "$59" and cfg.get("courses") == 7, str(cfg))
     _, fan = call("POST", "/api/auth/signup", {"username": "fan", "password": "secret123"})
     ftok, fan_id = fan["token"], fan["profile"]["id"]
     call("PUT", "/api/me/contact", {"country": "IL", "phone": "0521234567"}, ftok)

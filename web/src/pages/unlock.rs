@@ -1,6 +1,6 @@
 //! "Open this course": shown when a locked lesson is tapped.
 //! Guests are asked to sign in with Google (which opens one more topic for
-//! free); signed-in users choose $5/month or $25 once for this course only.
+//! free); signed-in users choose $5.99/month or $29 once for a year for this course only.
 //! After paying, the page waits until the payment is confirmed.
 
 use codesprout_core::phone::{flag, COUNTRIES};
@@ -291,8 +291,8 @@ pub fn UnlockPage() -> impl IntoView {
                                             if !cfg["enabled"].as_bool().unwrap_or(false) {
                                                 return view! { <Waitlist course_id=course_id()/> }.into_view();
                                             }
-                                            let monthly = cfg["monthly"].as_str().unwrap_or("$5").to_string();
-                                            let yearly = cfg["yearly"].as_str().or(cfg["lifetime"].as_str()).unwrap_or("$25").to_string();
+                                            let monthly = cfg["monthly"].as_str().unwrap_or("$5.99").to_string();
+                                            let yearly = cfg["yearly"].as_str().or(cfg["lifetime"].as_str()).unwrap_or("$29").to_string();
                                             view! {
                                                 <div class="plans">
                                                     // Renewing a running year: only another year makes sense.
@@ -314,7 +314,7 @@ pub fn UnlockPage() -> impl IntoView {
                                                 {(cfg["all"].as_bool().unwrap_or(false) && session.plan_ending(&course_id()).is_none()).then(|| {
                                                     let n = cfg["courses"].as_u64().unwrap_or(7);
                                                     let all_m = cfg["all_monthly"].as_str().unwrap_or("$9.99").to_string();
-                                                    let all_y = cfg["all_yearly"].as_str().unwrap_or("$49").to_string();
+                                                    let all_y = cfg["all_yearly"].as_str().unwrap_or("$59").to_string();
                                                     view! {
                                                         <div class="bundle">
                                                             <strong class="bundle-title">"📚 " {tf(session.lang.get_untracked(), "bundle.title", &[&n])}</strong>
