@@ -169,6 +169,9 @@ pub struct AdminOverview {
     /// New purchases are paused by the admin.
     #[cfg_attr(feature = "serde", serde(default))]
     pub sales_paused: bool,
+    /// Payments under a chargeback (all time).
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub disputes: u64,
     /// (course id, users who started it, users with full access)
     pub courses: Vec<(String, u64, u64)>,
     pub payments_enabled: bool,

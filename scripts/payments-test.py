@@ -58,7 +58,7 @@ class FakeLemonSqueezy(BaseHTTPRequestHandler):
         if self.command == "POST" and len(parts) == 4 and parts[3] == "refund":
             kind, rid = parts[1], parts[2]
             amount = body["data"]["attributes"].get("amount")
-            totals = {"5001": 2500, "9001": 500, "5095": 2500}
+            totals = {"5001": 2500, "9001": 500, "5095": 2500, "9101": 599}
             done = refunded.get(rid, 0) + amount
             if done > totals.get(rid, 0):
                 return self.reply(422, {"errors": [{"detail": "Refund exceeds the order total"}]})
@@ -373,6 +373,50 @@ def run():
     check("every money action logged", actions.count("refund") == 4 and "closed after refund" in actions and "cancel subscription" in actions
           and "pause purchases" in actions, str(actions))
     check("all fake API calls used the API key", all(c["auth"] == f"Bearer {API_KEY}" for c in calls))
+
+    # --- full refund of a monthly charge that also cancels and closes the subscription
+    sub2 = json.loads(json.dumps(sub))
+    sub2["data"]["id"] = "7101"
+    sub2["meta"]["event_name"] = "subscription_created"
+    sub2["meta"]["custom_data"]["course_id"] = "web"
+    sub2["data"]["attributes"].update({"status": "active", "renews_at": iso(25)})
+    inv2 = json.loads(json.dumps(inv))
+    inv2["data"]["id"] = "9101"
+    inv2["meta"]["custom_data"]["course_id"] = "web"
+    inv2["data"]["attributes"].update({"subscription_id": 7101, "total": 599, "test_mode": True})
+    hook(sub2); hook(inv2)
+    check("web open with a new subscription", call("GET", "/api/courses/web", token=tok)[1]["unlocked"] is True)
+    _, pays = call("GET", "/api/admin/payments", token=atok)
+    i2 = next(p for p in pays if p["provider_ref"] == "inv_9101")
+    check("a monthly charge can close its subscription", i2["can_lock"] is True, str(i2.get("can_lock")))
+    code, body = call("POST", "/api/admin/refund", {"payment_id": i2["id"], "amount_cents": 599, "lock": True}, atok)
+    check("refund + close: subscription cancelled at Lemon Squeezy", code == 200 and any(c["method"] == "DELETE" and c["path"] == "/v1/subscriptions/7101" for c in calls), str((code, body)))
+    check("refund + close: course closed at once", call("GET", "/api/courses/web", token=tok)[1]["unlocked"] is False)
+    late = json.loads(json.dumps(sub2))
+    late["meta"]["event_name"] = "subscription_updated"
+    late["data"]["attributes"].update({"status": "cancelled", "ends_at": iso(25)})
+    hook(late)
+    check("a later event can't reopen a closed subscription", call("GET", "/api/courses/web", token=tok)[1]["unlocked"] is False)
+
+    # --- a chargeback (dispute) closes the purchase
+    dord = json.loads(json.dumps(order))
+    dord["data"]["id"] = "5300"
+    dord["meta"]["custom_data"]["course_id"] = "arduino"
+    hook(dord)
+    check("arduino open before the dispute", call("GET", "/api/courses/arduino", token=tok)[1]["unlocked"] is True)
+    disp = {"meta": {"event_name": "dispute_created"}, "data": {"type": "disputes", "id": "77", "attributes": {"order_id": 5300, "status": "needs_response"}}}
+    check("dispute webhook accepted", hook(disp) == 200)
+    check("dispute closes the course", call("GET", "/api/courses/arduino", token=tok)[1]["unlocked"] is False)
+    hook(dord)
+    check("a repeated 'paid' event can't reopen a disputed purchase", call("GET", "/api/courses/arduino", token=tok)[1]["unlocked"] is False)
+    _, pays = call("GET", "/api/admin/payments", token=atok)
+    d = next(p for p in pays if p["provider_ref"] == "ord_5300")
+    check("disputed purchase marked for the admin", d["status"] == "disputed" and d["can_lock"] is False and d["prorata_cents"] == 0, str(d["status"]))
+    check("overview counts the dispute", call("GET", "/api/admin/overview", token=atok)[1].get("disputes") == 1)
+    unknown = {"meta": {"event_name": "dispute_created"}, "data": {"type": "disputes", "id": "78", "attributes": {"order_id": 999999}}}
+    check("dispute for an unknown order is logged, not an error", hook(unknown) == 200)
+    acts = [e["action"] for e in call("GET", "/api/admin/log", token=atok)[1]]
+    check("disputes logged", "dispute" in acts and "dispute (no matching payment)" in acts, str(acts[:8]))
 
 
 if __name__ == "__main__":

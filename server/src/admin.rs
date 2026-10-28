@@ -131,6 +131,7 @@ pub async fn overview(State(state): State<AppState>, headers: HeaderMap) -> ApiR
         payments_enabled: payments::config().is_some(),
         refunded,
         sales_paused: store::sales_paused(&state.db).await?,
+        disputes: all.iter().filter(|p| p.status == "disputed").count() as u64,
     }))
 }
 
@@ -223,6 +224,9 @@ pub async fn payments(State(state): State<AppState>, headers: HeaderMap) -> ApiR
     let subs: HashMap<String, store::Payment> =
         all.iter().filter(|p| p.provider_ref.starts_with("sub_")).map(|p| (p.provider_ref.clone(), p.clone())).collect();
     let prorata = |p: &store::Payment| -> (Option<i64>, Option<(i64, i64, i64)>) {
+        if p.closed_at.is_some() || p.status == "disputed" {
+            return (p.cancelled_at, None);
+        }
         // A yearly purchase after its 14 full-refund days: the unused part of its year.
         if p.plan == "yearly" && p.provider_ref.starts_with("ord_") {
             let Some(end) = p.until else { return (None, None) };
@@ -284,7 +288,14 @@ pub async fn payments(State(state): State<AppState>, headers: HeaderMap) -> ApiR
                 prorata_cents,
                 prorata_unused_days,
                 prorata_total_days,
-                can_lock: p.plan == "yearly" && p.until.is_some_and(|u| u > t) && matches!(p.status.as_str(), "paid" | "partial_refund"),
+                // Can the refund also close access? A yearly purchase still open, or
+                // a monthly charge whose subscription still opens the course.
+                can_lock: matches!(p.status.as_str(), "paid" | "partial_refund")
+                    && if p.provider_ref.starts_with("inv_") {
+                        subs.get(&p.manage_url).is_some_and(|s| s.active(t))
+                    } else {
+                        p.plan == "yearly" && p.active(t)
+                    },
             }
         })
         .collect();

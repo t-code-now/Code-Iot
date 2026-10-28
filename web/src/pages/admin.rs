@@ -45,6 +45,7 @@ fn status_label(lang: crate::i18n::Lang, status: &str) -> String {
         "pending" => "status.pending",
         "failed" => "status.failed",
         "void" => "status.void",
+        "disputed" => "status.disputed",
         other => return other.to_string(),
     };
     i18n::t(lang, key).to_string()
@@ -216,6 +217,9 @@ fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
                         ("⛔", o.banned_users.to_string(), t("admin.banned")),
                     ];
                     view! {
+                        {(o.disputes > 0).then(|| view! {
+                            <div class="form-error"><b>"⚠️ " {t("admin.disputes")} ": " {o.disputes}</b><br/>{t("admin.disputes_note")}</div>
+                        })}
                         {(!o.payments_enabled).then(|| view! {
                             <div class="guest-note">{t("admin.payments_off")}</div>
                             <PaymentsSetup/>
@@ -693,6 +697,7 @@ fn PaymentCard(
     let amount = create_rw_signal(format!("{:.2}", p.refundable_cents as f64 / 100.0));
     let lock = create_rw_signal(false);
     let can_lock = p.can_lock;
+    let is_charge_of_sub = p.provider_ref.starts_with("inv_");
     let id = p.id;
     let refundable = p.refundable_cents;
     let currency = p.currency.clone();
@@ -722,7 +727,7 @@ fn PaymentCard(
                 note.set(Some((false, tf(lang, "admin.amount_too_high", &[&money(refundable, &currency)]))));
                 return;
             }
-            let close = can_lock && lock.get_untracked() && cents < refundable;
+            let close = can_lock && lock.get_untracked();
             let mut question = tf(lang, "admin.refund_confirm", &[&money(cents, &currency), &who]);
             if close {
                 question = format!("{question}\n{}", t("admin.lock_confirm"));
@@ -862,7 +867,7 @@ fn PaymentCard(
                     {can_lock.then(|| view! {
                         <label class="lock-check">
                             <input type="checkbox" prop:checked=move || lock.get() on:change=move |ev| lock.set(event_target_checked(&ev))/>
-                            <span>{t("admin.lock_after")}</span>
+                            <span>{t(if is_charge_of_sub { "admin.lock_after_sub" } else { "admin.lock_after" })}</span>
                         </label>
                     })}
                     <button class="btn btn-small btn-check" disabled=move || busy.get() on:click=refund.clone()>

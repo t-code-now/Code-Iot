@@ -340,6 +340,15 @@ pub async fn webhook(State(state): State<AppState>, headers: HeaderMap, body: By
         return StatusCode::UNAUTHORIZED;
     }
     let Ok(event) = serde_json::from_slice::<Value>(&body) else { return StatusCode::BAD_REQUEST };
+    if event["meta"]["event_name"].as_str().is_some_and(|n| n.starts_with("dispute_")) {
+        return match dispute(&state, &cfg, &event, &body).await {
+            Ok(()) => StatusCode::OK,
+            Err(e) => {
+                tracing::error!("saving a dispute failed: {e:?}");
+                StatusCode::INTERNAL_SERVER_ERROR
+            }
+        };
+    }
     let Some(mut p) = payment_from_event(&cfg.monthly_variants(), &cfg.yearly_variants(), &event, now()) else {
         return StatusCode::OK;
     };
@@ -623,13 +632,11 @@ pub async fn admin_refund(
                 .as_str()
                 .map(str::to_string)
                 .unwrap_or_else(|| if refunded >= p.amount_cents { "refunded".into() } else { "partial_refund".into() });
-            // A yearly purchase ends now if the admin asked to close it.
-            let lock = req.lock && p.plan == "yearly" && p.until.is_some_and(|u| u > t);
-            store::update_payment_state(&state.db, p.id, &status, refunded, lock.then_some(t), t).await?;
+            store::update_payment_state(&state.db, p.id, &status, refunded, None, t).await?;
             store::log(&state.db, &who, "refund", &target, &format!("{} → {status}", dollars(req.amount_cents, &p.currency)), t)
                 .await?;
-            if lock {
-                store::log(&state.db, &who, "closed after refund", &target, &p.course_id, t).await?;
+            if req.lock {
+                close_access(&state, &cfg, &p, &who, t).await?;
             }
             Ok(Json(json!({ "ok": true, "status": status, "refunded_cents": refunded })))
         }
@@ -639,6 +646,74 @@ pub async fn admin_refund(
             Err(ApiError::BadRequest(msg))
         }
     }
+}
+
+/// The order or invoice a dispute (chargeback) is about, as our reference.
+pub fn dispute_target(event: &Value) -> Option<String> {
+    let d = &event["data"];
+    let a = &d["attributes"];
+    let rel = |k: &str| text(&d["relationships"][k]["data"]["id"]);
+    let order = [text(&a["order_id"]), rel("order")].into_iter().find(|s| !s.is_empty() && s != "null");
+    let invoice = [text(&a["subscription_invoice_id"]), rel("subscription-invoice"), rel("subscription_invoice")]
+        .into_iter()
+        .find(|s| !s.is_empty() && s != "null");
+    invoice.map(|i| format!("inv_{i}")).or_else(|| order.map(|o| format!("ord_{o}")))
+}
+
+/// `dispute_created`: the customer asked their bank to reverse a charge. The
+/// payment stops opening anything (a monthly one also cancels its
+/// subscription) and the admin sees it. `dispute_resolved` is only logged:
+/// reopening is the admin's call.
+async fn dispute(state: &AppState, cfg: &Config, event: &Value, body: &[u8]) -> ApiResult<()> {
+    let name = event["meta"]["event_name"].as_str().unwrap_or("");
+    let t = now();
+    let detail = format!("{} {}", name, event["data"]["attributes"]["status"].as_str().unwrap_or(""));
+    let Some(target) = dispute_target(event) else {
+        store::log(&state.db, "Lemon Squeezy", "dispute (no matching payment)", &text(&event["data"]["id"]), &detail, t).await?;
+        return Ok(());
+    };
+    if name != "dispute_created" {
+        store::log(&state.db, "Lemon Squeezy", "dispute update", &target, &detail, t).await?;
+        return Ok(());
+    }
+    let raw = String::from_utf8_lossy(body).to_string();
+    match store::mark_disputed(&state.db, &target, &raw, t).await? {
+        Some(p) => {
+            store::log(&state.db, "Lemon Squeezy", "dispute", &format!("{} ({target})", p.email), &detail, t).await?;
+            if p.provider_ref.starts_with("inv_") {
+                close_access(state, cfg, &p, "Lemon Squeezy", t).await?;
+            }
+        }
+        None => store::log(&state.db, "Lemon Squeezy", "dispute (no matching payment)", &target, &detail, t).await?,
+    }
+    Ok(())
+}
+
+/// Ends what a payment opened, right now: a yearly purchase closes; for a
+/// monthly charge its subscription is cancelled at Lemon Squeezy (no more
+/// charges) and closed. Kept closed whatever events arrive later.
+async fn close_access(state: &AppState, cfg: &Config, p: &store::Payment, who: &str, t: i64) -> ApiResult<()> {
+    let target = format!("{} ({})", p.email, p.provider_ref);
+    let closing = if p.provider_ref.starts_with("inv_") {
+        store::payment_by_ref(&state.db, &p.manage_url).await?
+    } else {
+        Some(p.clone())
+    };
+    let Some(c) = closing else { return Ok(()) };
+    if c.provider_ref.starts_with("sub_") && c.can_cancel() {
+        let id = c.provider_ref.trim_start_matches("sub_");
+        match ls_call(cfg, reqwest::Method::DELETE, &format!("subscriptions/{id}"), None).await {
+            Ok(resp) => {
+                let status = resp["data"]["attributes"]["status"].as_str().unwrap_or("cancelled").to_string();
+                store::update_payment_state(&state.db, c.id, &status, c.refunded_cents, None, t).await?;
+                store::log(&state.db, who, "cancel subscription", &target, &status, t).await?;
+            }
+            Err(msg) => store::log(&state.db, who, "cancel failed", &target, &msg, t).await?,
+        }
+    }
+    store::close_payment(&state.db, c.id, t).await?;
+    store::log(&state.db, who, "closed after refund", &target, &c.course_id, t).await?;
+    Ok(())
 }
 
 /// `POST /api/admin/cancel` – cancels a subscription. Lemon Squeezy stops

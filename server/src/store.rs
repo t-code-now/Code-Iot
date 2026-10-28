@@ -71,6 +71,7 @@ pub const UPGRADES: &[&str] = &[
     "ALTER TABLE payments ADD COLUMN customer_name TEXT NOT NULL DEFAULT ''",
     "ALTER TABLE payments ADD COLUMN raw TEXT NOT NULL DEFAULT ''",
     "ALTER TABLE payments ADD COLUMN cancelled_at INTEGER",
+    "ALTER TABLE payments ADD COLUMN closed_at INTEGER",
 ];
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -98,6 +99,9 @@ pub struct Payment {
     pub raw: String,
     /// Subscriptions: when it was cancelled (cleared if it is resumed).
     pub cancelled_at: Option<i64>,
+    /// The admin closed access (after a refund) or the payment is disputed:
+    /// it no longer opens anything, whatever later events say.
+    pub closed_at: Option<i64>,
 }
 
 /// The refund for the unused part of a cancelled subscription's last paid
@@ -134,6 +138,9 @@ impl Payment {
 
     /// Does this payment open its course right now?
     pub fn active(&self, now: i64) -> bool {
+        if self.closed_at.is_some() || self.status == "disputed" {
+            return false;
+        }
         match self.plan.as_str() {
             "lifetime" => matches!(self.status.as_str(), "paid" | "partial_refund"),
             // One payment, one year: open until `until`.
@@ -148,7 +155,7 @@ impl Payment {
 }
 
 const PAYMENT_COLUMNS: &str = "id, provider, provider_ref, user_id, course_id, plan, status, amount_cents, currency, \
-     method, email, until, manage_url, test_mode, created_at, updated_at, refunded_cents, customer_name, raw, cancelled_at";
+     method, email, until, manage_url, test_mode, created_at, updated_at, refunded_cents, customer_name, raw, cancelled_at, closed_at";
 
 fn payment_from_row(r: &[Value]) -> Payment {
     Payment {
@@ -172,6 +179,7 @@ fn payment_from_row(r: &[Value]) -> Payment {
         customer_name: r[17].text(),
         raw: r[18].text(),
         cancelled_at: r[19].opt_int(),
+        closed_at: r[20].opt_int(),
     }
 }
 
@@ -188,7 +196,8 @@ pub async fn upsert_payment(db: &Db, p: &Payment) -> DbResult<()> {
             course_id = CASE WHEN excluded.course_id = '' THEN payments.course_id ELSE excluded.course_id END,
             plan = excluded.plan,
             -- a late or repeated \"paid\" message never undoes a refund
-            status = CASE WHEN payments.status IN ('refunded', 'partial_refund') AND excluded.status = 'paid'
+            status = CASE WHEN payments.status = 'disputed' THEN payments.status
+                          WHEN payments.status IN ('refunded', 'partial_refund') AND excluded.status = 'paid'
                           THEN payments.status ELSE excluded.status END,
             amount_cents = CASE WHEN excluded.amount_cents = 0 THEN payments.amount_cents ELSE excluded.amount_cents END,
             currency = excluded.currency,
@@ -255,6 +264,29 @@ pub async fn all_payments(db: &Db, limit: u32) -> DbResult<Vec<Payment>> {
 pub async fn payment_by_id(db: &Db, id: i64) -> DbResult<Option<Payment>> {
     Ok(db
         .query_one(&format!("SELECT {PAYMENT_COLUMNS} FROM payments WHERE id = ?1"), args![id])
+        .await?
+        .map(|r| payment_from_row(&r)))
+}
+
+/// Closes access for a payment (kept even if later events arrive).
+pub async fn close_payment(db: &Db, id: i64, now: i64) -> DbResult<()> {
+    db.execute("UPDATE payments SET closed_at = COALESCE(closed_at, ?2), updated_at = ?2 WHERE id = ?1", args![id, now]).await?;
+    Ok(())
+}
+
+/// Marks a payment as disputed (a chargeback): it stops opening anything.
+pub async fn mark_disputed(db: &Db, provider_ref: &str, raw: &str, now: i64) -> DbResult<Option<Payment>> {
+    db.execute(
+        "UPDATE payments SET status = 'disputed', closed_at = COALESCE(closed_at, ?2), raw = ?3, updated_at = ?2 WHERE provider_ref = ?1",
+        args![provider_ref, now, raw],
+    )
+    .await?;
+    payment_by_ref(db, provider_ref).await
+}
+
+pub async fn payment_by_ref(db: &Db, provider_ref: &str) -> DbResult<Option<Payment>> {
+    Ok(db
+        .query_one(&format!("SELECT {PAYMENT_COLUMNS} FROM payments WHERE provider_ref = ?1"), args![provider_ref])
         .await?
         .map(|r| payment_from_row(&r)))
 }
