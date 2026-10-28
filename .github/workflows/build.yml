@@ -65,7 +65,7 @@ jobs:
           echo "=== TURSO PROTOCOL TEST ===" | tee -a build.log
           GOOGLE_CLIENT_ID=ci-test-id GOOGLE_CLIENT_SECRET=ci-test-secret PUBLIC_URL=https://code-iot.onrender.com \
           ALLOW_PASSWORD_SIGNUP=1 LEMONSQUEEZY_API_KEY=ci LEMONSQUEEZY_STORE_ID=1 LEMONSQUEEZY_VARIANT_MONTHLY=111 \
-          LEMONSQUEEZY_VARIANT_LIFETIME=222 LEMONSQUEEZY_WEBHOOK_SECRET=ci-hook-secret \
+          LEMONSQUEEZY_VARIANT_LIFETIME=222 LEMONSQUEEZY_VARIANT_ALL_MONTHLY=333 LEMONSQUEEZY_VARIANT_ALL_YEARLY=444 LEMONSQUEEZY_WEBHOOK_SECRET=ci-hook-secret \
           TURSO_DATABASE_URL=http://127.0.0.1:8080 TURSO_AUTH_TOKEN=local scripts/playground-smoke.sh 2>&1 | sed -n '/--- database/p;/--- avatar/,$p' | tee -a build.log
           docker logs sqld 2>&1 | tail -5 | tee -a build.log
 

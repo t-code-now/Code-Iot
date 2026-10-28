@@ -1003,3 +1003,9 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 /* ---------- renewal reminder (yearly access ending soon) ---------- */
 .renew-banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 16px 12px; padding: 12px 14px; border-radius: 12px; background: var(--surface); border: 2px solid var(--primary); color: var(--text); font-weight: 800; text-decoration: none; box-shadow: 0 4px 0 var(--primary-dark); }
 .renew-banner strong { flex: none; padding: 6px 12px; border-radius: 10px; background: var(--primary); color: var(--on-primary); font-weight: 900; }
+
+/* ---------- "all courses" bundle ---------- */
+.bundle { margin-top: 18px; padding-top: 16px; border-top: 2px dashed var(--line); display: flex; flex-direction: column; gap: 8px; }
+.bundle-title { font-family: var(--display); font-size: 19px; color: var(--text); }
+.bundle .muted { margin: 0; }
+.bundle .plan-card { border-color: var(--purple); }

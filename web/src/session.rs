@@ -39,7 +39,7 @@ impl Session {
             p.as_ref()?
                 .plans
                 .iter()
-                .find(|pl| pl.course_id == course && pl.kind == "yearly")
+                .find(|pl| (pl.course_id == course || pl.course_id == "*") && pl.kind == "yearly")
                 .and_then(|pl| pl.until)
                 .filter(|u| *u > now && *u - now <= RENEW_NOTICE_DAYS * 86_400)
         })

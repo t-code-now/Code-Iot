@@ -4,7 +4,8 @@
 
 use std::collections::{HashMap, HashSet};
 
-use codesprout_core::access::{open_sections, section_locked, CourseAccess, Viewer};
+use codesprout_core::access::{open_sections, section_locked, CourseAccess, Viewer, ALL_COURSES};
+use codesprout_core::catalog;
 use codesprout_core::api::PlanDto;
 use codesprout_core::model::Course;
 
@@ -73,7 +74,21 @@ impl Access {
                 best.insert(plan.course_id.clone(), plan);
             }
         };
-        for p in payments.iter().filter(|p| p.active(now)) {
+        // "All courses" is kept as one plan and opens every course.
+        let mut bundle: Option<PlanDto> = None;
+        for p in payments.iter().filter(|p| p.active(now) && p.course_id == ALL_COURSES) {
+            let plan = PlanDto {
+                course_id: ALL_COURSES.into(),
+                kind: p.plan.clone(),
+                until: if matches!(p.plan.as_str(), "monthly" | "yearly") { p.until } else { None },
+                manage_url: (!p.manage_url.is_empty()).then(|| p.manage_url.clone()),
+            };
+            let better = bundle.as_ref().map_or(true, |b| plan_rank(&plan.kind) > plan_rank(&b.kind) || (plan.kind == b.kind && plan.until > b.until));
+            if better {
+                bundle = Some(plan);
+            }
+        }
+        for p in payments.iter().filter(|p| p.active(now) && p.course_id != ALL_COURSES) {
             offer(PlanDto {
                 course_id: p.course_id.clone(),
                 kind: p.plan.clone(),
@@ -93,7 +108,11 @@ impl Access {
         }
         let mut plans: Vec<PlanDto> = best.into_values().filter(|p| !blocked.contains(&p.course_id)).collect();
         plans.sort_by(|a, b| a.course_id.cmp(&b.course_id));
-        let full = plans.iter().map(|p| p.course_id.clone()).collect();
+        let mut full: HashSet<String> = plans.iter().map(|p| p.course_id.clone()).collect();
+        if let Some(b) = bundle {
+            full.extend(catalog().iter().map(|c| c.id.to_string()));
+            plans.insert(0, b);
+        }
         Ok(Access { viewer, user_id: Some(user_id), email, full, blocked, plans })
     }
 

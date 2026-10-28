@@ -38,7 +38,14 @@ fn active_plans(payments: &[Payment], t: i64) -> HashMap<(i64, String), (String,
     let mut out: HashMap<(i64, String), (String, Option<i64>)> = HashMap::new();
     for p in payments.iter().filter(|p| p.active(t)) {
         let Some(uid) = p.user_id else { continue };
-        let key = (uid, p.course_id.clone());
+        // "All courses" counts for every course.
+        let ids: Vec<String> = if p.course_id == codesprout_core::access::ALL_COURSES {
+            catalog().iter().map(|c| c.id.to_string()).collect()
+        } else {
+            vec![p.course_id.clone()]
+        };
+        for id in ids {
+        let key = (uid, id);
         let better = match out.get(&key) {
             None => true,
             Some((kind, until)) => {
@@ -48,6 +55,7 @@ fn active_plans(payments: &[Payment], t: i64) -> HashMap<(i64, String), (String,
         };
         if better {
             out.insert(key, (p.plan.clone(), if p.plan == "lifetime" { None } else { p.until }));
+        }
         }
     }
     out

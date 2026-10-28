@@ -21,6 +21,8 @@ fn icon(id: &str) -> Icon {
         "sql" => Icon::Files(&["database"]),
         "python" => Icon::Emoji("🐍"),
         "rust" => Icon::Emoji("🦀"),
+        // "All courses"
+        "*" => Icon::Emoji("📚"),
         _ => Icon::Emoji("📘"),
     }
 }

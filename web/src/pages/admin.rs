@@ -158,6 +158,9 @@ pub fn AdminPage() -> impl IntoView {
 }
 
 fn course_label(courses: &[CourseSummary], id: &str) -> String {
+    if id == "*" {
+        return i18n::t(use_session().lang.get_untracked(), "bundle.name").to_string();
+    }
     courses
         .iter()
         .find(|c| c.id == id)

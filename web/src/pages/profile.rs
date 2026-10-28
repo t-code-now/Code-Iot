@@ -41,6 +41,7 @@ pub(crate) fn course_name(id: &str) -> String {
         "rust" => "Rust",
         "cpp" => "C++",
         "arduino" => "Arduino",
+        "*" => return crate::i18n::t(crate::session::use_session().lang.get_untracked(), "bundle.name").to_string(),
         other => other,
     };
     name.to_string()

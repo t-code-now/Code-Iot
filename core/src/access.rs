@@ -15,6 +15,11 @@ pub const FREE_SECTIONS_ACCOUNT: usize = 2;
 /// Prices shown in the app (the real amounts are set in the payment service).
 pub const PRICE_MONTHLY: &str = "$5";
 pub const PRICE_YEARLY: &str = "$25";
+/// "All courses": every course at once (course id `ALL_COURSES` on the payment).
+pub const PRICE_ALL_MONTHLY: &str = "$9.99";
+pub const PRICE_ALL_YEARLY: &str = "$49";
+/// The course id a purchase of every course carries.
+pub const ALL_COURSES: &str = "*";
 /// How long a one-time ($25) purchase keeps a course open.
 pub const YEAR_SECS: i64 = 365 * 86_400;
 

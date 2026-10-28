@@ -311,6 +311,29 @@ pub fn UnlockPage() -> impl IntoView {
                                                     </button>
                                                 </div>
                                                 <p class="muted unlock-small">{session.t("unlock.only_this")}</p>
+                                                {(cfg["all"].as_bool().unwrap_or(false) && session.plan_ending(&course_id()).is_none()).then(|| {
+                                                    let n = cfg["courses"].as_u64().unwrap_or(7);
+                                                    let all_m = cfg["all_monthly"].as_str().unwrap_or("$9.99").to_string();
+                                                    let all_y = cfg["all_yearly"].as_str().unwrap_or("$49").to_string();
+                                                    view! {
+                                                        <div class="bundle">
+                                                            <strong class="bundle-title">"📚 " {tf(session.lang.get_untracked(), "bundle.title", &[&n])}</strong>
+                                                            <p class="muted">{session.t("bundle.sub")}</p>
+                                                            <div class="plans">
+                                                                <button class="plan-card" disabled=move || busy.get() on:click=move |_| buy("all_monthly")>
+                                                                    <span class="plan-name">{session.t("unlock.monthly")}</span>
+                                                                    <span class="plan-price">{all_m}<small>{session.t("unlock.per_month")}</small></span>
+                                                                    <span class="plan-note">{session.t("bundle.monthly_note")}</span>
+                                                                </button>
+                                                                <button class="plan-card" disabled=move || busy.get() on:click=move |_| buy("all_yearly")>
+                                                                    <span class="plan-name">{session.t("unlock.yearly")}</span>
+                                                                    <span class="plan-price">{all_y}<small>{session.t("unlock.per_year")}</small></span>
+                                                                    <span class="plan-note">{session.t("bundle.yearly_note")}</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                })}
                                             }.into_view()
                                         })}
                                         })}

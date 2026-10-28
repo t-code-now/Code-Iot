@@ -16,7 +16,7 @@ use axum::body::Bytes;
 use axum::extract::State;
 use axum::http::{HeaderMap, StatusCode};
 use axum::Json;
-use codesprout_core::access::{PRICE_MONTHLY, PRICE_YEARLY, YEAR_SECS};
+use codesprout_core::access::{ALL_COURSES, PRICE_ALL_MONTHLY, PRICE_ALL_YEARLY, PRICE_MONTHLY, PRICE_YEARLY, YEAR_SECS};
 use codesprout_core::api::{CheckoutRequest, CheckoutResponse};
 use codesprout_core::find_course;
 use hmac::{Hmac, Mac};
@@ -35,12 +35,24 @@ pub struct Config {
     pub variant_monthly: String,
     /// The one-time $25 product (a year of access).
     pub variant_yearly: String,
+    /// "All courses" products (optional: without them the bundle isn't offered).
+    pub variant_all_monthly: Option<String>,
+    pub variant_all_yearly: Option<String>,
     pub webhook_secret: String,
     pub public_url: String,
 }
 
 fn env(k: &str) -> Option<String> {
     std::env::var(k).ok().map(|v| v.trim().to_string()).filter(|v| !v.is_empty())
+}
+
+impl Config {
+    fn monthly_variants(&self) -> Vec<&str> {
+        std::iter::once(self.variant_monthly.as_str()).chain(self.variant_all_monthly.as_deref()).collect()
+    }
+    fn yearly_variants(&self) -> Vec<&str> {
+        std::iter::once(self.variant_yearly.as_str()).chain(self.variant_all_yearly.as_deref()).collect()
+    }
 }
 
 pub fn config() -> Option<Config> {
@@ -50,6 +62,8 @@ pub fn config() -> Option<Config> {
         variant_monthly: env("LEMONSQUEEZY_VARIANT_MONTHLY")?,
         // LEMONSQUEEZY_VARIANT_LIFETIME is the older name of the same setting.
         variant_yearly: env("LEMONSQUEEZY_VARIANT_YEARLY").or_else(|| env("LEMONSQUEEZY_VARIANT_LIFETIME"))?,
+        variant_all_monthly: env("LEMONSQUEEZY_VARIANT_ALL_MONTHLY"),
+        variant_all_yearly: env("LEMONSQUEEZY_VARIANT_ALL_YEARLY"),
         webhook_secret: env("LEMONSQUEEZY_WEBHOOK_SECRET")?,
         public_url: env("PUBLIC_URL")
             .or_else(|| env("RENDER_EXTERNAL_URL"))
@@ -64,7 +78,12 @@ pub fn config() -> Option<Config> {
 /// soon" and the waiting list instead of the price buttons.
 pub async fn config_info(State(state): State<AppState>) -> ApiResult<Json<Value>> {
     let paused = store::sales_paused(&state.db).await?;
+    let all = config().is_some_and(|c| c.variant_all_monthly.is_some() && c.variant_all_yearly.is_some());
     Ok(Json(json!({
+        "all": all,
+        "courses": codesprout_core::catalog().len(),
+        "all_monthly": PRICE_ALL_MONTHLY,
+        "all_yearly": PRICE_ALL_YEARLY,
         "enabled": config().is_some() && !paused,
         "paused": paused,
         "monthly": PRICE_MONTHLY,
@@ -115,20 +134,31 @@ pub async fn checkout(
     if store::sales_paused(&state.db).await? {
         return Err(ApiError::BadRequest("Payments are not open yet".into()));
     }
-    let course = find_course(&req.course_id).ok_or(ApiError::NotFound)?;
+    let bundle = req.plan.starts_with("all_");
+    // The page the buyer came from (any course for the bundle) is where they return.
+    let back = find_course(&req.course_id).map(|c| c.id).unwrap_or("python");
+    let (course_id, title) = if bundle {
+        (ALL_COURSES.to_string(), "All courses".to_string())
+    } else {
+        let c = find_course(&req.course_id).ok_or(ApiError::NotFound)?;
+        (c.id.to_string(), c.title.to_string())
+    };
     // A phone number is required so the site owner can reach the buyer.
     let (_, country) = store::contact(&state.db, user_id)
         .await?
         .ok_or_else(|| ApiError::BadRequest("Please add your phone number first".into()))?;
     // "lifetime" is the older name of the yearly plan (apps not yet updated).
+    let none = || ApiError::BadRequest("Unknown plan".into());
     let (variant, plan) = match req.plan.as_str() {
         "monthly" => (&cfg.variant_monthly, "monthly"),
         "yearly" | "lifetime" => (&cfg.variant_yearly, "yearly"),
-        _ => return Err(ApiError::BadRequest("Unknown plan".into())),
+        "all_monthly" => (cfg.variant_all_monthly.as_ref().ok_or_else(none)?, "monthly"),
+        "all_yearly" => (cfg.variant_all_yearly.as_ref().ok_or_else(none)?, "yearly"),
+        _ => return Err(none()),
     };
     let email = store::user_email(&state.db, user_id).await?.unwrap_or_default();
     let mut checkout_data = json!({
-        "custom": { "user_id": user_id.to_string(), "course_id": course.id, "plan": plan }
+        "custom": { "user_id": user_id.to_string(), "course_id": course_id, "plan": plan }
     });
     if !email.is_empty() {
         checkout_data["email"] = json!(email);
@@ -140,8 +170,8 @@ pub async fn checkout(
             "attributes": {
                 "checkout_data": checkout_data,
                 "product_options": {
-                    "redirect_url": format!("{}/unlock/{}?paid=1", cfg.public_url, course.id),
-                    "description": format!("Code-Iot · {}", course.title)
+                    "redirect_url": format!("{}/unlock/{}?paid=1", cfg.public_url, back),
+                    "description": format!("Code-Iot · {}", title)
                 }
             },
             "relationships": {
@@ -225,7 +255,9 @@ fn card(attrs: &Value) -> String {
 }
 
 /// Turns one webhook event into a payment record (None = not relevant).
-pub fn payment_from_event(cfg_monthly: &str, cfg_yearly: &str, event: &Value, t: i64) -> Option<Payment> {
+/// `monthly` and `yearly` list the product variants of each kind (one course,
+/// and optionally every course).
+pub fn payment_from_event(monthly: &[&str], yearly: &[&str], event: &Value, t: i64) -> Option<Payment> {
     let meta = &event["meta"];
     let name = meta["event_name"].as_str().unwrap_or("");
     let custom = &meta["custom_data"];
@@ -259,7 +291,7 @@ pub fn payment_from_event(cfg_monthly: &str, cfg_yearly: &str, event: &Value, t:
     match (name, kind) {
         ("order_created" | "order_refunded", "orders") => {
             let variant = text(&a["first_order_item"]["variant_id"]);
-            if variant != cfg_yearly {
+            if !yearly.contains(&variant.as_str()) {
                 // Monthly plans are covered by the subscription events; other
                 // products of the store don't open courses.
                 return None;
@@ -275,7 +307,7 @@ pub fn payment_from_event(cfg_monthly: &str, cfg_yearly: &str, event: &Value, t:
                 ..base
             })
         }
-        (n, "subscriptions") if n.starts_with("subscription_") && text(&a["variant_id"]) == cfg_monthly => Some(Payment {
+        (n, "subscriptions") if n.starts_with("subscription_") && monthly.contains(&text(&a["variant_id"]).as_str()) => Some(Payment {
             provider_ref: format!("sub_{id}"),
             plan: "monthly".into(),
             status: a["status"].as_str().unwrap_or("active").to_string(),
@@ -308,7 +340,7 @@ pub async fn webhook(State(state): State<AppState>, headers: HeaderMap, body: By
         return StatusCode::UNAUTHORIZED;
     }
     let Ok(event) = serde_json::from_slice::<Value>(&body) else { return StatusCode::BAD_REQUEST };
-    let Some(mut p) = payment_from_event(&cfg.variant_monthly, &cfg.variant_yearly, &event, now()) else {
+    let Some(mut p) = payment_from_event(&cfg.monthly_variants(), &cfg.yearly_variants(), &event, now()) else {
         return StatusCode::OK;
     };
     // Invoices may arrive without our custom data: copy it from the subscription.
@@ -390,7 +422,7 @@ mod tests {
                 "first_order_item": { "variant_id": 222 }, "urls": { "receipt": "https://r" },
                 "created_at": "2024-05-01T10:20:30.000000Z" } }
         });
-        let p = payment_from_event("111", "222", &order, 9).unwrap();
+        let p = payment_from_event(&["111"], &["222"], &order, 9).unwrap();
         assert_eq!((p.provider_ref.as_str(), p.plan.as_str(), p.user_id, p.amount_cents), ("ord_55", "yearly", Some(7), 2500));
         assert_eq!(p.email, "a@b.com");
         let bought = p.created_at;
@@ -404,21 +436,21 @@ mod tests {
                 "renews_at": "2024-06-01T00:00:00Z", "ends_at": "2024-06-01T00:00:00Z",
                 "urls": { "customer_portal": "https://portal" } } }
         });
-        let s = payment_from_event("111", "222", &sub, 9).unwrap();
+        let s = payment_from_event(&["111"], &["222"], &sub, 9).unwrap();
         assert_eq!((s.provider_ref.as_str(), s.plan.as_str(), s.method.as_str()), ("sub_9", "monthly", "Visa •••• 4242"));
         assert!(s.active(parse_time("2024-05-20T00:00:00Z").unwrap()));
         assert!(!s.active(parse_time("2024-06-02T00:00:00Z").unwrap()));
 
         let monthly_order = json!({ "meta": { "event_name": "order_created" },
             "data": { "type": "orders", "id": 1, "attributes": { "first_order_item": { "variant_id": "111" } } } });
-        assert!(payment_from_event("111", "222", &monthly_order, 0).is_none());
+        assert!(payment_from_event(&["111"], &["222"], &monthly_order, 0).is_none());
         let other_product = json!({ "meta": { "event_name": "order_created", "custom_data": { "user_id": "7", "course_id": "python" } },
             "data": { "type": "orders", "id": 2, "attributes": { "status": "paid", "total": 900, "first_order_item": { "variant_id": "999" } } } });
-        assert!(payment_from_event("111", "222", &other_product, 0).is_none(), "other products never open courses");
+        assert!(payment_from_event(&["111"], &["222"], &other_product, 0).is_none(), "other products never open courses");
         let refunded = json!({ "meta": { "event_name": "order_refunded", "custom_data": { "user_id": "7", "course_id": "python" } },
             "data": { "type": "orders", "id": 55, "attributes": { "status": "partial_refund", "total": 2500, "refunded_amount": 1000,
                 "test_mode": true, "user_name": "Noa", "first_order_item": { "variant_id": 222 } } } });
-        let r = payment_from_event("111", "222", &refunded, 0).unwrap();
+        let r = payment_from_event(&["111"], &["222"], &refunded, 0).unwrap();
         assert_eq!((r.refunded_cents, r.refundable_cents(), r.test_mode, r.customer_name.as_str()), (1000, 1500, true, "Noa"));
     }
 }

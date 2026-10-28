@@ -251,6 +251,11 @@ const STRINGS: &[(&str, &str, &str)] = &[
     ("profile.year_until", "One year · until {}", "שנה · עד {}"),
     ("cancel.s_yearly", "One year of access · until {}", "גישה לשנה · עד {}"),
     ("unlock.yearly", "Yearly", "שנתי"),
+    ("bundle.name", "All courses", "כל המסלולים"),
+    ("bundle.title", "Or open all {} courses at once", "או לפתוח את כל {} המסלולים בבת אחת"),
+    ("bundle.sub", "Every language, every topic and project — one price.", "כל השפות, כל הנושאים והפרויקטים – במחיר אחד."),
+    ("bundle.monthly_note", "Cancel anytime", "אפשר לבטל בכל זמן"),
+    ("bundle.yearly_note", "Pay once, every course is open for a year. No automatic renewal.", "משלמים פעם אחת, וכל המסלולים פתוחים לשנה. בלי חידוש אוטומטי.")
     ("renew.banner", "Your access to this course ends on {}.", "הגישה למסלול הזה מסתיימת ב-{}."),
     ("renew.button", "Renew", "חידוש"),
     ("renew.unlock_sub", "Your year ends on {}. Buying now adds another year from that date.", "השנה שלך מסתיימת ב-{}. רכישה עכשיו מוסיפה שנה מהתאריך הזה."),

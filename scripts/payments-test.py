@@ -11,7 +11,7 @@ import hashlib, hmac, json, os, sqlite3, subprocess, sys, threading, time, urlli
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 API_KEY, SECRET = "test-key", "test-hook-secret"
-VAR_MONTHLY, VAR_LIFETIME = "111", "222"
+VAR_MONTHLY, VAR_LIFETIME, VAR_ALL_MONTHLY, VAR_ALL_YEARLY = "111", "222", "333", "444"
 BASE = "http://127.0.0.1:3998"
 DB = "/tmp/payments-test.db"
 calls = []   # requests seen by the fake Lemon Squeezy
@@ -106,6 +106,7 @@ def main():
     env = dict(os.environ, ADDR="127.0.0.1:3998", DATABASE_PATH=DB, WEB_DIST="web/dist", ALLOW_PASSWORD_SIGNUP="1",
                LEMONSQUEEZY_API_KEY=API_KEY, LEMONSQUEEZY_STORE_ID="1", LEMONSQUEEZY_VARIANT_MONTHLY=VAR_MONTHLY,
                LEMONSQUEEZY_VARIANT_LIFETIME=VAR_LIFETIME, LEMONSQUEEZY_WEBHOOK_SECRET=SECRET,
+               LEMONSQUEEZY_VARIANT_ALL_MONTHLY=VAR_ALL_MONTHLY, LEMONSQUEEZY_VARIANT_ALL_YEARLY=VAR_ALL_YEARLY,
                LEMONSQUEEZY_API_BASE="http://127.0.0.1:4010/v1", ADMIN_EMAILS="admin@example.com",
                TURSO_DATABASE_URL="", TURSO_AUTH_TOKEN="")
     server = subprocess.Popen(["./target/release/codesprout-server"], env=env)
@@ -211,6 +212,31 @@ def run():
     _, pays = call("GET", "/api/admin/payments", token=atok)
     a = next(p for p in pays if p["provider_ref"] == "ord_5091")
     b = next(p for p in pays if p["provider_ref"] == "ord_5092")
+    # --- "all courses"
+    _, cfg = call("GET", "/api/payments/config")
+    check("bundle offered with its prices", cfg.get("all") is True and cfg.get("all_monthly") == "$9.99" and cfg.get("all_yearly") == "$49" and cfg.get("courses") == 7, str(cfg))
+    _, fan = call("POST", "/api/auth/signup", {"username": "fan", "password": "secret123"})
+    ftok, fan_id = fan["token"], fan["profile"]["id"]
+    call("PUT", "/api/me/contact", {"country": "IL", "phone": "0521234567"}, ftok)
+    code, body = call("POST", "/api/payments/checkout", {"course_id": "rust", "plan": "all_yearly"}, ftok)
+    sent = calls[-1]["body"]["data"]
+    check("bundle checkout sends the all-courses variant", code == 200 and sent["relationships"]["variant"]["data"]["id"] == VAR_ALL_YEARLY
+          and sent["attributes"]["checkout_data"]["custom"]["course_id"] == "*" and sent["attributes"]["checkout_data"]["custom"]["plan"] == "yearly", str((code, sent)))
+    allo = json.loads(json.dumps(order))
+    allo["data"]["id"] = "5200"
+    allo["meta"]["custom_data"] = {"user_id": str(fan_id), "course_id": "*"}
+    allo["data"]["attributes"]["first_order_item"]["variant_id"] = int(VAR_ALL_YEARLY)
+    allo["data"]["attributes"]["total"] = 4900
+    check("bundle webhook", hook(allo) == 200)
+    opened = [c["id"] for c in call("GET", "/api/courses", token=ftok)[1] if c["unlocked"]]
+    check("bundle opens every course", len(opened) == 7, str(opened))
+    plans = call("GET", "/api/me", token=ftok)[1]["plans"]
+    check("profile lists one 'all courses' plan", len(plans) == 1 and plans[0]["course_id"] == "*" and plans[0]["kind"] == "yearly", str(plans))
+    _, users = call("GET", "/api/admin/users", token=atok)
+    fu = next(u for u in users if u["id"] == fan_id)
+    check("admin sees every course opened by the bundle", all(c["state"] == "yearly" for c in fu["courses"]), str(fu["courses"]))
+    code, _ = call("POST", "/api/payments/checkout", {"course_id": "rust", "plan": "all_weekly"}, ftok)
+    check("unknown bundle plan refused", code == 400)
     check("buying another year adds a year to the end", abs(b["until"] - (a["until"] + YEAR)) < 5, str((a["until"], b["until"])))
 
     _, pays = call("GET", "/api/admin/payments", token=atok)
