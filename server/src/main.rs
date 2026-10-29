@@ -83,7 +83,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     return crate::error::ApiError::NotFound.into_response();
                 }
                 match spa.try_call(req).await {
-                    Ok(resp) => resp.map(axum::body::Body::new).into_response(),
+                    Ok(resp) => {
+                        let mut resp = resp.map(axum::body::Body::new).into_response();
+                        // The page itself is always checked for a new version, so a
+                        // phone never keeps an old copy after an update. (Its scripts
+                        // and styles have versioned names and can be cached.)
+                        let is_html = resp
+                            .headers()
+                            .get(axum::http::header::CONTENT_TYPE)
+                            .and_then(|v| v.to_str().ok())
+                            .is_some_and(|v| v.starts_with("text/html"));
+                        if is_html {
+                            resp.headers_mut().insert(
+                                axum::http::header::CACHE_CONTROL,
+                                axum::http::HeaderValue::from_static("no-cache"),
+                            );
+                        }
+                        resp
+                    }
                     Err(_) => axum::http::StatusCode::INTERNAL_SERVER_ERROR.into_response(),
                 }
             }

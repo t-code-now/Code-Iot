@@ -2,7 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover" />
+    <script>
+      // Phones: if the browser ever shows this page zoomed out (smaller, like
+      // the computer layout), set the viewport again so it snaps back to the
+      // phone's own width, without the user having to refresh.
+      (function () {
+        var vv = window.visualViewport;
+        if (!vv) return;
+        var busy = false;
+        function fix() {
+          var m = document.querySelector('meta[name="viewport"]');
+          if (busy || !m || vv.scale >= 0.98) return;
+          busy = true;
+          var c = m.getAttribute('content');
+          m.setAttribute('content', 'width=device-width');
+          m.setAttribute('content', c);
+          setTimeout(function () { busy = false; }, 800);
+        }
+        vv.addEventListener('resize', fix);
+        window.addEventListener('load', function () { setTimeout(fix, 300); });
+        window.addEventListener('pageshow', function () { setTimeout(fix, 300); });
+      })();
+    </script>
     <meta name="theme-color" content="#8FB4E6" />
     <title>Code-Iot</title>
     <link rel="icon" type="image/png" href="/assets/favicon.png" />
