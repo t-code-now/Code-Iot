@@ -38,6 +38,11 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; color: var(--text); font-family: var(--font); }
+/* Nothing may stick out sideways: on phones, Chrome zooms the whole page out
+   to fit anything wider than the screen (even for a moment while a page loads),
+   which made the site look like the desktop layout until a refresh. */
+html { overflow-x: hidden; }
+@supports (overflow: clip) { html { overflow-x: clip; } }
 html { background: #8fb4e6; }
 body { min-height: 100dvh; background: #8fb4e6; }
 
