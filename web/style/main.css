@@ -458,7 +458,10 @@ p { margin: 0; }
   background: var(--surface); color: var(--text); font: inherit; font-size: 16px; outline: none;
 }
 .field input:focus { border-color: var(--primary); }
-.auth-switch { text-align: center; color: var(--text); font-weight: 700; margin-top: 22px; }
+.auth-switch {
+  display: table; margin: 22px auto 0; padding: 9px 18px; border-radius: 999px; text-align: center;
+  color: var(--text); font-weight: 700; background: rgba(18, 26, 56, .82); border: 1px solid var(--line);
+}
 .auth-switch a { color: var(--primary); font-weight: 900; }
 
 /* ---------- states ---------- */
@@ -1036,3 +1039,4 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
 .setup-toggle { margin: 0 0 12px; }
 .refund-box .lock-check, .lock-check { display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 8px; flex-basis: 100%; font-weight: 800; color: var(--text); cursor: pointer; }
 .lock-check input { width: 18px; height: 18px; accent-color: var(--primary); }
+.auth-switch.link-terms { color: var(--primary); font-weight: 900; text-decoration: underline; }

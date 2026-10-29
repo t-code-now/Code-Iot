@@ -146,7 +146,7 @@ pub fn CancelPage() -> impl IntoView {
                 })}
             </Suspense>
             <p class="cancel-contact">{session.t("cancel.other_ways")} " " <a href=format!("mailto:{CONTACT_EMAIL}") dir="ltr">{CONTACT_EMAIL}</a></p>
-            <a href="/terms" class="link-btn">{session.t("cancel.terms_link")}</a>
+            <a href="/terms" class="auth-switch link-terms">{session.t("cancel.terms_link")}</a>
         </div>
     }
 }
