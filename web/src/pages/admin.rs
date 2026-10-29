@@ -210,7 +210,7 @@ fn OverviewTab(courses: Vec<CourseSummary>) -> impl IntoView {
                         ("✨", o.new_users_7d.to_string(), t("admin.new_7d")),
                         ("📘", o.lessons_7d.to_string(), t("admin.lessons_7d")),
                         ("💳", o.paying_users.to_string(), t("admin.paying")),
-                        ("♾️", o.lifetime_purchases.to_string(), t("admin.lifetime")),
+                        ("📅", o.lifetime_purchases.to_string(), t("admin.lifetime")),
                         ("🔁", o.active_subscriptions.to_string(), t("admin.subs")),
                         ("💰", revenue, t("admin.revenue")),
                         ("↩️", refunded, t("admin.refunded")),
