@@ -810,7 +810,13 @@ fn PaymentCard(
                         money(p.amount_cents, &p.currency)
                     } else if p.provider_ref.starts_with("sub_") {
                         // A subscription itself carries no charge; show its price.
-                        format!("{}{}", codesprout_core::access::PRICE_MONTHLY, t("admin.per_month"))
+                        // ("*" is the all-courses plan, which has its own price.)
+                        let price = if p.course_id == "*" {
+                            codesprout_core::access::PRICE_ALL_MONTHLY
+                        } else {
+                            codesprout_core::access::PRICE_MONTHLY
+                        };
+                        format!("{price}{}", t("admin.per_month"))
                     } else {
                         "—".into()
                     }}
