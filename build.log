@@ -1,0 +1,1063 @@
+    Updating crates.io index
+     Locking 294 packages to highest compatible versions
+      Adding argon2 v0.5.3 (available: v0.6.0)
+      Adding axum v0.7.9 (available: v0.8.9)
+      Adding generic-array v0.14.7 (available: v0.14.9)
+      Adding gloo-net v0.5.0 (available: v0.7.0)
+      Adding gloo-storage v0.3.0 (available: v0.4.0)
+      Adding hmac v0.12.1 (available: v0.13.0)
+      Adding leptos v0.6.15 (available: v0.8.22)
+      Adding leptos_router v0.6.15 (available: v0.8.17)
+      Adding rand v0.8.8 (available: v0.10.3)
+      Adding reqwest v0.12.28 (available: v0.13.5)
+      Adding rusqlite v0.31.0 (available: v0.41.1)
+      Adding sha2 v0.10.9 (available: v0.11.1)
+      Adding tower-http v0.5.2 (available: v0.7.1)
+   Compiling codesprout-core v0.1.0 (/home/runner/work/Code-Iot/Code-Iot/core)
+warning: function `insert` is never used
+  --> core/src/content/arduino_more.rs:12:4
+   |
+12 | fn insert(sections: &mut Vec<Section>, after: Option<&str>, s: Section) {
+   |    ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codesprout-core` (lib) generated 1 warning
+warning: `codesprout-core` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 14.60s
+     Running unittests src/lib.rs (target/debug/deps/codesprout_core-ba0f1cd836e6422f)
+
+running 21 tests
+test access::tests::rules ... ok
+test api::avatar_tests::avatar_values ... ok
+test content::tests::courses_are_full_curricula ... ok
+test content::tests::every_section_ends_with_a_project ... ok
+test content::tests::lookup_and_next ... ok
+test grading::tests::learn_is_not_graded ... ok
+test grading::tests::multiple_choice ... ok
+test grading::tests::type_in_is_lenient_about_spacing_and_quotes ... ok
+test content::tests::ids_are_unique ... ok
+test grading::tests::fill_and_reorder ... ok
+test content::tests::every_step_is_well_formed ... ok
+test i18n::tests::parse_codes ... ok
+test phone::tests::phone_numbers ... ok
+test progress::tests::badge_awards ... ok
+test progress::tests::days_and_weeks ... ok
+test progress::tests::streaks ... ok
+test progress::tests::xp_and_levels ... ok
+test shuffle::tests::keeps_elements_and_changes_order ... ok
+test i18n::tests::fallback_is_english ... ok
+test i18n::tests::hebrew_covers_all_prose ... ok
+test i18n::tests::hebrew_keys_are_valid ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+   Doc-tests codesprout_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+ Downloading crates ...
+  Downloaded atomic-waker v1.1.2
+  Downloaded crypto-common v0.1.7
+  Downloaded form_urlencoded v1.2.2
+  Downloaded futures-sink v0.3.34
+  Downloaded idna_adapter v1.2.2
+  Downloaded digest v0.10.7
+  Downloaded futures-core v0.3.34
+  Downloaded argon2 v0.5.3
+  Downloaded async-trait v0.1.92
+  Downloaded rustversion v1.0.23
+  Downloaded nu-ansi-term v0.50.3
+  Downloaded ahash v0.8.12
+  Downloaded displaydoc v0.2.7
+  Downloaded fallible-iterator v0.3.0
+  Downloaded fallible-streaming-iterator v0.1.9
+  Downloaded find-msvc-tools v0.1.15
+  Downloaded proc-macro2 v1.0.107
+  Downloaded futures-channel v0.3.34
+  Downloaded rustls-pki-types v1.15.1
+  Downloaded pkg-config v0.3.34
+  Downloaded rand v0.8.8
+  Downloaded aho-corasick v1.1.5
+  Downloaded axum v0.7.9
+  Downloaded errno v0.3.14
+  Downloaded version_check v0.9.5
+  Downloaded cfg_aliases v0.2.2
+  Downloaded ryu v1.0.23
+  Downloaded signal-hook-registry v1.4.8
+  Downloaded icu_collections v2.4.0
+  Downloaded rustls-webpki v0.103.16
+  Downloaded rusqlite v0.31.0
+  Downloaded block-buffer v0.10.4
+  Downloaded http-body-util v0.1.5
+  Downloaded icu_properties v2.4.0
+  Downloaded ring v0.17.14
+  Downloaded base64ct v1.8.3
+  Downloaded hyper-rustls v0.27.10
+  Downloaded rand_chacha v0.3.1
+  Downloaded httpdate v1.0.3
+  Downloaded litemap v0.8.3
+  Downloaded ipnet v2.12.2
+  Downloaded lock_api v0.4.14
+  Downloaded rand_pcg v0.10.2
+  Downloaded zerocopy v0.8.63
+  Downloaded rustls v0.23.46
+  Downloaded cfg-if v1.0.5
+  Downloaded futures-task v0.3.34
+  Downloaded matchers v0.2.0
+  Downloaded rand_core v0.10.1
+  Downloaded serde_urlencoded v0.7.1
+  Downloaded sharded-slab v0.1.7
+  Downloaded cpufeatures v0.2.17
+  Downloaded once_cell v1.21.4
+  Downloaded rand v0.10.3
+  Downloaded serde_path_to_error v0.1.20
+  Downloaded subtle v2.6.1
+  Downloaded sync_wrapper v1.0.2
+  Downloaded serde_json v1.0.154
+  Downloaded potential_utf v0.1.6
+  Downloaded quote v1.0.47
+  Downloaded thread_local v1.1.10
+  Downloaded try-lock v0.2.5
+  Downloaded zerovec-derive v0.11.7
+  Downloaded slab v0.4.12
+  Downloaded serde_derive v1.0.229
+  Downloaded want v0.3.2
+  Downloaded scopeguard v1.2.0
+  Downloaded sha2 v0.10.9
+  Downloaded url v2.5.8
+  Downloaded parking_lot v0.12.5
+  Downloaded tinystr v0.8.5
+  Downloaded tracing-attributes v0.1.31
+  Downloaded cpufeatures v0.3.1
+  Downloaded http-range-header v0.4.2
+  Downloaded itoa v1.0.18
+  Downloaded socket2 v0.6.5
+  Downloaded tokio-macros v2.7.2
+  Downloaded tracing-core v0.1.36
+  Downloaded generic-array v0.14.7
+  Downloaded percent-encoding v2.3.2
+  Downloaded shlex v2.0.1
+  Downloaded synstructure v0.14.0
+  Downloaded unicase v2.10.0
+  Downloaded utf8_iter v1.1.0
+  Downloaded blake2 v0.10.6
+  Downloaded http-body v1.1.0
+  Downloaded lazy_static v1.5.1
+  Downloaded lru-slab v0.1.3
+  Downloaded mime v0.3.17
+  Downloaded parking_lot_core v0.9.12
+  Downloaded password-hash v0.5.0
+  Downloaded pin-project-lite v0.2.17
+  Downloaded ppv-lite86 v0.2.21
+  Downloaded rand_core v0.6.4
+  Downloaded rustc-hash v2.1.3
+  Downloaded serde_core v1.0.229
+  Downloaded yoke-derive v0.8.4
+  Downloaded zerofrom v0.1.8
+  Downloaded axum-core v0.4.5
+  Downloaded bytes v1.12.1
+  Downloaded hashlink v0.9.1
+  Downloaded hex v0.4.3
+  Downloaded hyper-util v0.1.21
+  Downloaded log v0.4.34
+  Downloaded mime_guess v2.0.5
+  Downloaded stable_deref_trait v1.2.1
+  Downloaded tower-layer v0.3.3
+  Downloaded tower-service v0.3.3
+  Downloaded untrusted v0.9.0
+  Downloaded writeable v0.6.4
+  Downloaded zerofrom-derive v0.1.8
+  Downloaded chacha20 v0.10.2
+  Downloaded getrandom v0.2.17
+  Downloaded hmac v0.12.1
+  Downloaded httparse v1.10.1
+  Downloaded icu_normalizer_data v2.4.0
+  Downloaded matchit v0.7.3
+  Downloaded quinn-udp v0.5.16
+  Downloaded thiserror v2.0.21
+  Downloaded thiserror-impl v2.0.21
+  Downloaded tokio-rustls v0.26.6
+  Downloaded tracing-log v0.2.0
+  Downloaded unicode-ident v1.0.27
+  Downloaded utf_types v1.0.0
+  Downloaded zeroize v1.9.1
+  Downloaded zmij v1.0.23
+  Downloaded base64 v0.22.1
+  Downloaded getrandom v0.4.3
+  Downloaded icu_locale_core v2.4.0
+  Downloaded icu_provider v2.4.0
+  Downloaded smallvec v1.16.4
+  Downloaded tinyvec v1.13.3
+  Downloaded yoke v0.8.4
+  Downloaded base64 v0.23.1
+  Downloaded bitflags v2.13.2
+  Downloaded mio v1.2.4
+  Downloaded quinn v0.11.12
+  Downloaded serde v1.0.229
+  Downloaded zerotrie v0.2.5
+  Downloaded idna v1.1.0
+  Downloaded memchr v2.8.3
+  Downloaded reqwest v0.12.28
+  Downloaded http v1.5.0
+  Downloaded regex-syntax v0.8.11
+  Downloaded typenum v1.20.1
+  Downloaded hashbrown v0.14.5
+  Downloaded tower v0.5.3
+  Downloaded tower-http v0.5.2
+  Downloaded zerovec v0.11.9
+  Downloaded cc v1.10.0
+  Downloaded futures-util v0.3.34
+  Downloaded hyper v1.12.0
+  Downloaded icu_properties_data v2.4.0
+  Downloaded tower-http v0.6.11
+  Downloaded tokio-util v0.7.20
+  Downloaded quinn-proto v0.11.19
+  Downloaded tracing-subscriber v0.3.23
+  Downloaded vcpkg v0.2.15
+  Downloaded webpki-roots v1.0.11
+  Downloaded syn v2.0.119
+  Downloaded syn v3.0.9
+  Downloaded tracing v0.1.44
+  Downloaded icu_normalizer v2.4.0
+  Downloaded regex-automata v0.4.18
+  Downloaded tokio v1.54.1
+  Downloaded libc v0.2.191
+  Downloaded libsqlite3-sys v0.28.0
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling cfg-if v1.0.5
+   Compiling libc v0.2.191
+   Compiling smallvec v1.16.4
+   Compiling once_cell v1.21.4
+   Compiling pin-project-lite v0.2.17
+   Compiling version_check v0.9.5
+   Compiling bytes v1.12.1
+   Compiling stable_deref_trait v1.2.1
+   Compiling futures-core v0.3.34
+   Compiling itoa v1.0.18
+   Compiling shlex v2.0.1
+   Compiling parking_lot_core v0.9.12
+   Compiling find-msvc-tools v0.1.15
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling cc v1.10.0
+   Compiling tracing-core v0.1.36
+   Compiling log v0.4.34
+   Compiling syn v3.0.9
+   Compiling errno v0.3.14
+   Compiling parking_lot v0.12.5
+   Compiling signal-hook-registry v1.4.8
+   Compiling syn v2.0.119
+   Compiling mio v1.2.4
+   Compiling socket2 v0.6.5
+   Compiling getrandom v0.2.17
+   Compiling http v1.5.0
+   Compiling subtle v2.6.1
+   Compiling generic-array v0.14.7
+   Compiling slab v0.4.12
+   Compiling utf_types v1.0.0
+   Compiling futures-task v0.3.34
+   Compiling http-body v1.1.0
+   Compiling writeable v0.6.4
+   Compiling serde_core v1.0.229
+   Compiling zerocopy v0.8.63
+   Compiling percent-encoding v2.3.2
+   Compiling litemap v0.8.3
+   Compiling futures-util v0.3.34
+   Compiling utf8_iter v1.1.0
+   Compiling ring v0.17.14
+   Compiling tower-service v0.3.3
+   Compiling icu_properties_data v2.4.0
+   Compiling typenum v1.20.1
+   Compiling synstructure v0.14.0
+   Compiling icu_normalizer_data v2.4.0
+   Compiling tracing-attributes v0.1.31
+   Compiling zerofrom-derive v0.1.8
+   Compiling yoke-derive v0.8.4
+   Compiling zerofrom v0.1.8
+   Compiling zerovec-derive v0.11.7
+   Compiling displaydoc v0.2.7
+   Compiling yoke v0.8.4
+   Compiling tokio-macros v2.7.2
+   Compiling zerovec v0.11.9
+   Compiling tracing v0.1.44
+   Compiling tokio v1.54.1
+   Compiling tinystr v0.8.5
+   Compiling potential_utf v0.1.6
+   Compiling icu_locale_core v2.4.0
+   Compiling zerotrie v0.2.5
+   Compiling icu_collections v2.4.0
+   Compiling icu_provider v2.4.0
+   Compiling httparse v1.10.1
+   Compiling zeroize v1.9.1
+   Compiling rustls-pki-types v1.15.1
+   Compiling tower-layer v0.3.3
+   Compiling serde v1.0.229
+   Compiling untrusted v0.9.0
+   Compiling httpdate v1.0.3
+   Compiling try-lock v0.2.5
+   Compiling want v0.3.2
+   Compiling icu_normalizer v2.4.0
+   Compiling icu_properties v2.4.0
+   Compiling serde_derive v1.0.229
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling form_urlencoded v1.2.2
+   Compiling sync_wrapper v1.0.2
+   Compiling ahash v0.8.12
+   Compiling atomic-waker v1.1.2
+   Compiling rustls v0.23.46
+   Compiling zmij v1.0.23
+   Compiling hyper v1.12.0
+   Compiling digest v0.10.7
+   Compiling idna_adapter v1.2.2
+   Compiling http-body-util v0.1.5
+   Compiling rand_core v0.6.4
+   Compiling futures-channel v0.3.34
+   Compiling ipnet v2.12.2
+   Compiling pkg-config v0.3.34
+   Compiling serde_json v1.0.154
+   Compiling bitflags v2.13.2
+   Compiling rustversion v1.0.23
+   Compiling mime v0.3.17
+   Compiling vcpkg v0.2.15
+   Compiling unicase v2.10.0
+   Compiling base64 v0.23.1
+   Compiling mime_guess v2.0.5
+   Compiling idna v1.1.0
+   Compiling libsqlite3-sys v0.28.0
+   Compiling hyper-util v0.1.21
+   Compiling tower v0.5.3
+   Compiling ryu v1.0.23
+   Compiling memchr v2.8.3
+   Compiling regex-syntax v0.8.11
+   Compiling regex-automata v0.4.18
+   Compiling serde_urlencoded v0.7.1
+   Compiling hashbrown v0.14.5
+   Compiling url v2.5.8
+   Compiling ppv-lite86 v0.2.21
+   Compiling rustls-webpki v0.103.16
+   Compiling webpki-roots v1.0.11
+   Compiling async-trait v0.1.92
+   Compiling cpufeatures v0.2.17
+   Compiling base64ct v1.8.3
+   Compiling futures-sink v0.3.34
+   Compiling lazy_static v1.5.1
+   Compiling sharded-slab v0.1.7
+   Compiling password-hash v0.5.0
+   Compiling tokio-util v0.7.20
+   Compiling axum-core v0.4.5
+   Compiling rand_chacha v0.3.1
+   Compiling tower-http v0.6.11
+   Compiling hashlink v0.9.1
+   Compiling matchers v0.2.0
+   Compiling blake2 v0.10.6
+   Compiling serde_path_to_error v0.1.20
+   Compiling tracing-log v0.2.0
+   Compiling thread_local v1.1.10
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling fallible-iterator v0.3.0
+   Compiling matchit v0.7.3
+   Compiling tokio-rustls v0.26.6
+   Compiling http-range-header v0.4.2
+   Compiling hyper-rustls v0.27.10
+   Compiling base64 v0.22.1
+   Compiling nu-ansi-term v0.50.3
+   Compiling reqwest v0.12.28
+   Compiling tracing-subscriber v0.3.23
+   Compiling tower-http v0.5.2
+   Compiling rusqlite v0.31.0
+   Compiling axum v0.7.9
+   Compiling argon2 v0.5.3
+   Compiling rand v0.8.8
+   Compiling sha2 v0.10.9
+   Compiling codesprout-core v0.1.0 (/home/runner/work/Code-Iot/Code-Iot/core)
+   Compiling hmac v0.12.1
+   Compiling hex v0.4.3
+warning: function `insert` is never used
+  --> core/src/content/arduino_more.rs:12:4
+   |
+12 | fn insert(sections: &mut Vec<Section>, after: Option<&str>, s: Section) {
+   |    ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codesprout-core` (lib) generated 1 warning
+   Compiling codesprout-server v0.1.0 (/home/runner/work/Code-Iot/Code-Iot/server)
+warning: field `affected` is never read
+   --> server/src/sql.rs:112:9
+    |
+109 | pub struct QueryResult {
+    |            ----------- field in this struct
+...
+112 |     pub affected: u64,
+    |         ^^^^^^^^
+    |
+    = note: `QueryResult` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codesprout-server` (bin "codesprout-server" test) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 40.21s
+     Running unittests src/main.rs (target/debug/deps/codesprout_server-199b2cca3814deb2)
+
+running 12 tests
+test google::tests::id_token_claims ... ok
+test google::tests::usernames_from_google_profiles ... ok
+test payments::tests::events ... ok
+test payments::tests::signatures ... ok
+test payments::tests::times ... ok
+test sketch::tests::finds_prototypes ... ok
+test sketch::tests::strips_provided_includes_and_adds_main ... ok
+test db::tests::users_sessions_and_completions ... ok
+test store::tests::prorata_refund ... ok
+test db::tests::atomic_batches_roll_back ... ok
+test db::tests::google_sign_in_bookkeeping ... ok
+test store::tests::payments_overrides_bans ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+2026-10-29T19:32:11.426088Z  INFO 🚀 Starting trunk 0.22.1
+2026-10-29T19:32:11.426450Z  WARN The field `address` in the configuration is deprecated and will be removed in a future version. Migrate to the `addresses` field, which allows adding more than one.
+2026-10-29T19:32:11.426778Z  INFO 📦 starting build
+2026-10-29T19:32:11.427133Z  INFO node packages []
+   Compiling unicode-ident v1.0.27
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling memchr v2.8.3
+   Compiling wasm-bindgen-shared v0.2.129
+   Compiling rustversion v1.0.23
+   Compiling cfg-if v1.0.5
+   Compiling syn v3.0.9
+   Compiling syn v2.0.119
+   Compiling version_check v0.9.5
+   Compiling once_cell v1.21.4
+   Compiling futures-core v0.3.34
+   Compiling thiserror v1.0.69
+   Compiling bumpalo v3.20.3
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-sink v0.3.34
+   Compiling futures-channel v0.3.34
+   Compiling wasm-bindgen v0.2.129
+   Compiling slab v0.4.12
+   Compiling futures-task v0.3.34
+   Compiling futures-io v0.3.34
+   Compiling stable_deref_trait v1.2.1
+   Compiling smallvec v1.16.4
+   Compiling zmij v1.0.23
+   Compiling parking_lot_core v0.9.12
+   Compiling itoa v1.0.18
+   Compiling utf_types v1.0.0
+   Compiling writeable v0.6.4
+   Compiling litemap v0.8.3
+   Compiling serde_json v1.0.154
+   Compiling utf8_iter v1.1.0
+   Compiling synstructure v0.14.0
+   Compiling wasm-bindgen-macro-support v0.2.129
+   Compiling unicode-xid v0.2.6
+   Compiling icu_properties_data v2.4.0
+   Compiling libc v0.2.191
+   Compiling icu_normalizer_data v2.4.0
+   Compiling const_format_proc_macros v0.2.37
+   Compiling thiserror-impl v1.0.69
+   Compiling serde_derive v1.0.229
+   Compiling futures-macro v0.3.34
+   Compiling zerofrom-derive v0.1.8
+   Compiling futures-util v0.3.34
+   Compiling zerofrom v0.1.8
+   Compiling yoke-derive v0.8.4
+   Compiling yoke v0.8.4
+   Compiling zerovec-derive v0.11.7
+   Compiling displaydoc v0.2.7
+   Compiling wasm-bindgen-macro v0.2.129
+   Compiling zerovec v0.11.9
+   Compiling zerotrie v0.2.5
+   Compiling proc-macro-error-attr v1.0.4
+   Compiling equivalent v1.0.3
+   Compiling konst_macro_rules v0.2.19
+   Compiling tinystr v0.8.5
+   Compiling potential_utf v0.1.6
+   Compiling icu_locale_core v2.4.0
+   Compiling icu_collections v2.4.0
+   Compiling hashbrown v0.17.1
+   Compiling icu_provider v2.4.0
+   Compiling js-sys v0.3.106
+   Compiling zerocopy v0.8.63
+   Compiling indexmap v2.14.2
+   Compiling konst v0.2.20
+   Compiling pin-project-internal v1.1.13
+   Compiling zerocopy-derive v0.8.63
+   Compiling proc-macro-error v1.0.4
+   Compiling unicode-segmentation v1.13.3
+   Compiling bytes v1.12.1
+   Compiling percent-encoding v2.3.2
+   Compiling convert_case v0.6.0
+   Compiling icu_normalizer v2.4.0
+   Compiling pin-project v1.1.13
+   Compiling icu_properties v2.4.0
+   Compiling const_format v0.2.37
+   Compiling tracing-attributes v0.1.31
+   Compiling proc-macro-utils v0.10.0
+   Compiling proc-macro-utils v0.8.0
+   Compiling proc-macro2-diagnostics v0.10.1
+   Compiling xxhash-rust v0.8.19
+   Compiling manyhow-macros v0.10.4
+   Compiling server_fn_macro v0.6.15
+   Compiling quote-use-macros v0.8.4
+   Compiling idna_adapter v1.2.2
+   Compiling futures-executor v0.3.34
+   Compiling slotmap v1.1.1
+   Compiling anyhow v1.0.104
+   Compiling paste v1.0.15
+   Compiling getrandom v0.4.3
+   Compiling camino v1.2.6
+   Compiling ciborium-io v0.2.2
+   Compiling scopeguard v1.2.0
+   Compiling yansi v1.0.1
+   Compiling lock_api v0.4.14
+   Compiling half v2.7.1
+   Compiling futures v0.3.34
+   Compiling ciborium-ll v0.2.2
+   Compiling syn_derive v0.1.8
+   Compiling quote-use v0.8.4
+   Compiling idna v1.1.0
+   Compiling manyhow v0.10.4
+   Compiling http v1.5.0
+   Compiling form_urlencoded v1.2.2
+   Compiling toml_datetime v0.6.11
+   Compiling serde_spanned v0.6.9
+   Compiling tracing-core v0.1.36
+   Compiling same-file v1.0.6
+   Compiling interpolator v0.5.0
+   Compiling winnow v0.7.15
+   Compiling collection_literals v1.0.3
+   Compiling hashbrown v0.14.5
+   Compiling toml_write v0.1.2
+   Compiling prettyplease v0.2.37
+   Compiling dashmap v5.5.3
+   Compiling attribute-derive-macro v0.9.2
+   Compiling toml_edit v0.22.27
+   Compiling tracing v0.1.44
+   Compiling walkdir v2.5.0
+   Compiling url v2.5.8
+   Compiling rstml v0.11.2
+   Compiling web-sys v0.3.106
+   Compiling wasm-bindgen-futures v0.4.79
+   Compiling serde-wasm-bindgen v0.6.5
+   Compiling ciborium v0.2.2
+   Compiling parking_lot v0.12.5
+   Compiling server_fn_macro_default v0.6.15
+   Compiling serde_qs v0.12.0
+   Compiling oco_ref v0.1.1
+   Compiling derive-where v1.7.0
+   Compiling send_wrapper v0.6.0
+   Compiling proc-macro-error-attr2 v2.0.0
+   Compiling aho-corasick v1.1.5
+   Compiling base64 v0.22.1
+   Compiling regex-syntax v0.8.11
+   Compiling self_cell v1.3.0
+   Compiling minimal-lexical v0.2.1
+   Compiling either v1.19.0
+   Compiling rustc-hash v1.1.0
+   Compiling itertools v0.12.1
+   Compiling regex-automata v0.4.18
+   Compiling nom v7.1.3
+   Compiling attribute-derive v0.9.2
+   Compiling proc-macro-error2 v2.0.1
+   Compiling leptos_hot_reload v0.6.15
+   Compiling uuid v1.29.0
+   Compiling toml v0.8.23
+   Compiling typed-builder-macro v0.18.2
+   Compiling html-escape v0.2.15
+   Compiling pathdiff v0.2.3
+   Compiling config v0.14.1
+   Compiling typed-builder v0.18.2
+   Compiling leptos_macro v0.6.15
+   Compiling regex v1.13.1
+   Compiling getrandom v0.2.17
+   Compiling async-recursion v1.2.0
+   Compiling inventory v0.3.25
+   Compiling drain_filter_polyfill v0.1.3
+   Compiling pad-adapter v0.1.1
+   Compiling lazy_static v1.5.1
+   Compiling leptos_config v0.6.15
+   Compiling serde_test v1.0.177
+   Compiling fnv v1.0.7
+   Compiling linear-map v1.2.0
+   Compiling http v0.2.12
+   Compiling serde_qs v0.13.0
+   Compiling console_error_panic_hook v0.1.7
+   Compiling codesprout-core v0.1.0 (/home/runner/work/Code-Iot/Code-Iot/core)
+warning: function `insert` is never used
+  --> core/src/content/arduino_more.rs:12:4
+   |
+12 | fn insert(sections: &mut Vec<Section>, after: Option<&str>, s: Section) {
+   |    ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codesprout-core` (lib) generated 1 warning
+   Compiling gloo-utils v0.2.0
+   Compiling leptos_reactive v0.6.15
+   Compiling gloo-net v0.6.0
+   Compiling gloo-storage v0.3.0
+   Compiling gloo-net v0.5.0
+   Compiling wasm-streams v0.4.2
+   Compiling server_fn v0.6.15
+   Compiling leptos_dom v0.6.15
+   Compiling leptos_server v0.6.15
+   Compiling leptos v0.6.15
+   Compiling leptos_router v0.6.15
+   Compiling codesprout-web v0.1.0 (/home/runner/work/Code-Iot/Code-Iot/web)
+warning: method `lang` is never used
+  --> web/src/session.rs:71:12
+   |
+33 | impl Session {
+   | ------------ method in this implementation
+...
+71 |     pub fn lang(&self) -> Lang {
+   |            ^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codesprout-web` (bin "codesprout-web") generated 1 warning
+    Finished `release` profile [optimized] target(s) in 1m 14s
+warning: the following packages contain code that will be rejected by a future version of Rust: proc-macro-error2 v2.0.1
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 1`
+2026-10-29T19:33:26.808650Z  INFO downloading wasm-bindgen version="0.2.129"
+2026-10-29T19:33:27.073849Z  INFO installing wasm-bindgen
+2026-10-29T19:33:27.539711Z  INFO downloading wasm-opt version="version_131"
+2026-10-29T19:33:28.164354Z  INFO installing wasm-opt
+2026-10-29T19:33:30.418333Z  INFO applying new distribution
+2026-10-29T19:33:30.418833Z  INFO ✅ success
+   Compiling proc-macro2 v1.0.107
+   Compiling cfg-if v1.0.5
+   Compiling libc v0.2.191
+   Compiling smallvec v1.16.4
+   Compiling once_cell v1.21.4
+   Compiling pin-project-lite v0.2.17
+   Compiling stable_deref_trait v1.2.1
+   Compiling bytes v1.12.1
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.15
+   Compiling futures-core v0.3.34
+   Compiling quote v1.0.47
+   Compiling syn v3.0.9
+   Compiling itoa v1.0.18
+   Compiling parking_lot_core v0.9.12
+   Compiling cc v1.10.0
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling errno v0.3.14
+   Compiling parking_lot v0.12.5
+   Compiling signal-hook-registry v1.4.8
+   Compiling mio v1.2.4
+   Compiling getrandom v0.2.17
+   Compiling socket2 v0.6.5
+   Compiling syn v2.0.119
+   Compiling tracing-core v0.1.36
+   Compiling log v0.4.34
+   Compiling http v1.5.0
+   Compiling subtle v2.6.1
+   Compiling generic-array v0.14.7
+   Compiling litemap v0.8.3
+   Compiling slab v0.4.12
+   Compiling http-body v1.1.0
+   Compiling futures-task v0.3.34
+   Compiling utf_types v1.0.0
+   Compiling writeable v0.6.4
+   Compiling zerocopy v0.8.63
+   Compiling percent-encoding v2.3.2
+   Compiling serde_core v1.0.229
+   Compiling utf8_iter v1.1.0
+   Compiling futures-util v0.3.34
+   Compiling synstructure v0.14.0
+   Compiling ring v0.17.14
+   Compiling tower-service v0.3.3
+   Compiling typenum v1.20.1
+   Compiling zerofrom-derive v0.1.8
+   Compiling yoke-derive v0.8.4
+   Compiling zerovec-derive v0.11.7
+   Compiling displaydoc v0.2.7
+   Compiling tokio-macros v2.7.2
+   Compiling zerofrom v0.1.8
+   Compiling tracing-attributes v0.1.31
+   Compiling yoke v0.8.4
+   Compiling zerotrie v0.2.5
+   Compiling zerovec v0.11.9
+   Compiling tokio v1.54.1
+   Compiling icu_properties_data v2.4.0
+   Compiling icu_normalizer_data v2.4.0
+   Compiling tracing v0.1.44
+   Compiling tinystr v0.8.5
+   Compiling icu_locale_core v2.4.0
+   Compiling potential_utf v0.1.6
+   Compiling icu_collections v2.4.0
+   Compiling icu_provider v2.4.0
+   Compiling httparse v1.10.1
+   Compiling zeroize v1.9.1
+   Compiling rustls-pki-types v1.15.1
+   Compiling try-lock v0.2.5
+   Compiling tower-layer v0.3.3
+   Compiling untrusted v0.9.0
+   Compiling httpdate v1.0.3
+   Compiling serde v1.0.229
+   Compiling want v0.3.2
+   Compiling icu_properties v2.4.0
+   Compiling icu_normalizer v2.4.0
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling serde_derive v1.0.229
+   Compiling form_urlencoded v1.2.2
+   Compiling sync_wrapper v1.0.2
+   Compiling ahash v0.8.12
+   Compiling atomic-waker v1.1.2
+   Compiling rustls v0.23.46
+   Compiling hyper v1.12.0
+   Compiling zmij v1.0.23
+   Compiling digest v0.10.7
+   Compiling idna_adapter v1.2.2
+   Compiling http-body-util v0.1.5
+   Compiling rand_core v0.6.4
+   Compiling futures-channel v0.3.34
+   Compiling vcpkg v0.2.15
+   Compiling base64 v0.23.1
+   Compiling ipnet v2.12.2
+   Compiling unicase v2.10.0
+   Compiling pkg-config v0.3.34
+   Compiling rustls-webpki v0.103.16
+   Compiling serde_json v1.0.154
+   Compiling mime v0.3.17
+   Compiling bitflags v2.13.2
+   Compiling libsqlite3-sys v0.28.0
+   Compiling mime_guess v2.0.5
+   Compiling hyper-util v0.1.21
+   Compiling idna v1.1.0
+   Compiling tower v0.5.3
+   Compiling regex-syntax v0.8.11
+   Compiling ryu v1.0.23
+   Compiling memchr v2.8.3
+   Compiling serde_urlencoded v0.7.1
+   Compiling regex-automata v0.4.18
+   Compiling tokio-rustls v0.26.6
+   Compiling hashbrown v0.14.5
+   Compiling url v2.5.8
+   Compiling ppv-lite86 v0.2.21
+   Compiling webpki-roots v1.0.11
+   Compiling async-trait v0.1.92
+   Compiling cpufeatures v0.2.17
+   Compiling futures-sink v0.3.34
+   Compiling base64ct v1.8.3
+   Compiling lazy_static v1.5.1
+   Compiling sharded-slab v0.1.7
+   Compiling password-hash v0.5.0
+   Compiling tokio-util v0.7.20
+   Compiling axum-core v0.4.5
+   Compiling hyper-rustls v0.27.10
+   Compiling rand_chacha v0.3.1
+   Compiling hashlink v0.9.1
+   Compiling tower-http v0.6.11
+   Compiling matchers v0.2.0
+   Compiling blake2 v0.10.6
+   Compiling serde_path_to_error v0.1.20
+   Compiling tracing-log v0.2.0
+   Compiling thread_local v1.1.10
+   Compiling matchit v0.7.3
+   Compiling http-range-header v0.4.2
+   Compiling base64 v0.22.1
+   Compiling nu-ansi-term v0.50.3
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling fallible-iterator v0.3.0
+   Compiling reqwest v0.12.28
+   Compiling tracing-subscriber v0.3.23
+   Compiling axum v0.7.9
+   Compiling tower-http v0.5.2
+   Compiling argon2 v0.5.3
+   Compiling rand v0.8.8
+   Compiling sha2 v0.10.9
+   Compiling codesprout-core v0.1.0 (/home/runner/work/Code-Iot/Code-Iot/core)
+   Compiling hmac v0.12.1
+   Compiling hex v0.4.3
+warning: function `insert` is never used
+  --> core/src/content/arduino_more.rs:12:4
+   |
+12 | fn insert(sections: &mut Vec<Section>, after: Option<&str>, s: Section) {
+   |    ^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codesprout-core` (lib) generated 1 warning
+   Compiling rusqlite v0.31.0
+   Compiling codesprout-server v0.1.0 (/home/runner/work/Code-Iot/Code-Iot/server)
+warning: field `affected` is never read
+   --> server/src/sql.rs:112:9
+    |
+109 | pub struct QueryResult {
+    |            ----------- field in this struct
+...
+112 |     pub affected: u64,
+    |         ^^^^^^^^
+    |
+    = note: `QueryResult` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `memory` is never used
+   --> server/src/sql.rs:156:12
+    |
+151 | impl Db {
+    | ------- associated function in this implementation
+...
+156 |     pub fn memory() -> DbResult<Db> {
+    |            ^^^^^^
+
+warning: `codesprout-server` (bin "codesprout-server") generated 2 warnings
+    Finished `release` profile [optimized] target(s) in 2m 12s
+[2m2026-10-29T19:35:42.814130Z[0m [32m INFO[0m [2mcodesprout_server[0m[2m:[0m Code-Iot listening on http://127.0.0.1:3998 (db: local SQLite file, web: web/dist)
+[2m2026-10-29T19:35:43.073094Z[0m [33m WARN[0m [2mcodesprout_server::payments[0m[2m:[0m payment webhook with a bad signature
+[2m2026-10-29T19:35:43.075886Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5001 yearly paid for user Some(1)
+[2m2026-10-29T19:35:43.079249Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5001 yearly paid for user Some(1)
+[2m2026-10-29T19:35:43.083293Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5090 yearly paid for user Some(1)
+[2m2026-10-29T19:35:43.086751Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5095 yearly paid for user Some(1)
+[2m2026-10-29T19:35:43.096306Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5091 yearly paid for user Some(1)
+[2m2026-10-29T19:35:43.097962Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5092 yearly paid for user Some(1)
+[2m2026-10-29T19:35:43.099612Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5092 yearly paid for user Some(1)
+[2m2026-10-29T19:35:43.124889Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5200 yearly paid for user Some(3)
+[2m2026-10-29T19:35:43.141400Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5001 yearly paid for user Some(1)
+[2m2026-10-29T19:35:43.143929Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment sub_7001 monthly active for user Some(1)
+[2m2026-10-29T19:35:43.145484Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment inv_9001 monthly paid for user Some(1)
+[2m2026-10-29T19:35:43.160029Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment sub_7001 monthly expired for user Some(1)
+[2m2026-10-29T19:35:43.172334Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment sub_7101 monthly active for user Some(1)
+[2m2026-10-29T19:35:43.173973Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment inv_9101 monthly paid for user Some(1)
+[2m2026-10-29T19:35:43.185720Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment sub_7101 monthly cancelled for user Some(1)
+[2m2026-10-29T19:35:43.188272Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5300 yearly paid for user Some(1)
+[2m2026-10-29T19:35:43.194075Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_5300 yearly paid for user Some(1)
+PASS admin flag
+PASS join a waiting list
+PASS joining twice keeps one entry
+PASS unknown course refused
+PASS guest can't join
+PASS waiting list is admins only
+PASS admin sees who waits
+PASS leave the waiting list
+PASS buyer is not admin
+PASS checkout needs a phone
+PASS phone saved in international form
+PASS bad phone rejected
+PASS checkout url
+PASS checkout sends the yearly variant
+PASS checkout carries user and course
+PASS checkout prefills the country
+PASS unknown API path answers JSON 404
+PASS python locked before paying
+PASS forged webhook rejected
+PASS python still locked after a forged webhook
+PASS signed webhook accepted
+PASS python opens after paying
+PASS rust stays locked
+PASS same webhook twice is harmless
+PASS $25 opens the course for one year
+PASS profile shows the year's end (for the renewal reminder)
+PASS older apps' 'lifetime' still buys a year
+PASS a year that ended
+PASS no unused-year suggestion in the first 14 days
+PASS unused part of the year suggested after 14 days
+PASS cpp open before the refund
+PASS partial refund that closes the course
+PASS closed purchase can't be closed again and offers nothing more
+PASS bundle offered with its prices
+PASS bundle checkout sends the all-courses variant
+PASS bundle webhook
+PASS bundle opens every course
+PASS profile lists one 'all courses' plan
+PASS admin sees every course opened by the bundle
+PASS unknown bundle plan refused
+PASS buying another year adds a year to the end
+PASS one record per order
+PASS payment details
+PASS buyer can't refund
+PASS guest can't refund
+PASS refund above the payment rejected
+PASS zero refund rejected
+PASS partial refund
+PASS refund request sent correctly
+PASS refundable left
+PASS partial refund keeps access
+PASS can't refund more than what's left
+PASS rest refunded
+PASS full refund closes the course
+PASS nothing left to refund
+PASS repeated 'paid' message after a refund
+PASS a late 'paid' message doesn't reopen a refunded course
+PASS Lemon Squeezy got exactly three refund calls
+PASS subscription webhook
+PASS rust opens with a subscription
+PASS subscription can be cancelled, not refunded
+PASS invoice can be refunded
+PASS refunding the subscription record itself is refused
+PASS invoice partial refund
+PASS no unused-part refund before cancelling
+PASS buyer sees own subscription with its charges
+PASS another user doesn't see it
+PASS guest can't cancel
+PASS another user can't cancel someone else's subscription
+PASS cancel subscription
+PASS cancelled stays open until the period ends
+PASS can't cancel twice
+PASS unused-part refund suggested after cancelling
+PASS after cancelling, no cancel button
+PASS expiry webhook
+PASS expired subscription closes the course
+PASS pause purchases
+PASS no checkout while paused
+PASS page shows 'opening soon' while paused
+PASS resume purchases
+PASS price buttons back after resuming
+PASS checkout after resuming
+PASS admin sees phone and country
+PASS admin sees payment method
+PASS overview revenue: live money only, refunds separate
+PASS every money action logged
+PASS all fake API calls used the API key
+PASS web open with a new subscription
+PASS a monthly charge can close its subscription
+PASS refund + close: subscription cancelled at Lemon Squeezy
+PASS refund + close: course closed at once
+PASS a later event can't reopen a closed subscription
+PASS arduino open before the dispute
+PASS dispute webhook accepted
+PASS dispute closes the course
+PASS a repeated 'paid' event can't reopen a disputed purchase
+PASS disputed purchase marked for the admin
+PASS overview counts the dispute
+PASS dispute for an unknown order is logged, not an error
+PASS disputes logged
+
+0 failure(s)
+[2m2026-10-29T19:35:43.735367Z[0m [32m INFO[0m [2mcodesprout_server[0m[2m:[0m Code-Iot listening on http://127.0.0.1:3999 (db: local SQLite file, web: web/dist)
+--- database: local file
+--- /api/run cpp
+status: ok exit: 0
+stdout: Hello, Code-Iot!
+stderr: 
+--- /api/run rust
+status: ok exit: 0
+stdout: Hello, Code-Iot!
+stderr: 
+--- /api/run arduino
+status: ok exit: 0
+stdout: hi from the sim
+[ 0.000 s] pin 13 -> HIGH
+[ 1.000 s] pin 13 -> LOW
+[ 2.000 s] pin 13 -> HIGH
+[ 3.000 s] pin 13 -> LOW
+[ 4.000 s] pin 13 -> HIGH
+[ 5.000 s] pin 13 -> LOW
+[ 6.000 s] pin 13 -> HIGH
+[ 7.000 s] pin 13 -> LOW
+[ 8.000 s] pin 13 -> HIGH
+[ 9.000 s] pin 13 -> LOW
+[10.000 s] pin 13 -> HIGH
+[11.000 s] pin 13 -> LOW
+[12.000 s] pin 13 -> HIGH
+[13.000 s] pin 13 -> LOW
+[14.000 s] pin 13 -> HIGH
+[15.000 s] pin 13 -> LOW
+[16.000 s] pin 13 -> HIGH
+[17.000 s] pin 13 -> LOW
+[18.000 s] pin 13 -> HIGH
+[19.000 s] pin 13 -> LOW
+
+[simulation stopped: 20 seconds of board time]
+stderr: 
+--- /api/run cpp
+status: compile_error exit: 1
+stdout: 
+stderr: main: In function 'int main()':
+main:1:21: error: 'x' was not declared in this scope
+    1 | int main() { return x; }
+      |                     ^
+--- /api/run python
+status: ok exit: 0
+stdout: What's your name? Hello, Code-Iot!
+1 squared is 1
+2 squared is 4
+3 squared is 9
+stderr: 
+--- /api/run python
+status: runtime_error exit: 1
+stdout: 
+stderr: Traceback (most recent call last):
+  File "main.py", line 1, in <module>
+    print(1 / 0)
+          ~~^~~
+ZeroDivisionError: division by zero
+--- avatar
+signup avatar: None
+preset: preset:a2
+me: preset:a2
+upload: data:image/jpeg;base64,/9j/4AAQ
+bad: {'http_error': 400, 'body': '{"error":"The picture must be a JPEG, PNG or WebP image"}'}
+clear: None
+login again: True | completions saved: 16
+profile after lesson: xp 16
+--- access
+guest, topic 3: {'http_error': 402, 'body': '{"error":"locked:python"}'}
+guest, topic 1: True
+user, topic 2: True
+user, topic 3: {'http_error': 402, 'body': '{"error":"locked:python"}'}
+user sees locks: [False, True]
+admin api as a user: {'http_error': 403, 'body': '{"error":"Admins only"}'}
+payments config: {'all': False, 'all_monthly': '$9.99', 'all_yearly': '$59', 'courses': 7, 'enabled': False, 'monthly': '$5.99', 'paused': False, 'yearly': '$29'}
+--- google
+providers: {'google': False, 'google_client_id': None}
+start: 404 
+callback with a bad state: 404 
+poll: {'status': 'pending'}
+--- 200 https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js
+--- 200 https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js
+--- 200 https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.wasm
+=== TURSO PROTOCOL TEST ===
+--- database: Tursohttp://127.0.0.1:8080
+--- avatar
+[2m2026-10-29T19:36:09.472893Z[0m [33m WARN[0m [2mcodesprout_server::payments[0m[2m:[0m payment webhook with a bad signature
+[2m2026-10-29T19:36:09.476125Z[0m [32m INFO[0m [2mcodesprout_server::payments[0m[2m:[0m payment ord_smoke-smoke_7c15f148 yearly paid for user Some(1)
+signup avatar: None
+preset: preset:a2
+me: preset:a2
+upload: data:image/jpeg;base64,/9j/4AAQ
+bad: {'http_error': 400, 'body': '{"error":"The picture must be a JPEG, PNG or WebP image"}'}
+clear: None
+login again: True | completions saved: 16
+profile after lesson: xp 16
+--- access
+guest, topic 3: {'http_error': 402, 'body': '{"error":"locked:python"}'}
+guest, topic 1: True
+user, topic 2: True
+user, topic 3: {'http_error': 402, 'body': '{"error":"locked:python"}'}
+user sees locks: [False, True]
+admin api as a user: {'http_error': 403, 'body': '{"error":"Admins only"}'}
+payments config: {'all': True, 'all_monthly': '$9.99', 'all_yearly': '$59', 'courses': 7, 'enabled': True, 'monthly': '$5.99', 'paused': False, 'yearly': '$29'}
+webhook, bad signature: 401
+webhook, signed: 200
+python unlocked after paying: True
+user, topic 3 after paying: True
+plans: [{'course_id': 'python', 'kind': 'yearly', 'until': 1824838569, 'manage_url': None}]
+rust still locked: True
+--- google
+providers: {'google': True, 'google_client_id': 'ci-test-id'}
+start: 303 https://accounts.google.com/o/oauth2/v2/auth?client_id=ci-test-id&redirect_uri=https%3A%2F%2Fcode-iot.onrender.com%2Fapi%2Fauth%2Fgoogle%2Fcallback&response_typ
+callback with a bad state: 303 /auth/done#error=This%20sign-in%20link%20has%20expired.%20Please%20try%20again.
+poll: {'status': 'pending'}
+--- 200 https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js
+--- 200 https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js
+--- 200 https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.wasm
+2026-10-29T19:35:55.869944Z  INFO restore: libsql_server::namespace::meta_store: restoring meta store
+2026-10-29T19:35:55.869980Z  INFO restore: libsql_server::namespace::meta_store: meta store restore completed
+2026-10-29T19:35:55.870677Z  INFO libsql_server: Server sending heartbeat to URL <not supplied> every 30s
+2026-10-29T19:35:55.870831Z  INFO libsql_server::rpc: serving internal rpc server without tls
+2026-10-29T19:35:55.873718Z  INFO create:try_new_primary:make_primary_connection_maker: libsql_server::replication::primary::logger: SQLite autocheckpoint: 1000
