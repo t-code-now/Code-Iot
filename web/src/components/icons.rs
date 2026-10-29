@@ -125,3 +125,13 @@ pub fn IconLock() -> impl IntoView {
         </svg>
     }
 }
+
+/// "Back" chevron. Points left; mirrored in right-to-left pages.
+#[component]
+pub fn IconBack() -> impl IntoView {
+    view! {
+        <svg class="icon icon-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 5l-7 7 7 7"/>
+        </svg>
+    }
+}

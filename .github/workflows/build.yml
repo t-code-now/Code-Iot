@@ -41,6 +41,16 @@ jobs:
         working-directory: web
         run: trunk build --release 2>&1 | tee -a ../build.log; exit ${PIPESTATUS[0]}
 
+      # Branch previews: the built web app goes to the preview-dist branch so a
+      # preview can be looked at before it is merged.
+      - name: Publish preview web build
+        if: success() && github.ref != 'refs/heads/main'
+        run: |
+          mkdir -p /tmp/pd && cp -r web/dist/. /tmp/pd/ && cd /tmp/pd
+          git init -q && git checkout -q -b preview-dist && git add -A
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "preview of ${GITHUB_SHA}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" preview-dist
+
       - name: Build server (release)
         if: always()
         run: cargo build -p codesprout-server --release 2>&1 | tee -a build.log; exit ${PIPESTATUS[0]}

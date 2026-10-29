@@ -1,6 +1,7 @@
 //! Privacy policy and terms of use (linked from Google's sign-in screen).
 
 use leptos::*;
+use crate::components::icons::IconBack;
 
 use crate::i18n::Lang;
 use crate::session::use_session;
@@ -95,7 +96,7 @@ const TERMS_HE: Doc = Doc {
 fn render(doc: &'static Doc) -> impl IntoView {
     view! {
         <div class="auth legal">
-            <a href="/" class="back-link">{use_session().t("back")}</a>
+            <a href="/" class="back-link"><IconBack/>{use_session().t("back.word")}</a>
             <h1 class="auth-title">{doc.title}</h1>
             <div class="legal-card">
                 <p class="muted">{doc.updated}</p>

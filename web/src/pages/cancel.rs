@@ -5,6 +5,7 @@
 
 use codesprout_core::api::MyPurchase;
 use leptos::*;
+use crate::components::icons::IconBack;
 use wasm_bindgen::prelude::*;
 
 use crate::api;
@@ -76,7 +77,7 @@ pub fn CancelPage() -> impl IntoView {
 
     view! {
         <div class="auth cancel-page">
-            <a href="/profile" class="back-link">{session.t("back")}</a>
+            <a href="/profile" class="back-link"><IconBack/>{session.t("back.word")}</a>
             <h1 class="auth-title">{session.t("cancel.title")}</h1>
             <p class="admin-hint">{session.t("cancel.intro")}</p>
             {move || note.get().map(|(ok, msg)| view! { <div class={if ok { "ok-note" } else { "form-error" }}>{msg}</div> })}

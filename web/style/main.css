@@ -152,7 +152,20 @@ p { margin: 0; }
 .btn:disabled { background: var(--surface-2); color: #7884b8; box-shadow: 0 4px 0 #0e1534; }
 .link-btn { color: var(--text); font-weight: 800; padding: 10px; text-decoration: underline; opacity: .85; }
 .icon-btn { display: inline-flex; padding: 6px; color: var(--muted); }
-.back-link { color: var(--text); font-weight: 800; font-size: 18px; padding: 8px 0; display: inline-block; }
+/* "Back" link: a clear pill at the top start of the page, readable on the sky. */
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px; margin: 4px 0;
+  padding: 8px 16px 8px 12px; border-radius: 999px;
+  background: rgba(18, 26, 56, .88); border: 2px solid var(--line); box-shadow: 0 3px 0 rgba(8, 12, 32, .45);
+  color: var(--text); font-weight: 900; font-size: 16px; line-height: 1;
+  transition: filter .15s ease, transform .06s ease;
+}
+[dir="rtl"] .back-link { padding: 8px 12px 8px 16px; }
+.back-link:hover { filter: brightness(1.15); }
+.back-link:active { transform: translateY(2px); }
+.back-link .icon { width: 18px; height: 18px; color: var(--primary); }
+[dir="rtl"] .icon-back { transform: scaleX(-1); }
+.back-link.icon-only, [dir="rtl"] .back-link.icon-only { padding: 9px; }
 
 /* ---------- progress bars ---------- */
 .bar { height: 14px; background: var(--surface-2); border-radius: 999px; overflow: hidden; flex: 1; }
@@ -292,6 +305,9 @@ p { margin: 0; }
   display: flex; align-items: center; gap: 12px; padding: 14px 16px;
 }
 .lesson-bar { height: 16px; }
+.player-top .icon-btn { border-radius: 10px; }
+.player-top .icon-btn:hover:not(:disabled) { color: var(--text); background: rgba(255, 255, 255, .06); }
+.step-back:disabled { opacity: .3; cursor: default; }
 .player-body { flex: 1; padding: 8px 16px 24px; }
 .step-wrap { animation: slide-in .25s ease; }
 @keyframes slide-in { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
@@ -373,6 +389,9 @@ p { margin: 0; }
 .footer.ok { background: #10301f; border-top-color: #166534; animation: sheet-up .22s ease; }
 .footer.bad { background: #33121c; border-top-color: #9f1239; animation: sheet-up .22s ease; }
 .footer.bad .btn-check { background: var(--danger); color: #fff; box-shadow: 0 4px 0 var(--danger-dark); }
+.footer-actions { display: flex; gap: 10px; }
+.footer-actions .btn { flex: 1; min-width: 0; }
+.btn-retry { background: transparent; color: #fecdd3; border: 2px solid #fb7185; box-shadow: 0 4px 0 #4c0519; }
 @keyframes sheet-up { from { transform: translateY(30px); opacity: .6; } to { transform: none; opacity: 1; } }
 .feedback-body { margin-bottom: 14px; }
 .feedback-head { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 900; }
@@ -541,7 +560,11 @@ p { margin: 0; }
   background: #0b1028; color: #e6e8f5; font-size: 14px; line-height: 1.6; tab-size: 2;
 }
 .pg-result { width: 100%; height: 100%; border: none; background: #fff; }
-.pg-hint { font-size: 13px; margin-top: 10px; font-weight: 700; }
+.pg-hint {
+  font-size: 13px; margin-top: 10px; font-weight: 700; line-height: 1.45; color: #e3e7fa;
+  padding: 10px 14px; border-radius: 12px; background: rgba(18, 26, 56, .82); border: 1px solid var(--line);
+}
+.pg-actions .btn.done { background: #17633f; border-color: #3fbf7f; color: #fff; }
 .pg-langs { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 10px; margin-bottom: 4px; scrollbar-width: none; }
 .pg-langs::-webkit-scrollbar { display: none; }
 .pg-lang {
@@ -772,7 +795,8 @@ div.avatar-preview { display: grid; place-items: center; font-size: 52px; font-w
   .code { font-size: 16px; }
   .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .footer { padding: 20px 48px; }
-  .footer .btn-block { max-width: 360px; margin-inline-start: auto; display: flex; }
+  .footer-actions { justify-content: flex-end; }
+  .footer-actions .btn { flex: 0 1 260px; }
   .complete { padding: 40px 48px; }
 
   /* Welcome: the mascot and name beside the sign-up card. */

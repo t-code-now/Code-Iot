@@ -4,6 +4,7 @@
 
 use codesprout_core::api::AVATAR_PRESETS;
 use leptos::*;
+use crate::components::icons::IconBack;
 use leptos_router::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
@@ -121,7 +122,7 @@ pub fn AvatarPage() -> impl IntoView {
     view! {
         {move || (!session.logged_in()).then(|| view! { <Redirect path="/signup"/> })}
         <div class="auth avatar-page">
-            {move || (!first_time()).then(|| view! { <a href="/profile" class="back-link">{session.t("back")}</a> })}
+            {move || (!first_time()).then(|| view! { <a href="/profile" class="back-link"><IconBack/>{session.t("back.word")}</a> })}
             <h1 class="auth-title">{session.t("avatar.title")}</h1>
             <p class="avatar-sub">{session.t("avatar.sub")}</p>
 

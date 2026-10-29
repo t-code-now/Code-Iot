@@ -1,6 +1,7 @@
 //! Welcome, sign-up and log-in screens.
 
 use leptos::*;
+use crate::components::icons::IconBack;
 use leptos_router::*;
 
 use crate::api;
@@ -55,7 +56,7 @@ pub fn AuthPage(mode: AuthMode) -> impl IntoView {
     if mode == AuthMode::Signup {
         return view! {
             <div class="auth">
-                <a href="/welcome" class="back-link">{session.t("back")}</a>
+                <a href="/welcome" class="back-link"><IconBack/>{session.t("back.word")}</a>
                 <img class="auth-logo" src="/assets/mascot.png" alt=""/>
                 <h1 class="auth-title">{session.t("auth.signup_title")}</h1>
                 <div class="auth-form signup-google">
@@ -110,7 +111,7 @@ pub fn AuthPage(mode: AuthMode) -> impl IntoView {
 
     view! {
         <div class="auth">
-            <a href="/welcome" class="back-link">{session.t("back")}</a>
+            <a href="/welcome" class="back-link"><IconBack/>{session.t("back.word")}</a>
             <img class="auth-logo" src="/assets/mascot.png" alt=""/>
             <h1 class="auth-title">{session.t(title)}</h1>
             <form class="auth-form" on:submit=submit>

@@ -12,7 +12,7 @@ use wasm_bindgen_futures::JsFuture;
 
 use crate::api;
 use crate::components::google::{go_to, in_app, open_external, sleep, GoogleButton};
-use crate::components::icons::{IconCheck, IconLock};
+use crate::components::icons::{IconBack, IconCheck, IconLock};
 use crate::i18n::{self, tf};
 use crate::pages::Loading;
 use crate::session::use_session;
@@ -219,7 +219,7 @@ pub fn UnlockPage() -> impl IntoView {
 
     view! {
         <div class="auth unlock-page">
-            <a href="/" class="back-link">{session.t("back")}</a>
+            <a href="/" class="back-link"><IconBack/>{session.t("back.word")}</a>
             <Suspense fallback=|| view! { <Loading/> }>
                 {move || course.get().map(|r| match r {
                     Err(e) => view! { <div class="form-error">{i18n::error(session.lang.get(), &e.message)}</div> }.into_view(),

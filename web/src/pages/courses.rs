@@ -2,6 +2,7 @@
 
 use crate::components::lang_icon::LangIcon;
 use leptos::*;
+use crate::components::icons::IconBack;
 use leptos_router::*;
 
 use crate::api;
@@ -21,7 +22,7 @@ pub fn Courses() -> impl IntoView {
     view! {
         <div class="page">
             <header class="page-header">
-                <a href="/" class="back-link">{session.t("back.arrow")}</a>
+                <a href="/" class="back-link icon-only" aria-label=session.t("back.word")><IconBack/></a>
                 <h1>{session.t("courses.title")}</h1>
             </header>
             <Suspense fallback=|| view! { <Loading/> }>

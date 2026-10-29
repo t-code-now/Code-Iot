@@ -4,6 +4,7 @@
 use codesprout_core::api::{AdminOverview, AdminPayment, AdminUser, CourseSummary};
 use crate::components::lang_icon::LangIcon;
 use leptos::*;
+use crate::components::icons::IconBack;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
@@ -125,7 +126,7 @@ pub fn AdminPage() -> impl IntoView {
     view! {
         <div class="admin">
             <header class="admin-head">
-                <a href="/profile" class="back-link">{session.t("back")}</a>
+                <a href="/profile" class="back-link"><IconBack/>{session.t("back.word")}</a>
                 <h1 class="topbar-title">"🛠 " {session.t("admin.title")}</h1>
             </header>
             {move || if !is_admin() {

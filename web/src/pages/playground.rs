@@ -213,7 +213,12 @@ pub fn Playground() -> impl IntoView {
         }
     };
 
+    // Shows "Reset ✓" for a moment so a tap always has a visible result,
+    // even when the code was still the starter code.
+    let just_reset = create_rw_signal(false);
     let reset = move |_| {
+        just_reset.set(true);
+        set_timeout(move || just_reset.set(false), std::time::Duration::from_millis(1400));
         let l = lang.get_untracked();
         if l.id == "web" {
             html.set(STARTER_HTML.into());
@@ -291,7 +296,9 @@ pub fn Playground() -> impl IntoView {
             <header class="topbar">
                 <h1 class="topbar-title">{session.t("pg.title")}</h1>
                 <div class="pg-actions">
-                    <button class="btn btn-small btn-ghost" on:click=reset>{session.t("pg.reset")}</button>
+                    <button type="button" class="btn btn-small btn-ghost" class:done=move || just_reset.get() on:click=reset>
+                        {move || if just_reset.get() { session.t("pg.reset_done")() } else { session.t("pg.reset")() }}
+                    </button>
                     <button class="btn btn-small btn-check" on:click=run><IconPlay/>{session.t("pg.run")}</button>
                 </div>
             </header>
@@ -333,7 +340,7 @@ pub fn Playground() -> impl IntoView {
                     Tab::Output => output_view().into_view(),
                 }}
             </div>
-            <p class="muted pg-hint">{move || session.t(lang.get().tip)()}</p>
+            <p class="pg-hint">{move || session.t(lang.get().tip)()}</p>
         </div>
     }
 }

@@ -1,6 +1,12 @@
 package com.tcodenow.googlesignin
 
 import android.app.Activity
+import android.graphics.Color
+import android.view.ViewGroup
+import android.webkit.WebView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -25,6 +31,39 @@ class SignInArgs {
 /** Google's account sheet over the app (Android Credential Manager). */
 @TauriPlugin
 class GoogleSignInPlugin(private val activity: Activity) : Plugin(activity) {
+    /**
+     * Keeps the app out from under the phone's status bar and navigation bar.
+     * Android draws apps edge to edge, so without this the clock, battery and
+     * notification icons sit on top of the app's header (and catch its taps).
+     * The web view is moved inside the safe area and the strips around it get
+     * the app's navy, with light icons.
+     */
+    override fun load(webView: WebView) {
+        super.load(webView)
+        val window = activity.window
+        window.decorView.setBackgroundColor(Color.parseColor("#121A38"))
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false
+            isAppearanceLightNavigationBars = false
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(webView) { view, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            val params = view.layoutParams
+            if (params is ViewGroup.MarginLayoutParams) {
+                if (params.topMargin != bars.top || params.bottomMargin != bars.bottom ||
+                    params.leftMargin != bars.left || params.rightMargin != bars.right
+                ) {
+                    params.setMargins(bars.left, bars.top, bars.right, bars.bottom)
+                    view.layoutParams = params
+                }
+            }
+            insets
+        }
+        ViewCompat.requestApplyInsets(webView)
+    }
+
     @Command
     fun signIn(invoke: Invoke) {
         val args = invoke.parseArgs(SignInArgs::class.java)

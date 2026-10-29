@@ -12,6 +12,7 @@ const STRINGS: &[(&str, &str, &str)] = &[
     ("tab.profile", "Profile", "פרופיל"),
     ("back", "‹ Back", "› חזרה"),
     ("back.arrow", "‹", "›"),
+    ("back.word", "Back", "חזרה"),
     ("back.learn", "Back to Learn", "חזרה ללימוד"),
     // home / courses
     ("home.lessons_progress", "{} of {} lessons", "{} מתוך {} שיעורים"),
@@ -30,6 +31,8 @@ const STRINGS: &[(&str, &str, &str)] = &[
     ("lesson.checking", "Checking…", "בודק…"),
     ("lesson.continue", "Continue", "המשך"),
     ("lesson.not_quite", "Not quite", "לא בדיוק"),
+    ("lesson.retry", "Try again", "נסו שוב"),
+    ("lesson.prev", "Previous step", "לשלב הקודם"),
     ("lesson.correct_answer", "Correct answer:", "התשובה הנכונה:"),
     ("lesson.reorder_hint", "Tap the lines below in the right order", "הקישו על השורות שלמטה בסדר הנכון"),
     ("lesson.type_placeholder", "Type your answer…", "הקלידו את התשובה…"),
@@ -331,6 +334,7 @@ const STRINGS: &[(&str, &str, &str)] = &[
     // playground
     ("pg.title", "Playground", "מגרש משחקים"),
     ("pg.reset", "Reset", "איפוס"),
+    ("pg.reset_done", "Reset ✓", "אופס ✓"),
     ("pg.run", "Run", "הרצה"),
     ("pg.result", "Result", "תוצאה"),
     ("pg.tip", "Tip: code runs in a sandbox right in your browser.", "טיפ: הקוד רץ בסביבה מבודדת ישירות בדפדפן."),

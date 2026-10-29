@@ -8,7 +8,7 @@ use leptos_router::*;
 
 use crate::api;
 use crate::components::exercises::*;
-use crate::components::icons::IconClose;
+use crate::components::icons::{IconBack, IconClose};
 use crate::highlight::lang_for_course;
 use crate::pages::{ErrorState, Loading};
 use crate::i18n::{self, tf};
@@ -60,6 +60,11 @@ fn Player(lesson: LessonDto) -> impl IntoView {
     let checking = create_rw_signal(false);
     let net_error = create_rw_signal(None::<String>);
     let correct_first = create_rw_signal(0u32);
+    // Steps already checked once: only the first try counts toward accuracy,
+    // so trying again (or going back) never adds to the score.
+    let tried = create_rw_signal(std::collections::HashSet::<usize>::new());
+    // Bumped to show the current step again from scratch.
+    let attempt = create_rw_signal(0u32);
     let finished = create_rw_signal(false);
     // Saved result from the server (logged-in users only).
     let saved = create_rw_signal(None::<Result<CompleteResponse, String>>);
@@ -101,6 +106,23 @@ fn Player(lesson: LessonDto) -> impl IntoView {
         }
     };
 
+    // Show the same step again, unanswered.
+    let retry = move || {
+        feedback.set(None);
+        answer.set(None);
+        net_error.set(None);
+        attempt.update(|a| *a += 1);
+    };
+
+    // Go back one step; it opens fresh so it can be answered again.
+    let go_back = move |_| {
+        if index.get_untracked() == 0 || checking.get_untracked() {
+            return;
+        }
+        index.update(|i| *i -= 1);
+        retry();
+    };
+
     let check = move || {
         let Some(ans) = answer.get_untracked() else { return };
         if checking.get_untracked() {
@@ -114,7 +136,8 @@ fn Player(lesson: LessonDto) -> impl IntoView {
         spawn_local(async move {
             match api::check(id, session.token.get_untracked(), step, ans, ui).await {
                 Ok(resp) => {
-                    if resp.correct {
+                    let first_try = tried.try_update(|t| t.insert(step)).unwrap_or(false);
+                    if resp.correct && first_try {
                         correct_first.update(|c| *c += 1);
                     }
                     feedback.set(Some(resp));
@@ -149,6 +172,7 @@ fn Player(lesson: LessonDto) -> impl IntoView {
     let locked = Signal::derive(move || feedback.with(Option::is_some));
 
     let step_view = move || {
+        let _ = attempt.get();
         let i = index.get();
         let step = lesson.with_value(|l| l.steps[i].clone());
         let inner = match step {
@@ -201,6 +225,8 @@ fn Player(lesson: LessonDto) -> impl IntoView {
         })
     };
 
+    let wrong = move || feedback.with(|f| f.as_ref().is_some_and(|f| !f.correct));
+
     let footer_state = move || match feedback.with(|f| f.as_ref().map(|f| f.correct)) {
         Some(true) => "footer ok",
         Some(false) => "footer bad",
@@ -221,7 +247,14 @@ fn Player(lesson: LessonDto) -> impl IntoView {
         >
             <div class="player" style=format!("--course:{color}")>
                 <header class="player-top">
-                    <a href="/" class="icon-btn" aria-label=session.t("lesson.close")><IconClose/></a>
+                    <a href="/" class="icon-btn" aria-label=session.t("lesson.close") title=session.t("lesson.close")><IconClose/></a>
+                    <button
+                        class="icon-btn step-back"
+                        aria-label=session.t("lesson.prev")
+                        title=session.t("lesson.prev")
+                        disabled=move || index.get() == 0 || checking.get()
+                        on:click=go_back
+                    ><IconBack/></button>
                     <div class="bar lesson-bar">
                         <div class="bar-fill" style=move || format!("width:{}%", progress())></div>
                     </div>
@@ -230,9 +263,16 @@ fn Player(lesson: LessonDto) -> impl IntoView {
                 <footer class=footer_state>
                     {feedback_view}
                     {move || net_error.get().map(|e| view! { <div class="form-error">{e}</div> })}
-                    <button class="btn btn-check btn-block" disabled=main_disabled on:click=on_main>
-                        {main_label}
-                    </button>
+                    <div class="footer-actions">
+                        {move || wrong().then(|| view! {
+                            <button class="btn btn-retry btn-block" on:click=move |_| retry()>
+                                {session.t("lesson.retry")}
+                            </button>
+                        })}
+                        <button class="btn btn-check btn-block" disabled=main_disabled on:click=on_main>
+                            {main_label}
+                        </button>
+                    </div>
                 </footer>
             </div>
         </Show>
