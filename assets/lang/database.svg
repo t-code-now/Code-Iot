@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>Database</title>
+<path d="M10 14v36c0 5 9.8 9 22 9s22-4 22-9V14z" fill="#3b82f6"/>
+<path d="M10 26c0 5 9.8 9 22 9s22-4 22-9M10 38c0 5 9.8 9 22 9s22-4 22-9" fill="none" stroke="#1e40af" stroke-width="2.5"/>
+<ellipse cx="32" cy="14" rx="22" ry="9" fill="#93c5fd"/>
+<ellipse cx="32" cy="14" rx="22" ry="9" fill="none" stroke="#1e40af" stroke-width="2"/>
+<g fill="#ffc72c"><circle cx="46" cy="31" r="2.2"/><circle cx="46" cy="43" r="2.2"/><circle cx="46" cy="55" r="2.2"/></g>
+</svg>

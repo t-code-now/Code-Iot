@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover" />
+    <script>
+      // Chrome on a phone can reopen a tab in "Desktop site" mode (it keeps
+      // that mode for pages it restores, even after the setting is off), and
+      // then shows the site 980px wide. A reload asks again and gets the phone
+      // layout, so reload by ourselves (at most once in 30 seconds, so a user who
+      // really chose desktop mode is not stuck in a loop).
+      document.addEventListener('DOMContentLoaded', function () {
+        try {
+          var phone = navigator.maxTouchPoints > 0 && screen.width < 700;
+          var last = +sessionStorage.getItem('cs.mobile-reload') || 0;
+          if (phone && window.innerWidth > screen.width * 1.5 && Date.now() - last > 30000) {
+            sessionStorage.setItem('cs.mobile-reload', String(Date.now()));
+            location.reload();
+          }
+        } catch (e) {}
+      });
+      // Phones: if the browser ever shows this page zoomed out, set the
+      // viewport again so it snaps back to the phone's own width.
+      (function () {
+        var vv = window.visualViewport;
+        if (!vv) return;
+        var busy = false;
+        function fix() {
+          var m = document.querySelector('meta[name="viewport"]');
+          if (busy || !m || vv.scale >= 0.98) return;
+          busy = true;
+          var c = m.getAttribute('content');
+          m.setAttribute('content', 'width=device-width');
+          m.setAttribute('content', c);
+          setTimeout(function () { busy = false; }, 800);
+        }
+        vv.addEventListener('resize', fix);
+        window.addEventListener('load', function () { setTimeout(fix, 300); });
+        window.addEventListener('pageshow', function () { setTimeout(fix, 300); });
+      })();
+    </script>
+    <meta name="theme-color" content="#8FB4E6" />
+    <title>Code-Iot</title>
+    <link rel="icon" type="image/png" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/icon-192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&family=Rubik:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/main-ff9f4beea760f5fc.css" integrity="sha384-sXfjbH9RJjuQTBR5iov8wrvmkmXYBMf9UESbGpHfx2TpGDBJMNu50fp3Xmn4BD4C"/>
+    
+    
+<script type="module">
+import init, * as bindings from '/codesprout-web-2a133b686472fad.js';
+const wasm = await init({ module_or_path: '/codesprout-web-4e1c44cb7760970d_bg.wasm' });
+
+
+window.wasmBindings = bindings;
+
+
+dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
+
+</script>
+  <link rel="modulepreload" href="/codesprout-web-2a133b686472fad.js" crossorigin="anonymous" integrity="sha384-HpL4HNQpzTki8UtVMDs4yuJtfwdtRxj+VzPllye7fKFHcia5/QFNhri5Bhi5lxOW"><link rel="modulepreload" href="/snippets/codesprout-web-ed305553149f93bf/inline0.js" crossorigin="anonymous" integrity="sha384-XbOStQliC6feLQtOiuJXsrLOVQM4S/lkwGoEkqHmz8Fa2cWQFHis7Jzd/uSy+By4"><link rel="modulepreload" href="/snippets/codesprout-web-ed305553149f93bf/inline1.js" crossorigin="anonymous" integrity="sha384-NkFXY8QJ5Q8KHkhtNPeeB69z2JYXK2ARljAkPacCTNzxxg12fDwQ4z5enASP7UDY"><link rel="modulepreload" href="/snippets/codesprout-web-ed305553149f93bf/inline5.js" crossorigin="anonymous" integrity="sha384-ySJUD5VfEZfS9gdtafBYYwuHFZVuRMkDyKlID+2rChwOul10HwUbIjK8726eA5uH"><link rel="modulepreload" href="/snippets/codesprout-web-ed305553149f93bf/inline3.js" crossorigin="anonymous" integrity="sha384-765mfqhDS823nb4VtY5V7K/402m0gGlsLX5BdFRUt/hWL95vcFb4PeCJsTLetnr4"><link rel="modulepreload" href="/snippets/codesprout-web-ed305553149f93bf/inline2.js" crossorigin="anonymous" integrity="sha384-PDxvaq2/IN97dBImJQ3jpOC6ZCqwyAFCMMkWpQeE6BdDUi4cd9Vxf6H5GA9qzFyT"><link rel="modulepreload" href="/snippets/codesprout-web-ed305553149f93bf/inline4.js" crossorigin="anonymous" integrity="sha384-kPGpaak9JrQdbaqY1ECEyhPNqr5NcV1+myCxug3iQZyIUp0/fLVfnKUJ57wHXNOr"><link rel="preload" href="/codesprout-web-4e1c44cb7760970d_bg.wasm" crossorigin="anonymous" integrity="sha384-0EwEbORMTi7GyG8kJiVGUnK9L+AVk31JS6pMbw+v4S22eyjtB+eL2A+QR0c3fdwJ" as="fetch" type="application/wasm"></head>
+  <body></body>
+</html>

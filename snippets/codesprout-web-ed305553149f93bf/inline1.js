@@ -1,0 +1,1 @@
+export function ask_cancel(message) { return window.confirm(message); }

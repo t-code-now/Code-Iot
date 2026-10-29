@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>Microcontroller board</title>
+<rect x="4" y="10" width="56" height="44" rx="6" fill="#2f9e44"/>
+<rect x="4" y="10" width="56" height="44" rx="6" fill="none" stroke="#1b6e2c" stroke-width="2"/>
+<g fill="#ffd43b"><circle cx="10" cy="16" r="2.2"/><circle cx="54" cy="16" r="2.2"/><circle cx="10" cy="48" r="2.2"/><circle cx="54" cy="48" r="2.2"/></g>
+<g fill="#e9ecef"><rect x="14" y="13" width="3" height="5" rx="1"/><rect x="20" y="13" width="3" height="5" rx="1"/><rect x="26" y="13" width="3" height="5" rx="1"/><rect x="32" y="13" width="3" height="5" rx="1"/><rect x="38" y="13" width="3" height="5" rx="1"/><rect x="44" y="13" width="3" height="5" rx="1"/>
+<rect x="14" y="46" width="3" height="5" rx="1"/><rect x="20" y="46" width="3" height="5" rx="1"/><rect x="26" y="46" width="3" height="5" rx="1"/><rect x="32" y="46" width="3" height="5" rx="1"/><rect x="38" y="46" width="3" height="5" rx="1"/><rect x="44" y="46" width="3" height="5" rx="1"/></g>
+<rect x="20" y="23" width="24" height="18" rx="2" fill="#212529"/>
+<g stroke="#adb5bd" stroke-width="1.6" stroke-linecap="round"><path d="M23 23v-3M28 23v-3M33 23v-3M38 23v-3M41 23v-3M23 41v3M28 41v3M33 41v3M38 41v3M41 41v3"/></g>
+<circle cx="25" cy="28" r="1.6" fill="#495057"/>
+<rect x="49" y="28" width="7" height="8" rx="1.5" fill="#ced4da"/>
+</svg>

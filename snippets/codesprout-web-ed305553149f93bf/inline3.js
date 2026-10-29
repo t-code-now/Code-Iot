@@ -1,0 +1,1 @@
+export function locale_region() { var p = (navigator.language || '').split('-'); return p.length > 1 ? p[1].toUpperCase() : ''; }
