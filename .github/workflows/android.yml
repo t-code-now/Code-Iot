@@ -103,7 +103,10 @@ jobs:
           name: Code-Iot-android
           path: Code-Iot.apk
 
+      # Only an approved version (main) replaces the download link; preview
+      # branches are built just to check that they compile.
       - name: Publish APK as a release
+        if: github.ref == 'refs/heads/main'
         run: |
           git config user.name "ci"
           git config user.email "ci@users.noreply.github.com"
